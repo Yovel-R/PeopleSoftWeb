@@ -1,0 +1,67 @@
+<div class="page-header">
+  <div class="header-content">
+    <div class="breadcrumb">
+      <a routerLink="/interns">Interns</a> / <span>Performance Review</span>
+    </div>
+    <h1>Performance Reviews</h1>
+    <p>Viewing performance goals for Intern ID: {{ internId() }}</p>
+  </div>
+  <div class="header-actions">
+    <div class="month-selector-wrapper">
+      <lucide-icon name="Calendar"></lucide-icon>
+      <select [value]="selectedMonth()" (change)="onMonthChange($event)" class="month-select">
+        <option *ngFor="let month of months()" [value]="month">{{ month }}</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="data-container" [class.loading]="isLoading()">
+  
+  <div class="review-overview" *ngIf="!isLoading() && reviewData()">
+    <div class="overview-header">
+      <div class="team-info">
+        <lucide-icon name="Users"></lucide-icon>
+        <span>{{ reviewData().team || 'Team not set' }}</span>
+      </div>
+      <div class="score-badge" *ngIf="reviewData().isGraded">
+        Overall Score: {{ reviewData().summary?.percentage || 0 | number:'1.1-1' }}%
+      </div>
+    </div>
+  </div>
+
+  <div class="reviews-grid" *ngIf="!isLoading() && reviewData() && reviewData().goals">
+    <div class="card review-card" *ngFor="let goal of reviewData().goals">
+      <div class="review-header">
+        <div class="perspective-badge">{{ goal.perspective }}</div>
+        <div class="weight-badge">Weight: {{ goal.weight }}</div>
+      </div>
+      <div class="review-body">
+        <h4>{{ goal.title }}</h4>
+        <p class="goal-desc">{{ goal.description }}</p>
+        <p class="goal-kpi"><strong>KPI:</strong> {{ goal.kpi }}</p>
+        
+        <div class="goal-comment" *ngIf="goal.comment">
+          <strong>Comment:</strong> {{ goal.comment }}
+        </div>
+      </div>
+      <div class="review-footer">
+        <div class="grade-display" *ngIf="goal.grade">
+          Grade: <span class="status-badge" [ngClass]="getGradeColor(goal.grade)">{{ goal.grade }}</span>
+        </div>
+        <div class="pending-badge" *ngIf="!goal.grade">Pending Review</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="!isLoading() && !reviewData()">
+    <lucide-icon name="LineChart" class="empty-icon"></lucide-icon>
+    <h3>No review for this month</h3>
+    <p>There are no performance goals submitted for {{ selectedMonth() }}.</p>
+  </div>
+
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <div class="spinner"></div>
+    <p>Loading performance data...</p>
+  </div>
+</div>

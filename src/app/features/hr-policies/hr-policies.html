@@ -1,0 +1,86 @@
+<div class="page-header">
+  <div class="header-content">
+    <h1>HR Policies</h1>
+    <p>Upload and manage company guidelines for staff and interns</p>
+  </div>
+</div>
+
+<div class="policies-grid">
+  <!-- Add Policy Card -->
+  <div class="card add-form">
+    <h3>Add New Policy</h3>
+    <div class="form-group">
+      <label>Policy Name</label>
+      <input type="text" [(ngModel)]="newPolicy.policy_name" placeholder="e.g. Leave Policy, Code of Conduct">
+    </div>
+    <div class="form-group">
+      <label>PDF URL (Google Drive / Dropbox)</label>
+      <input type="text" [(ngModel)]="newPolicy.policy_url" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label>Visible To</label>
+      <div class="checkbox-group">
+        <label class="checkbox-item">
+          <input type="checkbox" checked disabled> Employees
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" checked disabled> Interns
+        </label>
+      </div>
+    </div>
+    <button class="btn-primary" (click)="addPolicy()">
+      <lucide-icon name="Plus"></lucide-icon> Save Policy
+    </button>
+  </div>
+
+  <!-- Policies List -->
+  <div class="policies-list">
+    <div class="card" *ngIf="!isLoading()">
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Policy Name</th>
+              <th>Visibility</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let policy of policies()">
+              <td>
+                <div class="policy-info">
+                  <lucide-icon name="FileText"></lucide-icon>
+                  <span>{{ policy.policy_name }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="badges">
+                  <span class="badge" *ngFor="let role of policy.policy_view_by">{{ role }}</span>
+                </div>
+              </td>
+              <td class="actions">
+                <button class="icon-btn" (click)="openPdf(policy.policy_url)" title="View PDF">
+                  <lucide-icon name="Download"></lucide-icon>
+                </button>
+                <button class="icon-btn delete" (click)="deletePolicy(policy._id)" title="Delete">
+                  <lucide-icon name="UserX"></lucide-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="empty-state" *ngIf="policies().length === 0">
+        <lucide-icon name="FileText" class="empty-icon"></lucide-icon>
+        <p>No policies uploaded yet.</p>
+      </div>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div class="card skeleton" *ngIf="isLoading()">
+      <div class="skeleton-line long"></div>
+      <div class="skeleton-line medium"></div>
+    </div>
+  </div>
+</div>

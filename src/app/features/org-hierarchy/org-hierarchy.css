@@ -1,0 +1,116 @@
+.hierarchy-card {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0;
+  overflow: hidden;
+}
+
+.card-hero {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #004d61 100%);
+  padding: 3rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  color: white;
+}
+
+.hero-icon {
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-icon lucide-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.hero-text h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.hero-text p {
+  opacity: 0.8;
+  font-size: 0.95rem;
+}
+
+.form-section {
+  padding: 2.5rem;
+}
+
+.form-group {
+  margin-bottom: 2rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon lucide-icon {
+  position: absolute;
+  left: 1rem;
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+}
+
+.input-with-icon input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 3rem;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: var(--transition-fast);
+}
+
+.input-with-icon input:focus {
+  border-color: var(--accent-primary);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(0, 101, 127, 0.1);
+}
+
+.input-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.75rem;
+}
+
+.actions-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.actions-row button {
+  flex: 1;
+  padding: 1rem;
+  height: auto;
+  font-size: 1rem;
+}
+
+@media (max-width: 640px) {
+  .card-hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem;
+  }
+  
+  .actions-row {
+    flex-direction: column;
+  }
+}

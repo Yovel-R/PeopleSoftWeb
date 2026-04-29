@@ -1,0 +1,97 @@
+<div class="page-header">
+  <div class="header-content">
+    <h1>Manage Employees</h1>
+    <p>View and manage all organization employees.</p>
+  </div>
+  <div class="header-actions">
+    <button class="export-btn">
+      <lucide-icon name="Download"></lucide-icon> Export Payroll
+    </button>
+    <button class="btn-primary" routerLink="/employees/add">
+      <lucide-icon name="Plus"></lucide-icon> Add Employee
+    </button>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <div class="search-box">
+    <lucide-icon name="Search" class="search-icon"></lucide-icon>
+    <input type="text" placeholder="Search by name, ID or department...">
+  </div>
+  
+  <div class="status-filter">
+    <select [value]="statusFilter()" (change)="setStatus($any($event.target).value)">
+      <option value="all">All Status</option>
+      <option value="active">Active</option>
+      <option value="on leave">On Leave</option>
+      <option value="terminated">Terminated</option>
+    </select>
+  </div>
+</div>
+
+<div class="data-container" [class.loading]="isLoading()">
+  <div class="table-responsive" *ngIf="!isLoading() && employees().length > 0">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>ID</th>
+          <th>Department</th>
+          <th>Designation</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emp of employees()">
+          <td>
+            <div class="user-cell">
+              <div class="avatar">{{ emp.fullName[0] }}</div>
+              <div class="user-info">
+                <span class="name">{{ emp.fullName }}</span>
+                <span class="email">{{ emp.email }}</span>
+              </div>
+            </div>
+          </td>
+          <td>{{ emp.EmployeeId || 'N/A' }}</td>
+          <td>{{ emp.department || 'N/A' }}</td>
+          <td>{{ emp.designation || 'N/A' }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusColor(emp.status)">
+              {{ emp.status }}
+            </span>
+          </td>
+          <td>
+            <div class="action-group">
+              <button class="icon-btn-sm teal" title="Attendance" [routerLink]="['/employees', emp.EmployeeId, 'attendance']">
+                <lucide-icon name="Calendar"></lucide-icon>
+              </button>
+              <button class="icon-btn-sm orange" title="Payroll" [routerLink]="['/employees', emp.EmployeeId, 'payroll']">
+                <lucide-icon name="CircleDollarSign"></lucide-icon>
+              </button>
+              <button class="icon-btn-sm blue" title="Edit" [routerLink]="['/employees', emp.EmployeeId, 'edit']">
+                <lucide-icon name="Edit3"></lucide-icon>
+              </button>
+              <button class="icon-btn-sm purple" title="Details" [routerLink]="['/employees', emp.EmployeeId]">
+                <lucide-icon name="FileText"></lucide-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading() && employees().length === 0">
+    <lucide-icon name="Briefcase" class="empty-icon"></lucide-icon>
+    <h3>No employees found</h3>
+    <p>We couldn't find any employees matching your search.</p>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <div class="spinner"></div>
+    <p>Loading employees...</p>
+  </div>
+</div>

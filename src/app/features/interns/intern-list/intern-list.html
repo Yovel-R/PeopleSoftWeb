@@ -1,0 +1,108 @@
+<div class="page-header">
+  <div class="header-content">
+    <h1>Manage Interns</h1>
+    <p>View and manage all interns across different stages.</p>
+  </div>
+  <div class="header-actions">
+    <button class="export-btn">
+      <lucide-icon name="Download"></lucide-icon> Export Attendance
+    </button>
+    <button class="btn-primary" routerLink="/interns/add">
+      <lucide-icon name="Plus"></lucide-icon> Add Intern
+    </button>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <div class="range-filters">
+    <button 
+      class="filter-chip" 
+      [class.active]="rangeFilter() === 'thisMonth'"
+      (click)="setFilter('thisMonth')">
+      This month
+    </button>
+    <button 
+      class="filter-chip" 
+      [class.active]="rangeFilter() === 'sixMonths'"
+      (click)="setFilter('sixMonths')">
+      Last 6 months
+    </button>
+    <button 
+      class="filter-chip" 
+      [class.active]="rangeFilter() === 'all'"
+      (click)="setFilter('all')">
+      All time
+    </button>
+  </div>
+  
+  <div class="status-filter">
+    <select [value]="statusFilter()" (change)="setStatus($any($event.target).value)">
+      <option value="all">All Status</option>
+      <option value="approved">Approved</option>
+      <option value="ongoing">Ongoing</option>
+      <option value="remote">Remote</option>
+    </select>
+  </div>
+</div>
+
+<div class="data-container" [class.loading]="isLoading()">
+  <div class="table-responsive" *ngIf="!isLoading() && interns().length > 0">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Intern Name</th>
+          <th>ID</th>
+          <th>Department</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let intern of interns()">
+          <td>
+            <div class="user-cell">
+              <div class="avatar">{{ intern.fullName[0] }}</div>
+              <span>{{ intern.fullName }}</span>
+            </div>
+          </td>
+          <td>{{ intern.internid || intern.internId || 'N/A' }}</td>
+          <td>{{ intern.department || 'N/A' }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusColor(intern.status)">
+              {{ intern.status }}
+            </span>
+          </td>
+          <td>
+            <div class="action-group">
+              <button class="icon-btn-sm teal" title="Attendance" [routerLink]="['/interns', intern.internid || intern.internId, 'attendance']">
+                <lucide-icon name="Calendar"></lucide-icon>
+              </button>
+              <button class="icon-btn-sm orange" title="Leaves" [routerLink]="['/interns', intern.internid || intern.internId, 'leaves']">
+                <lucide-icon name="Clock"></lucide-icon>
+              </button>
+              <button class="icon-btn-sm blue" title="Review" [routerLink]="['/interns', intern.internid || intern.internId, 'review']">
+                <lucide-icon name="LineChart"></lucide-icon>
+              </button>
+              <button class="icon-btn-sm purple" title="Details" [routerLink]="['/interns', intern.internid || intern.internId]">
+                <lucide-icon name="FileText"></lucide-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading() && interns().length === 0">
+    <lucide-icon name="Users" class="empty-icon"></lucide-icon>
+    <h3>No interns found</h3>
+    <p>Try adjusting your filters or add a new intern.</p>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <div class="spinner"></div>
+    <p>Loading interns...</p>
+  </div>
+</div>

@@ -3,7 +3,7 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="logo-box">
-        <lucide-icon name="Building2"></lucide-icon>
+        <img src="logo/peoplesoft.png" alt="SoftPeople Logo">
       </div>
       <div class="header-text">
         <h2 class="primary-color">SoftPeople</h2>
@@ -12,24 +12,24 @@
     </div>
     
     <nav class="sidebar-nav">
-      <a href="#" class="nav-item active">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
         <lucide-icon name="LayoutDashboard"></lucide-icon> Dashboard
       </a>
-      <a href="#" class="nav-item">
+      <a routerLink="/org-hierarchy" routerLinkActive="active" class="nav-item">
         <lucide-icon name="Network"></lucide-icon> Org Hierarchy
       </a>
-      <a href="#" class="nav-item">
+      <a routerLink="/hr-policies" routerLinkActive="active" class="nav-item">
         <lucide-icon name="FileText"></lucide-icon> HR Policies
       </a>
-      <a href="#" class="nav-item">
+      <a routerLink="/holiday-calendar" routerLinkActive="active" class="nav-item">
         <lucide-icon name="Calendar"></lucide-icon> Holiday Calendar
       </a>
       <div class="nav-divider"></div>
       <p class="nav-label">Management</p>
-      <a href="#" class="nav-item">
+      <a routerLink="/interns" routerLinkActive="active" class="nav-item">
         <lucide-icon name="Users"></lucide-icon> Manage Interns
       </a>
-      <a href="#" class="nav-item">
+      <a routerLink="/employees" routerLinkActive="active" class="nav-item">
         <lucide-icon name="Briefcase"></lucide-icon> Manage Employees
       </a>
     </nav>
@@ -66,148 +66,8 @@
       </div>
     </header>
 
-    <div class="dashboard-wrapper">
-      <!-- Section Toggle -->
-      <div class="section-toggle-container">
-        <div class="toggle-switch">
-          <button 
-            [class.active]="selectedModel() === 'interns'" 
-            (click)="selectModel('interns')">
-            Interns
-          </button>
-          <button 
-            [class.active]="selectedModel() === 'employees'" 
-            (click)="selectModel('employees')">
-            Employees
-          </button>
-        </div>
-        <button class="export-btn">
-          <lucide-icon name="Download"></lucide-icon> Export {{ selectedModel() === 'interns' ? 'Intern' : 'Employee' }} Data
-        </button>
-      </div>
-
-      <div class="welcome-header">
-        <h1>Dashboard Overview</h1>
-        <p *ngIf="!isLoading()">Welcome back! Here is a summary of the <strong>{{ selectedModel() }}</strong> management.</p>
-        <p *ngIf="isLoading()">Fetching latest dashboard data...</p>
-      </div>
-
-      <!-- Stats Grid -->
-      <div class="stats-grid" [class.loading]="isLoading()">
-        <div class="card stat-card" *ngFor="let stat of stats()[selectedModel()]">
-          <div class="stat-icon-wrapper" [ngClass]="stat.color">
-            <lucide-icon [name]="stat.icon" class="stat-icon"></lucide-icon>
-          </div>
-          <div class="stat-details">
-            <p class="stat-label">{{ stat.label }}</p>
-            <h3 class="stat-value">{{ stat.value }}</h3>
-          </div>
-        </div>
-        
-        <!-- Loading Skeletons -->
-        <ng-container *ngIf="isLoading()">
-          <div class="card stat-card skeleton" *ngFor="let i of [1,2,3,4]">
-            <div class="stat-icon-wrapper gray"></div>
-            <div class="stat-details">
-              <div class="skeleton-line short"></div>
-              <div class="skeleton-line long"></div>
-            </div>
-          </div>
-        </ng-container>
-      </div>
-
-      <!-- Quick Actions Grid -->
-      <div class="actions-grid">
-        <div class="card action-card">
-          <div class="action-icon teal"><lucide-icon name="Plus"></lucide-icon></div>
-          <div class="action-info">
-            <h4>Add {{ selectedModel() === 'interns' ? 'Intern' : 'Employee' }}</h4>
-            <p>Onboard new talent to the team.</p>
-          </div>
-        </div>
-        <div class="card action-card">
-          <div class="action-icon orange"><lucide-icon name="ClipboardList"></lucide-icon></div>
-          <div class="action-info">
-            <h4>Leave Requests</h4>
-            <p>Approve or review pending leaves.</p>
-          </div>
-        </div>
-        <div class="card action-card">
-          <div class="action-icon purple"><lucide-icon name="LogOut"></lucide-icon></div>
-          <div class="action-info">
-            <h4>Off-boarding</h4>
-            <p>Manage resignations and exits.</p>
-          </div>
-        </div>
-        <div class="card action-card">
-          <div class="action-icon blue"><lucide-icon name="LineChart"></lucide-icon></div>
-          <div class="action-info">
-            <h4>Review Performance</h4>
-            <p>Track progress and milestones.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Content Row -->
-      <div class="content-row">
-        <!-- Attendance Chart Card -->
-        <div class="card chart-card">
-          <div class="card-header">
-            <h3>Attendance Trend</h3>
-            <select class="period-select">
-              <option>Last 7 Days</option>
-              <option>Last 30 Days</option>
-            </select>
-          </div>
-          <div class="chart-mockup">
-            <div class="bar-group">
-              <div class="bar" style="height: 70%"></div>
-              <div class="bar" style="height: 85%"></div>
-              <div class="bar" style="height: 60%"></div>
-              <div class="bar" style="height: 95%"></div>
-              <div class="bar" style="height: 80%"></div>
-              <div class="bar" style="height: 75%"></div>
-              <div class="bar" style="height: 90%"></div>
-            </div>
-            <div class="chart-labels">
-              <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Activity Card -->
-        <div class="card activity-card">
-          <div class="card-header">
-            <h3>Recent Activity</h3>
-            <button class="view-all">View All</button>
-          </div>
-          <div class="activity-list">
-            <div class="activity-item">
-              <div class="activity-dot blue"></div>
-              <div class="activity-content">
-                <p><strong>Sarah Smith</strong> applied for medical leave</p>
-                <span>2 hours ago</span>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-dot green"></div>
-              <div class="activity-content">
-                <p><strong>New Intern</strong> onboarding completed</p>
-                <span>5 hours ago</span>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-dot orange"></div>
-              <div class="activity-content">
-                <p><strong>Payroll</strong> for October has been processed</p>
-                <span>Yesterday</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="main-outlet-wrapper">
+      <router-outlet></router-outlet>
     </div>
   </main>
 </div>
-
-<router-outlet />

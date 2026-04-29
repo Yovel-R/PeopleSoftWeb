@@ -1,0 +1,58 @@
+<div class="page-header">
+  <div class="header-content">
+    <div class="breadcrumb">
+      <a [routerLink]="['/employees', employeeId()]" class="back-link">
+        <lucide-icon name="ArrowLeft"></lucide-icon> Back to Profile
+      </a>
+    </div>
+    <h1>Attendance History</h1>
+    <p>Detailed punch-in/out records for Employee ID: {{ employeeId() }}</p>
+  </div>
+</div>
+
+<div class="data-container" [class.loading]="isLoading()">
+  <!-- Table View -->
+  <div class="table-responsive" *ngIf="!isLoading() && attendance() && attendance().length > 0">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Punch In</th>
+          <th>Punch Out</th>
+          <th>Work Duration</th>
+          <th>Location</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let record of attendance()">
+          <td>{{ record.date | date:'mediumDate' }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="record.punchOutTime ? 'status-green' : 'status-orange'">
+              {{ record.punchOutTime ? 'Present' : 'Active' }}
+            </span>
+          </td>
+          <td>{{ record.punchInTime | date:'shortTime' }}</td>
+          <td>{{ record.punchOutTime ? (record.punchOutTime | date:'shortTime') : '--:--' }}</td>
+          <td>{{ record.duration || '--:--' }}</td>
+          <td>{{ record.location || 'Office' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading() && (!attendance() || attendance().length === 0)">
+    <div class="empty-content">
+      <lucide-icon name="Calendar" class="empty-icon"></lucide-icon>
+      <h3>No attendance records</h3>
+      <p>This employee hasn't marked any attendance yet.</p>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <div class="spinner"></div>
+    <p>Loading attendance data...</p>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+<div class="page-header">
+  <div class="header-content">
+    <h1>Organizational Hierarchy</h1>
+    <p>Manage and share the latest company structure with all employees</p>
+  </div>
+</div>
+
+<div class="data-container">
+  <div class="card hierarchy-card" [class.loading]="isLoading()">
+    <div class="card-hero">
+      <div class="hero-icon">
+        <lucide-icon name="Network"></lucide-icon>
+      </div>
+      <div class="hero-text">
+        <h3>Hierarchy Document</h3>
+        <p>Update the public link to the organizational chart PDF.</p>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-group">
+        <label>PDF URL (Google Drive / Dropbox)</label>
+        <div class="input-with-icon">
+          <lucide-icon name="FileText"></lucide-icon>
+          <input type="text" [(ngModel)]="hierarchyUrl" placeholder="https://drive.google.com/...">
+        </div>
+        <p class="input-hint">Ensure the link visibility is set to "Anyone with the link can view".</p>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn-primary" (click)="saveHierarchy()" [disabled]="isSaving()">
+          <lucide-icon name="Plus" *ngIf="!isSaving()"></lucide-icon>
+          <span *ngIf="!isSaving()">Save URL</span>
+          <span *ngIf="isSaving()">Saving...</span>
+        </button>
+        <button class="btn-secondary" (click)="viewHierarchy()" [disabled]="!hierarchyUrl">
+          <lucide-icon name="Download"></lucide-icon> View Hierarchy
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <div class="spinner"></div>
+    <p>Loading hierarchy details...</p>
+  </div>
+</div>

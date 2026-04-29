@@ -21,7 +21,12 @@ import {
   CircleDollarSign, 
   LogOut, 
   LineChart,
-  Building2
+  Building2,
+  RefreshCw,
+  Star,
+  Edit3,
+  UserX,
+  ArrowLeft
 } from 'lucide-angular';
 
 import { routes } from './app.routes';
@@ -51,7 +56,12 @@ export const appConfig: ApplicationConfig = {
         CircleDollarSign, 
         LogOut, 
         LineChart,
-        Building2
+        Building2,
+        RefreshCw,
+        Star,
+        Edit3,
+        UserX,
+        ArrowLeft
       })
     )
   ],

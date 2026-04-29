@@ -1,0 +1,142 @@
+.breadcrumb {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.breadcrumb a {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.month-selector-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #f8fafc;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.month-selector-wrapper lucide-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--accent-primary);
+}
+
+.month-select {
+  border: none;
+  background: transparent;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.review-overview {
+  margin-bottom: 1.5rem;
+}
+
+.overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.team-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.score-badge {
+  background: #dcfce7;
+  color: #166534;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  gap: 1.5rem;
+}
+
+.perspective-badge {
+  background: rgba(0, 101, 127, 0.1);
+  color: var(--accent-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.weight-badge {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.review-body h4 {
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.goal-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+.goal-kpi {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  background: #f9fafb;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.goal-comment {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f0f9ff;
+  border-left: 4px solid #0ea5e9;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  color: #0369a1;
+}
+
+.pending-badge {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.grade-display {
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .reviews-grid {
+    grid-template-columns: 1fr;
+  }
+}

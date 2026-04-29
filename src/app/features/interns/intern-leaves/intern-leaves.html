@@ -1,0 +1,58 @@
+<div class="page-header">
+  <div class="header-content">
+    <div class="breadcrumb">
+      <a routerLink="/interns">Interns</a> / <span>Leaves</span>
+    </div>
+    <h1>Leave History</h1>
+    <p>Viewing leave applications for Intern ID: {{ internId() }}</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn-primary" (click)="fetchLeaves()">
+      <lucide-icon name="RefreshCw"></lucide-icon> Refresh
+    </button>
+  </div>
+</div>
+
+<div class="data-container" [class.loading]="isLoading()">
+  <div class="table-responsive" *ngIf="!isLoading() && leaves().length > 0">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Leave Type</th>
+          <th>From Date</th>
+          <th>To Date</th>
+          <th>Reason</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let leave of leaves()">
+          <td><strong>{{ leave.leaveType }}</strong></td>
+          <td>{{ leave.fromDate | date:'mediumDate' }}</td>
+          <td>{{ leave.toDate | date:'mediumDate' }}</td>
+          <td>{{ leave.reason || 'No reason provided' }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusColor(leave.status)">
+              {{ leave.status }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="empty-state" *ngIf="!isLoading() && leaves().length === 0">
+    <lucide-icon name="Clock" class="empty-icon"></lucide-icon>
+    <h3>No leaves found</h3>
+    <p>This intern hasn't applied for any leaves yet.</p>
+  </div>
+
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <div class="spinner"></div>
+    <p>Loading leave history...</p>
+  </div>
+
+  <pre style="background: #eee; padding: 10px; font-size: 10px; overflow: auto; max-height: 200px; margin-top: 2rem;">
+    DEBUG DATA: {{ leaves() | json }}
+  </pre>
+</div>

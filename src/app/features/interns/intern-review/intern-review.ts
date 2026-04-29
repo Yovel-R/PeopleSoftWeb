@@ -1,0 +1,76 @@
+import { Component, signal, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ApiService } from '../../../services/api.service';
+import { LucideAngularModule } from 'lucide-angular';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+
+@Component({
+  selector: 'app-intern-review',
+  standalone: true,
+  imports: [CommonModule, LucideAngularModule, RouterModule],
+  templateUrl: './intern-review.html',
+  styleUrl: './intern-review.css'
+})
+export class InternReview implements OnInit {
+  private apiService = inject(ApiService);
+  private route = inject(ActivatedRoute);
+  
+  internId = signal<string>('');
+  reviewData = signal<any>(null);
+  selectedMonth = signal<string>('');
+  isLoading = signal(true);
+  months = signal<string[]>([]);
+
+  ngOnInit() {
+    this.internId.set(this.route.snapshot.paramMap.get('id') || '');
+    this.initMonths();
+    this.fetchReviews();
+  }
+
+  initMonths() {
+    const now = new Date();
+    if (now.getDate() <= 5) {
+      now.setMonth(now.getMonth() - 1);
+    }
+    
+    const monthList = [];
+    for (let i = 0; i < 6; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i);
+      const month = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+      monthList.push(month);
+    }
+    this.months.set(monthList);
+    this.selectedMonth.set(monthList[0]);
+  }
+
+  onMonthChange(event: any) {
+    this.selectedMonth.set(event.target.value);
+    this.fetchReviews();
+  }
+
+  fetchReviews() {
+    this.isLoading.set(true);
+    this.apiService.getInternReview(this.internId(), this.selectedMonth()).subscribe({
+      next: (res: any) => {
+        console.log('Review data received:', res);
+        this.reviewData.set(res.data || null);
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to fetch reviews', err);
+        this.reviewData.set(null);
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  getGradeColor(grade: string): string {
+    switch(grade) {
+      case 'A': return 'status-green';
+      case 'B': return 'status-teal';
+      case 'C': return 'status-orange';
+      case 'D': return 'status-red';
+      default: return 'status-gray';
+    }
+  }
+}

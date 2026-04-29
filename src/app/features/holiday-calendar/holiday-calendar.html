@@ -1,0 +1,64 @@
+<div class="page-header">
+  <div class="header-content">
+    <h1>Holiday Calendar</h1>
+    <p>Manage company holidays and special events</p>
+  </div>
+</div>
+
+<div class="calendar-grid">
+  <!-- Add Holiday Form -->
+  <div class="card add-form">
+    <h3>Add Special Holiday</h3>
+    <div class="form-group">
+      <label>Reason</label>
+      <input type="text" [(ngModel)]="newHoliday.reason" placeholder="e.g. Diwali, Christmas">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>From Date</label>
+        <input type="date" [(ngModel)]="newHoliday.fromDate">
+      </div>
+      <div class="form-group">
+        <label>To Date</label>
+        <input type="date" [(ngModel)]="newHoliday.toDate">
+      </div>
+    </div>
+    <button class="btn-primary" (click)="addHoliday()">
+      <lucide-icon name="Plus"></lucide-icon> Add Holiday
+    </button>
+  </div>
+
+  <!-- Holiday List -->
+  <div class="holiday-list-container">
+    <div class="card" *ngIf="!isLoading()">
+      <h3>Upcoming Holidays</h3>
+      <div class="holiday-items">
+        <div class="holiday-item" *ngFor="let holiday of holidays()">
+          <div class="holiday-date">
+            <span class="day">{{ holiday.fromDate | date:'dd' }}</span>
+            <span class="month">{{ holiday.fromDate | date:'MMM' }}</span>
+          </div>
+          <div class="holiday-info">
+            <h4>{{ holiday.reason }}</h4>
+            <p>{{ holiday.fromDate | date:'longDate' }} - {{ holiday.toDate | date:'longDate' }}</p>
+          </div>
+          <button class="delete-btn" (click)="deleteHoliday(holiday._id)">
+            <lucide-icon name="UserX"></lucide-icon>
+          </button>
+        </div>
+        
+        <div class="empty-state" *ngIf="holidays().length === 0">
+          <lucide-icon name="Calendar" class="empty-icon"></lucide-icon>
+          <p>No special holidays scheduled.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div class="card skeleton" *ngIf="isLoading()">
+      <div class="skeleton-line long"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line medium"></div>
+    </div>
+  </div>
+</div>
