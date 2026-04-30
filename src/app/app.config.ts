@@ -26,7 +26,8 @@ import {
   Star,
   Edit3,
   UserX,
-  ArrowLeft
+  ArrowLeft,
+  Save
 } from 'lucide-angular';
 
 import { routes } from './app.routes';
@@ -61,7 +62,8 @@ export const appConfig: ApplicationConfig = {
         Star,
         Edit3,
         UserX,
-        ArrowLeft
+        ArrowLeft,
+        Save
       })
     )
   ],

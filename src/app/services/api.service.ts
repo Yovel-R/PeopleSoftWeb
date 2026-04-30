@@ -9,7 +9,7 @@ export class ApiService {
   private useLocalBackend = false;
   private baseUrl = this.useLocalBackend 
     ? 'http://localhost:5001' 
-    : 'https://peoplesoft-backend.onrender.com';
+    : 'https://peoplesoft-develop.onrender.com';
 
   constructor(private http: HttpClient) {}
 
@@ -100,6 +100,10 @@ export class ApiService {
     return this.http.get<any[]>(`${this.baseUrl}/api/employee/all/active`, {
       params: { status }
     });
+  }
+
+  addEmployee(employee: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/employee/add`, employee);
   }
 
   getEmployeeById(id: string): Observable<any> {
