@@ -15,6 +15,7 @@ import { LeaveManagement } from './features/leaves/leave-management/leave-manage
 import { OrgHierarchy } from './features/org-hierarchy/org-hierarchy';
 import { HrPolicies } from './features/hr-policies/hr-policies';
 import { HolidayCalendar } from './features/holiday-calendar/holiday-calendar';
+import { EmployeeAdd } from './features/employees/employee-add/employee-add';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -29,6 +30,7 @@ export const routes: Routes = [
   { path: 'interns/:id/leaves', component: InternLeaves },
   { path: 'interns/:id/review', component: InternReview },
   { path: 'employees', component: EmployeeList },
+  { path: 'employees/add', component: EmployeeAdd },
   { path: 'employees/:id', component: EmployeeDetails },
   { path: 'employees/:id/attendance', component: EmployeeAttendance },
   { path: 'employees/:id/payroll', component: EmployeePayroll },

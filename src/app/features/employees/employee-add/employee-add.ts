@@ -23,15 +23,15 @@ export class EmployeeAdd {
     email: '',
     phone: '',
     department: '',
-    position: '',
+    designation: '',
     onboardingDate: '',
     address: '',
     role: 'Employee'
   };
 
   saveEmployee() {
-    if (!this.employee.fullName || !this.employee.email) {
-      alert('Full Name and Email are required');
+    if (!this.employee.fullName || !this.employee.email || !this.employee.phone) {
+      alert('Full Name, Email, and Phone are required');
       return;
     }
 
