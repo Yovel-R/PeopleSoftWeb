@@ -23,6 +23,12 @@
   box-sizing: border-box;
 }
 
+lucide-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--bg-primary);

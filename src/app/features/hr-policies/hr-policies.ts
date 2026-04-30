@@ -16,6 +16,7 @@ export class HrPolicies implements OnInit {
   
   policies = signal<any[]>([]);
   isLoading = signal(true);
+  isSaving = signal(false);
   
   newPolicy = {
     policy_name: '',
@@ -47,12 +48,17 @@ export class HrPolicies implements OnInit {
       return;
     }
 
+    this.isSaving.set(true);
     this.apiService.savePolicy(this.newPolicy).subscribe({
       next: () => {
         this.fetchPolicies();
         this.newPolicy = { policy_name: '', policy_url: '', policy_view_by: ['employee', 'intern'] };
+        this.isSaving.set(false);
       },
-      error: (err: any) => alert('Failed to save: ' + err.message)
+      error: (err: any) => {
+        alert('Failed to save: ' + err.message);
+        this.isSaving.set(false);
+      }
     });
   }
 

@@ -14,9 +14,22 @@ import { FormsModule } from '@angular/forms';
 export class HolidayCalendar implements OnInit {
   private apiService = inject(ApiService);
   
+  // Regular Holidays
+  days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  weeks = [
+    { id: 1, label: "1st Week" },
+    { id: 2, label: "2nd Week" },
+    { id: 3, label: "3rd Week" },
+    { id: 4, label: "4th Week" },
+    { id: 5, label: "5th Week" }
+  ];
+  
+  selectedDay = signal<string | null>(null);
+  selectedWeeks = signal<number[]>([]);
+  weeklyHolidaysMap = signal<Record<string, number[]>>({});
   holidays = signal<any[]>([]);
   isLoading = signal(true);
-  
+
   // Form fields
   newHoliday = {
     type: 'special',
@@ -33,14 +46,55 @@ export class HolidayCalendar implements OnInit {
     this.isLoading.set(true);
     this.apiService.getHolidays().subscribe({
       next: (data: any[]) => {
-        // Filter only special holidays for the list
+        // Special holidays
         this.holidays.set(data.filter((h: any) => h.type === 'special'));
+        
+        // Weekly holidays mapping
+        const weeklyMap: Record<string, number[]> = {};
+        data.filter((h: any) => h.type === 'weekly').forEach(h => {
+          weeklyMap[h.day] = h.weeks;
+        });
+        this.weeklyHolidaysMap.set(weeklyMap);
+        
         this.isLoading.set(false);
       },
       error: (err: any) => {
         console.error('Failed to fetch holidays', err);
         this.isLoading.set(false);
       }
+    });
+  }
+
+  selectDay(day: string) {
+    this.selectedDay.set(day);
+    this.selectedWeeks.set(this.weeklyHolidaysMap()[day] || []);
+  }
+
+  toggleWeek(weekId: number) {
+    const current = [...this.selectedWeeks()];
+    const index = current.indexOf(weekId);
+    if (index > -1) {
+      current.splice(index, 1);
+    } else {
+      current.push(weekId);
+    }
+    this.selectedWeeks.set(current);
+  }
+
+  saveWeeklyHoliday() {
+    const day = this.selectedDay();
+    if (!day) return;
+
+    this.apiService.saveHoliday({
+      type: 'weekly',
+      day: day,
+      weeks: this.selectedWeeks()
+    }).subscribe({
+      next: () => {
+        alert('Weekly holiday updated');
+        this.fetchHolidays();
+      },
+      error: (err: any) => alert('Failed to update weekly holiday: ' + err.message)
     });
   }
 

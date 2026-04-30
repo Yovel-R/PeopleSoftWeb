@@ -3,6 +3,7 @@
   grid-template-columns: 350px 1fr;
   gap: 2rem;
   align-items: start;
+  margin: 1rem;
 }
 
 @media (max-width: 992px) {
@@ -82,6 +83,7 @@
 .actions {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
 }
 
 .icon-btn.delete:hover {

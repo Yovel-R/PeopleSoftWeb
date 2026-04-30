@@ -1,37 +1,84 @@
 <div class="page-header">
   <div class="header-content">
     <h1>Holiday Calendar</h1>
-    <p>Manage company holidays and special events</p>
+    <p>Manage company holidays and weekly off-days</p>
   </div>
 </div>
 
-<div class="calendar-grid">
-  <!-- Add Holiday Form -->
-  <div class="card add-form">
-    <h3>Add Special Holiday</h3>
-    <div class="form-group">
-      <label>Reason</label>
-      <input type="text" [(ngModel)]="newHoliday.reason" placeholder="e.g. Diwali, Christmas">
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>From Date</label>
-        <input type="date" [(ngModel)]="newHoliday.fromDate">
+<div class="calendar-layout">
+  <!-- Sidebar for Forms -->
+  <aside class="calendar-sidebar">
+    <!-- Regular Holiday Section -->
+    <div class="card form-card">
+      <div class="card-header">
+        <lucide-icon name="Clock"></lucide-icon>
+        <h3>Weekly Holidays</h3>
       </div>
-      <div class="form-group">
-        <label>To Date</label>
-        <input type="date" [(ngModel)]="newHoliday.toDate">
+      <p class="section-desc">Select days that are off every week</p>
+      
+      <div class="day-chips">
+        <button *ngFor="let day of days" 
+                [class.active]="selectedDay() === day"
+                [class.has-config]="(weeklyHolidaysMap()[day]?.length || 0) > 0"
+                (click)="selectDay(day)">
+          {{ day }}
+        </button>
       </div>
-    </div>
-    <button class="btn-primary" (click)="addHoliday()">
-      <lucide-icon name="Plus"></lucide-icon> Add Holiday
-    </button>
-  </div>
 
-  <!-- Holiday List -->
-  <div class="holiday-list-container">
-    <div class="card" *ngIf="!isLoading()">
-      <h3>Upcoming Holidays</h3>
+      <div class="week-selector" *ngIf="selectedDay()">
+        <h4>Configuring {{ selectedDay() }}</h4>
+        <div class="week-grid">
+          <label class="week-item" *ngFor="let week of weeks">
+            <input type="checkbox" 
+                   [checked]="selectedWeeks().includes(week.id)"
+                   (change)="toggleWeek(week.id)">
+            <span>{{ week.label }}</span>
+          </label>
+        </div>
+        <button class="btn-primary full-width" (click)="saveWeeklyHoliday()">
+          Update {{ selectedDay() }}
+        </button>
+      </div>
+      
+      <div class="no-selection" *ngIf="!selectedDay()">
+        <p>Select a day to configure weekly holidays</p>
+      </div>
+    </div>
+
+    <!-- Special Holiday Form -->
+    <div class="card form-card">
+      <div class="card-header">
+        <lucide-icon name="Star"></lucide-icon>
+        <h3>Add Special Holiday</h3>
+      </div>
+      <div class="form-group">
+        <label>Reason</label>
+        <input type="text" [(ngModel)]="newHoliday.reason" placeholder="e.g. Diwali, Christmas">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>From Date</label>
+          <input type="date" [(ngModel)]="newHoliday.fromDate">
+        </div>
+        <div class="form-group">
+          <label>To Date</label>
+          <input type="date" [(ngModel)]="newHoliday.toDate">
+        </div>
+      </div>
+      <button class="btn-primary full-width" (click)="addHoliday()">
+        <lucide-icon name="Plus"></lucide-icon> Add Holiday
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content for Lists -->
+  <main class="calendar-main">
+    <div class="card list-card" *ngIf="!isLoading()">
+      <div class="card-header">
+        <lucide-icon name="Calendar"></lucide-icon>
+        <h3>Upcoming Special Holidays</h3>
+      </div>
+      
       <div class="holiday-items">
         <div class="holiday-item" *ngFor="let holiday of holidays()">
           <div class="holiday-date">
@@ -42,8 +89,8 @@
             <h4>{{ holiday.reason }}</h4>
             <p>{{ holiday.fromDate | date:'longDate' }} - {{ holiday.toDate | date:'longDate' }}</p>
           </div>
-          <button class="delete-btn" (click)="deleteHoliday(holiday._id)">
-            <lucide-icon name="UserX"></lucide-icon>
+          <button class="delete-btn" (click)="deleteHoliday(holiday._id)" title="Delete Holiday">
+            <lucide-icon name="Trash2"></lucide-icon>
           </button>
         </div>
         
@@ -60,5 +107,5 @@
       <div class="skeleton-line short"></div>
       <div class="skeleton-line medium"></div>
     </div>
-  </div>
+  </main>
 </div>

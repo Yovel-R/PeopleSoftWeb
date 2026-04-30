@@ -28,8 +28,9 @@
         </label>
       </div>
     </div>
-    <button class="btn-primary" (click)="addPolicy()">
-      <lucide-icon name="Plus"></lucide-icon> Save Policy
+    <button class="btn-primary" (click)="addPolicy()" [disabled]="isSaving()">
+      <lucide-icon name="Save" *ngIf="!isSaving()"></lucide-icon>
+      {{ isSaving() ? 'Saving...' : 'Save Policy' }}
     </button>
   </div>
 
@@ -37,7 +38,7 @@
   <div class="policies-list">
     <div class="card" *ngIf="!isLoading()">
       <div class="table-responsive">
-        <table>
+        <table class="data-table">
           <thead>
             <tr>
               <th>Policy Name</th>
@@ -60,10 +61,10 @@
               </td>
               <td class="actions">
                 <button class="icon-btn" (click)="openPdf(policy.policy_url)" title="View PDF">
-                  <lucide-icon name="Download"></lucide-icon>
+                  <lucide-icon name="Eye"></lucide-icon>
                 </button>
                 <button class="icon-btn delete" (click)="deletePolicy(policy._id)" title="Delete">
-                  <lucide-icon name="UserX"></lucide-icon>
+                  <lucide-icon name="Trash2"></lucide-icon>
                 </button>
               </td>
             </tr>
