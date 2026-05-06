@@ -2,7 +2,7 @@
   <div class="header-content">
     <div class="breadcrumb">
       <a routerLink="/employees" class="back-link">
-        <lucide-icon name="ArrowLeft"></lucide-icon> Back to List
+        <i class="fa-solid fa-arrow-left"></i> Back to Employees
       </a>
     </div>
     <h1>Employee Profile</h1>
@@ -10,7 +10,7 @@
   </div>
   <div class="header-actions">
     <button class="btn-secondary">
-      <lucide-icon name="Edit3"></lucide-icon> Edit Profile
+      <i class="fa-solid fa-pen-to-square"></i> Edit Profile
     </button>
   </div>
 </div>
@@ -22,36 +22,40 @@
       <div class="card profile-card">
         <div class="profile-image">
           <div class="avatar-placeholder">{{ employee().fullName?.charAt(0) }}</div>
+          <div class="status-dot" [class.active]="employee().status === 'approved'"></div>
         </div>
-        <h3>{{ employee().fullName }}</h3>
-        <p class="intern-id">ID: {{ employee().employeeId || employee()._id }}</p>
-        <span class="status-badge" [ngClass]="getStatusColor(employee().status)">
+        <h3>
+          {{ employee().fullName }}
+          <i *ngIf="employee().isManager" class="fa-solid fa-shield-halved manager-badge" title="Manager"></i>
+        </h3>
+        <p class="employee-id-label">Employee ID: {{ employee().EmployeeId || 'N/A' }}</p>
+        <div class="status-pill" [ngClass]="getStatusColor(employee().status)">
           {{ employee().status }}
-        </span>
+        </div>
         
         <div class="quick-stats">
           <div class="q-stat">
-            <span class="q-label">Position</span>
-            <span class="q-value">{{ employee().position || 'Staff' }}</span>
+            <span class="q-label">Role</span>
+            <span class="q-value">{{ employee().role || 'Staff' }}</span>
           </div>
           <div class="q-stat">
             <span class="q-label">Department</span>
-            <span class="q-value">{{ employee().department || 'General' }}</span>
+            <span class="q-value">{{ employee().department || 'N/A' }}</span>
           </div>
         </div>
       </div>
 
       <div class="card nav-card">
-        <h4>Navigation</h4>
+        <h4>Actions & History</h4>
         <div class="nav-links">
           <a [routerLink]="['/employees', employeeId(), 'attendance']" class="nav-item">
-            <lucide-icon name="Calendar"></lucide-icon> Attendance History
+            <i class="fa-solid fa-calendar-days"></i> Attendance History
           </a>
           <a [routerLink]="['/employees', employeeId(), 'payroll']" class="nav-item">
-            <lucide-icon name="CircleDollarSign"></lucide-icon> Payroll & Salary
+            <i class="fa-solid fa-circle-dollar-to-slot"></i> Payroll & Salary
           </a>
           <a [routerLink]="['/employees', employeeId(), 'review']" class="nav-item">
-            <lucide-icon name="LineChart"></lucide-icon> Performance Reviews
+            <i class="fa-solid fa-chart-line"></i> Performance Reviews
           </a>
         </div>
       </div>
@@ -59,9 +63,11 @@
 
     <!-- Main Content -->
     <div class="profile-main">
+      <!-- Section 1: Personal Details -->
       <div class="card">
         <div class="card-header">
-          <h3>Personal & Contact Information</h3>
+          <i class="fa-solid fa-user"></i>
+          <h3>Personal & Contact Details</h3>
         </div>
         <div class="info-grid">
           <div class="info-item">
@@ -69,59 +75,114 @@
             <p>{{ employee().fullName }}</p>
           </div>
           <div class="info-item">
-            <label>Email Address</label>
+            <label>Work Email</label>
             <p>{{ employee().email }}</p>
           </div>
           <div class="info-item">
             <label>Phone Number</label>
-            <p>{{ employee().phoneNumber }}</p>
+            <p>{{ employee().phone || 'N/A' }}</p>
           </div>
           <div class="info-item">
-            <label>WhatsApp</label>
-            <p>{{ employee().whatsappNumber || 'N/A' }}</p>
+            <label>Date of Birth</label>
+            <p>{{ (employee().dob | date:'longDate') || 'N/A' }}</p>
           </div>
           <div class="info-item">
-            <label>Joining Date</label>
-            <p>{{ employee().joiningDate | date:'longDate' }}</p>
+            <label>Gender</label>
+            <p>{{ employee().gender || 'N/A' }}</p>
           </div>
           <div class="info-item">
-            <label>Personal Email</label>
-            <p>{{ employee().personalEmail || 'N/A' }}</p>
+            <label>Marital Status</label>
+            <p>{{ employee().maritalStatus || 'N/A' }}</p>
           </div>
         </div>
       </div>
 
+      <!-- Section 2: Employment Details -->
       <div class="card">
         <div class="card-header">
-          <h3>Employment Details</h3>
+          <i class="fa-solid fa-briefcase"></i>
+          <h3>Work Information</h3>
         </div>
         <div class="info-grid">
           <div class="info-item">
             <label>Designation</label>
-            <p>{{ employee().position || 'N/A' }}</p>
+            <p>{{ employee().designation || employee().role || 'N/A' }}</p>
           </div>
           <div class="info-item">
             <label>Department</label>
             <p>{{ employee().department || 'N/A' }}</p>
           </div>
           <div class="info-item">
-            <label>Salary (LPA)</label>
-            <p>{{ employee().salaryLpa || 'Not Disclosed' }}</p>
+            <label>Onboarding Date</label>
+            <p>{{ (employee().onboardingDate | date:'longDate') || 'N/A' }}</p>
           </div>
           <div class="info-item">
-            <label>Offer Letter Date</label>
-            <p>{{ employee().offerLetterDate | date:'longDate' }}</p>
+            <label>LinkedIn</label>
+            <p>
+              <a *ngIf="employee().linkedin" [href]="employee().linkedin" target="_blank">{{ employee().linkedin }}</a>
+              <span *ngIf="!employee().linkedin">N/A</span>
+            </p>
           </div>
         </div>
       </div>
 
+      <!-- Section 3: Education -->
+      <div class="card">
+        <div class="card-header">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <h3>Education & Qualification</h3>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Qualification</label>
+            <p>{{ employee().qualification || 'N/A' }}</p>
+          </div>
+          <div class="info-item">
+            <label>Specialization</label>
+            <p>{{ employee().specialization || 'N/A' }}</p>
+          </div>
+          <div class="info-item">
+            <label>College/University</label>
+            <p>{{ employee().college || 'N/A' }}</p>
+          </div>
+          <div class="info-item">
+            <label>Passing Year</label>
+            <p>{{ employee().passingYear || 'N/A' }}</p>
+          </div>
+          <div class="info-item">
+            <label>UG/PG CGPA</label>
+            <p>{{ employee().ugCgpa || 'N/A' }} / {{ employee().pgCgpa || 'N/A' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Emergency Contacts -->
+      <div class="card">
+        <div class="card-header">
+          <i class="fa-solid fa-hospital-user"></i>
+          <h3>Emergency Contact</h3>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Contact Person</label>
+            <p>{{ employee().emergencyName || 'N/A' }}</p>
+          </div>
+          <div class="info-item">
+            <label>Contact Phone</label>
+            <p>{{ employee().emergencyPhone || 'N/A' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Address -->
       <div class="card" *ngIf="employee().address">
         <div class="card-header">
+          <i class="fa-solid fa-location-dot"></i>
           <h3>Address Information</h3>
         </div>
         <div class="info-grid">
           <div class="info-item full-width">
-            <label>Current Address</label>
+            <label>Permanent / Current Address</label>
             <p>{{ employee().address }}</p>
           </div>
         </div>
@@ -132,11 +193,11 @@
   <!-- Loading Overlay -->
   <div class="loading-overlay" *ngIf="isLoading()">
     <div class="spinner"></div>
-    <p>Fetching employee profile...</p>
+    <p>Loading profile...</p>
   </div>
   
   <div class="empty-state" *ngIf="!isLoading() && !employee()">
-    <lucide-icon name="UserX" class="empty-icon"></lucide-icon>
+    <i class="fa-solid fa-user-xmark empty-icon"></i>
     <h3>Employee not found</h3>
     <p>The employee details could not be retrieved. Please check the ID.</p>
   </div>

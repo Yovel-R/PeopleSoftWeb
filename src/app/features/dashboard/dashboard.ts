@@ -1,11 +1,10 @@
 import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
-import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

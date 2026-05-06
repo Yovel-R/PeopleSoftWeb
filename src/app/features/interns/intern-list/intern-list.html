@@ -1,108 +1,168 @@
-<div class="page-header">
-  <div class="header-content">
-    <h1>Manage Interns</h1>
-    <p>View and manage all interns across different stages.</p>
-  </div>
-  <div class="header-actions">
-    <button class="export-btn">
-      <lucide-icon name="Download"></lucide-icon> Export Attendance
-    </button>
-    <button class="btn-primary" routerLink="/interns/add">
-      <lucide-icon name="Plus"></lucide-icon> Add Intern
-    </button>
-  </div>
-</div>
+<div class="main-content-layout">
+  <!-- LEFT: DYNAMIC CONTENT SECTION -->
+  <div class="data-section">
+    <!-- VIEW 1: INTERN LIST -->
+    <ng-container *ngIf="currentTab() === 'list'">
+      <div class="page-header-embedded">
+        <div class="header-content">
+          <h1>Manage Interns</h1>
+          <p>View and manage all interns across different stages.</p>
+        </div>
+      </div>
 
-<div class="filter-bar">
-  <div class="range-filters">
-    <button 
-      class="filter-chip" 
-      [class.active]="rangeFilter() === 'thisMonth'"
-      (click)="setFilter('thisMonth')">
-      This month
-    </button>
-    <button 
-      class="filter-chip" 
-      [class.active]="rangeFilter() === 'sixMonths'"
-      (click)="setFilter('sixMonths')">
-      Last 6 months
-    </button>
-    <button 
-      class="filter-chip" 
-      [class.active]="rangeFilter() === 'all'"
-      (click)="setFilter('all')">
-      All time
-    </button>
-  </div>
-  
-  <div class="status-filter">
-    <select [value]="statusFilter()" (change)="setStatus($any($event.target).value)">
-      <option value="all">All Status</option>
-      <option value="approved">Approved</option>
-      <option value="ongoing">Ongoing</option>
-      <option value="remote">Remote</option>
-    </select>
-  </div>
-</div>
+      <div class="filter-bar">
+        <div class="range-filters">
+          <button 
+            class="filter-chip" 
+            [class.active]="rangeFilter() === 'thisMonth'"
+            (click)="setFilter('thisMonth')">
+            This month
+          </button>
+          <button 
+            class="filter-chip" 
+            [class.active]="rangeFilter() === 'sixMonths'"
+            (click)="setFilter('sixMonths')">
+            Last 6 months
+          </button>
+          <button 
+            class="filter-chip" 
+            [class.active]="rangeFilter() === 'all'"
+            (click)="setFilter('all')">
+            All time
+          </button>
+        </div>
+        
+        <div class="status-filter">
+          <select [value]="statusFilter()" (change)="setStatus($any($event.target).value)">
+            <option value="all">All Status</option>
+            <option value="approved">Approved</option>
+            <option value="ongoing">Ongoing</option>
+            <option value="remote">Remote</option>
+          </select>
+        </div>
+      </div>
 
-<div class="data-container" [class.loading]="isLoading()">
-  <div class="table-responsive" *ngIf="!isLoading() && interns().length > 0">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Intern Name</th>
-          <th>ID</th>
-          <th>Department</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let intern of interns()">
-          <td>
-            <div class="user-cell">
-              <div class="avatar">{{ intern.fullName[0] }}</div>
-              <span>{{ intern.fullName }}</span>
-            </div>
-          </td>
-          <td>{{ intern.internid || intern.internId || 'N/A' }}</td>
-          <td>{{ intern.department || 'N/A' }}</td>
-          <td>
-            <span class="status-badge" [ngClass]="getStatusColor(intern.status)">
-              {{ intern.status }}
-            </span>
-          </td>
-          <td>
-            <div class="action-group">
-              <button class="icon-btn-sm teal" title="Attendance" [routerLink]="['/interns', intern.internid || intern.internId, 'attendance']">
-                <lucide-icon name="Calendar"></lucide-icon>
-              </button>
-              <button class="icon-btn-sm orange" title="Leaves" [routerLink]="['/interns', intern.internid || intern.internId, 'leaves']">
-                <lucide-icon name="Clock"></lucide-icon>
-              </button>
-              <button class="icon-btn-sm blue" title="Review" [routerLink]="['/interns', intern.internid || intern.internId, 'review']">
-                <lucide-icon name="LineChart"></lucide-icon>
-              </button>
-              <button class="icon-btn-sm purple" title="Details" [routerLink]="['/interns', intern.internid || intern.internId]">
-                <lucide-icon name="FileText"></lucide-icon>
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+      <div class="data-container" [class.loading]="isLoading()">
+        <div class="table-responsive" *ngIf="!isLoading() && interns().length > 0">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Intern Name</th>
+                <th>ID</th>
+                <th>Department</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let intern of interns()">
+                <td>
+                  <div class="user-cell">
+                    <div class="avatar">{{ intern.fullName[0] }}</div>
+                    <span>{{ intern.fullName }}</span>
+                  </div>
+                </td>
+                <td>{{ intern.internid || intern.internId || 'N/A' }}</td>
+                <td>{{ intern.department || 'N/A' }}</td>
+                <td>
+                  <span class="status-badge" [ngClass]="getStatusColor(intern.status)">
+                    {{ intern.status }}
+                  </span>
+                </td>
+                <td>
+                  <div class="action-group">
+                    <button class="icon-btn-sm teal" title="Attendance" [routerLink]="['/interns', intern.internid || intern.internId, 'attendance']">
+                      <i class="fa-solid fa-calendar-days"></i>
+                    </button>
+                    <button class="icon-btn-sm orange" title="Leaves" [routerLink]="['/interns', intern.internid || intern.internId, 'leaves']">
+                      <i class="fa-solid fa-clock"></i>
+                    </button>
+                    <button class="icon-btn-sm blue" title="Review" [routerLink]="['/interns', intern.internid || intern.internId, 'review']">
+                      <i class="fa-solid fa-chart-line"></i>
+                    </button>
+                    <button class="icon-btn-sm purple" title="Details" [routerLink]="['/interns', intern.internid || intern.internId]">
+                      <i class="fa-solid fa-file-invoice"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="!isLoading() && interns().length === 0">
+          <i class="fa-solid fa-users empty-icon"></i>
+          <h3>No interns found</h3>
+          <p>Try adjusting your filters or add a new intern.</p>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" *ngIf="isLoading()">
+          <div class="spinner"></div>
+          <p>Loading interns...</p>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- VIEW 2: APPROVE LEAVE -->
+    <app-leave-management *ngIf="currentTab() === 'leaves'"></app-leave-management>
+
+    <!-- VIEW 3: PENDING REQUESTS -->
+    <app-intern-requests *ngIf="currentTab() === 'requests'"></app-intern-requests>
+
+    <!-- VIEW 4: ATTENDANCE CORRECTIONS -->
+    <app-attendance-corrections *ngIf="currentTab() === 'corrections'"></app-attendance-corrections>
   </div>
 
-  <!-- Empty State -->
-  <div class="empty-state" *ngIf="!isLoading() && interns().length === 0">
-    <lucide-icon name="Users" class="empty-icon"></lucide-icon>
-    <h3>No interns found</h3>
-    <p>Try adjusting your filters or add a new intern.</p>
-  </div>
+  <!-- RIGHT: VERTICAL ACTION SIDEBAR -->
+  <aside class="action-sidebar">
+    <!-- MANAGE LIST (Home) -->
+    <button (click)="currentTab.set('list')" class="sidebar-action-item" [class.active]="currentTab() === 'list'" title="Intern List">
+      <div class="action-icon-circle">
+        <i class="fa-solid fa-house"></i>
+      </div>
+      <span class="action-label">Intern List</span>
+    </button>
 
-  <!-- Loading Overlay -->
-  <div class="loading-overlay" *ngIf="isLoading()">
-    <div class="spinner"></div>
-    <p>Loading interns...</p>
-  </div>
+    <div class="sidebar-divider"></div>
+
+    <!-- APPROVE LEAVE -->
+    <button (click)="currentTab.set('leaves')" class="sidebar-action-item" [class.active]="currentTab() === 'leaves'" title="Approve Leave">
+      <div class="action-icon-circle">
+        <i class="fa-solid fa-calendar-check icon-green"></i>
+      </div>
+      <span class="action-label">Approve Leave</span>
+    </button>
+
+    <div class="sidebar-divider"></div>
+
+    <!-- PENDING REQUESTS -->
+    <button (click)="currentTab.set('requests')" class="sidebar-action-item" [class.active]="currentTab() === 'requests'" title="Pending Requests">
+      <div class="action-icon-circle">
+        <i class="fa-solid fa-clock-rotate-left icon-orange"></i>
+      </div>
+      <span class="action-label">Pending Requests</span>
+    </button>
+
+    <div class="sidebar-divider"></div>
+
+    <!-- ATTENDANCE CORRECTIONS -->
+    <button (click)="currentTab.set('corrections')" class="sidebar-action-item" [class.active]="currentTab() === 'corrections'" title="Attendance Corrections">
+      <div class="action-icon-circle">
+        <i class="fa-solid fa-clipboard-check icon-blue"></i>
+      </div>
+      <span class="action-label">Corrections</span>
+    </button>
+
+    <div class="sidebar-divider"></div>
+
+    <!-- EXPORT DATA -->
+    <button (click)="exportInternData()" class="sidebar-action-item" title="Export Data">
+      <div class="action-icon-circle">
+        <i class="fa-solid fa-file-export icon-purple"></i>
+      </div>
+      <span class="action-label">Export Data</span>
+    </button>
+  </aside>
 </div>

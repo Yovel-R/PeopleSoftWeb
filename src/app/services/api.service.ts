@@ -9,12 +9,25 @@ export class ApiService {
   private useLocalBackend = false;
   private baseUrl = this.useLocalBackend 
     ? 'http://localhost:5001' 
-    : 'https://peoplesoft-backend.onrender.com';
+    : 'https://peoplesoft-develop.onrender.com';
 
   constructor(private http: HttpClient) {}
 
+  // Authentication
+  hrLogin(email: string, password: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/hr/login`, { email, password });
+  }
+
+  employeeLogin(employeeId: string, password: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/employee/login`, { employeeId, password });
+  }
+
   getBaseUrl(): string {
     return this.baseUrl;
+  }
+
+  toggleManager(id: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/employee/toggle-manager/${id}`, {});
   }
 
   // Dashboard Stats
@@ -25,7 +38,9 @@ export class ApiService {
       activeEmployees: this.http.get<any[]>(`${this.baseUrl}/api/employee/all/active`),
       internAttendance: this.http.get<any>(`${this.baseUrl}/api/attendance/today/all`),
       employeeAttendance: this.http.get<any>(`${this.baseUrl}/api/employeeAttanance/employee/today/all`),
-      pendingLeaves: this.http.get<any[]>(`${this.baseUrl}/api/leave/pending`),
+      pendingLeaves: this.http.get<any[]>(`${this.baseUrl}/api/employee-leave/hr-pending`),
+      internTrend: this.http.get<any[]>(`${this.baseUrl}/api/attendance/trend`),
+      employeeTrend: this.http.get<any[]>(`${this.baseUrl}/api/employeeAttanance/trend`),
     }).pipe(
       map(data => {
         // Map recent activities
@@ -38,7 +53,7 @@ export class ApiService {
               title: `New Intern Application: ${intern.fullName}`,
               description: `Status: ${intern.status || 'Initial'}`,
               time: 'Recently',
-              icon: 'Users',
+              icon: 'fa-solid fa-users',
               color: 'blue'
             });
           });
@@ -48,30 +63,35 @@ export class ApiService {
         if (data.pendingLeaves && data.pendingLeaves.length > 0) {
           data.pendingLeaves.slice(-3).forEach(leave => {
             activities.push({
-              title: `Leave Request: ${leave.internName || 'Intern'}`,
+              title: `Leave Request: ${leave.employeeName || 'Staff'}`,
               description: `${leave.leaveType} for ${leave.reason || 'personal'}`,
-              time: 'Pending',
-              icon: 'Clock',
+              time: 'Pending HR',
+              icon: 'fa-solid fa-clock',
               color: 'orange'
             });
           });
         }
 
+        const maxIntern = Math.max(...data.internTrend.map(t => t.count), 1);
+        const maxEmployee = Math.max(...data.employeeTrend.map(t => t.count), 1);
+
         return {
           interns: [
-            { label: 'Today Attendance', value: data.internAttendance.count.toString(), icon: 'CheckCircle2', color: 'green' },
-            { label: 'Pending Leaves', value: data.pendingLeaves.length.toString(), icon: 'Clock', color: 'orange' },
-            { label: 'Active Interns', value: data.activeInterns.length.toString(), icon: 'Users', color: 'teal' },
-            { label: 'New Applications', value: data.initialInterns.length.toString(), icon: 'ClipboardList', color: 'blue' }
+            { label: 'Today Attendance', value: data.internAttendance.count.toString(), icon: 'fa-solid fa-circle-check', color: 'green' },
+            { label: 'Pending Leaves', value: data.pendingLeaves.length.toString(), icon: 'fa-solid fa-clock', color: 'orange' },
+            { label: 'Active Interns', value: data.activeInterns.length.toString(), icon: 'fa-solid fa-users', color: 'teal' },
+            { label: 'New Applications', value: data.initialInterns.length.toString(), icon: 'fa-solid fa-list-check', color: 'blue' }
           ],
           employees: [
-            { label: 'Today Attendance', value: data.employeeAttendance.count.toString(), icon: 'CheckCircle2', color: 'green' },
-            { label: 'Total Employees', value: data.activeEmployees.length.toString(), icon: 'Briefcase', color: 'teal' },
-            { label: 'Active Projects', value: '14', icon: 'ListTodo', color: 'purple' },
-            { label: 'Payroll Status', value: 'Paid', icon: 'CircleDollarSign', color: 'green' }
+            { label: 'Today Attendance', value: data.employeeAttendance.count.toString(), icon: 'fa-solid fa-circle-check', color: 'green' },
+            { label: 'Total Employees', value: data.activeEmployees.length.toString(), icon: 'fa-solid fa-briefcase', color: 'teal' },
+            { label: 'Active Projects', value: '14', icon: 'fa-solid fa-list-ul', color: 'purple' },
+            { label: 'Payroll Status', value: 'Paid', icon: 'fa-solid fa-circle-dollar-to-slot', color: 'green' }
           ],
-          activities: activities.length > 0 ? activities : [
-            { title: 'No recent activity', description: 'Everything is up to date', time: 'Now', icon: 'CheckCircle2', color: 'green' }
+          internTrend: data.internTrend.map(t => ({ ...t, height: (t.count / maxIntern) * 100 })),
+          employeeTrend: data.employeeTrend.map(t => ({ ...t, height: (t.count / maxEmployee) * 100 })),
+          activities: activities.length > 0 ? activities.reverse().slice(0, 3) : [
+            { title: 'No recent activity', description: 'Everything is up to date', time: 'Now', icon: 'fa-solid fa-circle-check', color: 'green' }
           ]
         };
       })
@@ -96,9 +116,9 @@ export class ApiService {
   }
 
   // Employees
-  getAllEmployees(status: string = 'all'): Observable<any[]> {
+  getAllEmployees(range: string = 'all', status: string = 'all'): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/api/employee/all/active`, {
-      params: { status }
+      params: { range, status }
     });
   }
 
@@ -123,7 +143,7 @@ export class ApiService {
 
   // Leaves
   getInternLeaves(internId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/api/leave/intern/${internId}`);
+    return this.http.get<any[]>(`${this.baseUrl}/api/employee-leave/employee/${internId}`);
   }
 
   getEmployeeLeaves(employeeId: string): Observable<any[]> {
@@ -179,5 +199,56 @@ export class ApiService {
       email: 'admin@softrate.com',
       policyUrl: url
     });
+  }
+  acceptIntern(id: string, data: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/intern/accept/${id}`, data);
+  }
+  deleteIntern(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/api/intern/reject/${id}`);
+  }
+  deleteEmployee(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/api/employee/reject/${id}`);
+  }
+  acceptEmployee(id: string, data: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/employee/accept/${id}`, data);
+  }
+
+  // Manager Assignment & Review
+  getManagers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/api/employee/all/active`, {
+      params: { range: 'all', status: 'approved' }
+    }).pipe(
+      map(emps => emps.filter(e => e.isManager === true))
+    );
+  }
+
+  assignInternToManager(internId: string, managerId: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/intern/assign-manager/${internId}`, { managerId });
+  }
+
+  getAssignedInterns(managerId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/api/intern/assigned-to/${managerId}`);
+  }
+
+  managerReviewIntern(internId: string, status: 'approved' | 'rejected', remarks: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/intern/manager-review/${internId}`, { status, remarks });
+  }
+
+  // Attendance Correction Requests (HR)
+  getHrPendingAttendanceRequests(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/api/attendance-requests/hr-pending`);
+  }
+
+  hrReviewAttendanceRequest(requestId: string, status: 'approved' | 'rejected', remarks: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/attendance-requests/hr-review/${requestId}`, { status, remarks });
+  }
+
+  // HR Leave Management
+  getHrPendingLeaves(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/api/employee-leave/hr-pending`);
+  }
+
+  hrReviewLeave(id: string, status: 'approved' | 'rejected', rejectionReason: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/employee-leave/hr-action/${id}`, { status, rejectionReason });
   }
 }

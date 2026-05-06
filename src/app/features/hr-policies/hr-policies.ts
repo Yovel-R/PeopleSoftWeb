@@ -1,13 +1,12 @@
 import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
-import { LucideAngularModule } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-hr-policies',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './hr-policies.html',
   styleUrl: './hr-policies.css'
 })

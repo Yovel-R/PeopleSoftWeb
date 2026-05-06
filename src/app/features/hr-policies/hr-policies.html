@@ -8,35 +8,51 @@
 <div class="policies-grid">
   <!-- Add Policy Card -->
   <div class="card add-form">
-    <h3>Add New Policy</h3>
-    <div class="form-group">
-      <label>Policy Name</label>
-      <input type="text" [(ngModel)]="newPolicy.policy_name" placeholder="e.g. Leave Policy, Code of Conduct">
+    <div class="card-header">
+      <h3><i class="fa-solid fa-plus-circle"></i> Add New Policy</h3>
     </div>
-    <div class="form-group">
-      <label>PDF URL (Google Drive / Dropbox)</label>
-      <input type="text" [(ngModel)]="newPolicy.policy_url" placeholder="https://...">
-    </div>
-    <div class="form-group">
-      <label>Visible To</label>
-      <div class="checkbox-group">
-        <label class="checkbox-item">
-          <input type="checkbox" checked disabled> Employees
-        </label>
-        <label class="checkbox-item">
-          <input type="checkbox" checked disabled> Interns
-        </label>
+    <div class="card-body">
+      <div class="form-group">
+        <label>Policy Name</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-file-signature"></i>
+          <input type="text" [(ngModel)]="newPolicy.policy_name" placeholder="e.g. Leave Policy, Code of Conduct">
+        </div>
       </div>
+      <div class="form-group">
+        <label>PDF URL (Google Drive / Dropbox)</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-link"></i>
+          <input type="text" [(ngModel)]="newPolicy.policy_url" placeholder="https://...">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Visible To</label>
+        <div class="checkbox-group">
+          <label class="checkbox-item">
+            <input type="checkbox" checked disabled> 
+            <span>Employees</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" checked disabled> 
+            <span>Interns</span>
+          </label>
+        </div>
+      </div>
+      <button class="btn-primary full-width" (click)="addPolicy()" [disabled]="isSaving()">
+        <i class="fa-solid fa-save" *ngIf="!isSaving()"></i>
+        {{ isSaving() ? 'Saving...' : 'Save Policy' }}
+      </button>
     </div>
-    <button class="btn-primary" (click)="addPolicy()" [disabled]="isSaving()">
-      <lucide-icon name="Save" *ngIf="!isSaving()"></lucide-icon>
-      {{ isSaving() ? 'Saving...' : 'Save Policy' }}
-    </button>
   </div>
 
   <!-- Policies List -->
   <div class="policies-list">
     <div class="card" *ngIf="!isLoading()">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-book"></i> Active Policies</h3>
+        <span class="count-badge">{{ policies().length }} Total</span>
+      </div>
       <div class="table-responsive">
         <table class="data-table">
           <thead>
@@ -50,21 +66,25 @@
             <tr *ngFor="let policy of policies()">
               <td>
                 <div class="policy-info">
-                  <lucide-icon name="FileText"></lucide-icon>
+                  <div class="icon-box">
+                    <i class="fa-solid fa-file-pdf"></i>
+                  </div>
                   <span>{{ policy.policy_name }}</span>
                 </div>
               </td>
               <td>
                 <div class="badges">
-                  <span class="badge" *ngFor="let role of policy.policy_view_by">{{ role }}</span>
+                  <span class="badge" *ngFor="let role of policy.policy_view_by">
+                    {{ role }}
+                  </span>
                 </div>
               </td>
               <td class="actions">
-                <button class="icon-btn" (click)="openPdf(policy.policy_url)" title="View PDF">
-                  <lucide-icon name="Eye"></lucide-icon>
+                <button class="icon-btn view" (click)="openPdf(policy.policy_url)" title="View PDF">
+                  <i class="fa-solid fa-eye"></i>
                 </button>
                 <button class="icon-btn delete" (click)="deletePolicy(policy._id)" title="Delete">
-                  <lucide-icon name="Trash2"></lucide-icon>
+                  <i class="fa-solid fa-trash-can"></i>
                 </button>
               </td>
             </tr>
@@ -73,15 +93,18 @@
       </div>
       
       <div class="empty-state" *ngIf="policies().length === 0">
-        <lucide-icon name="FileText" class="empty-icon"></lucide-icon>
-        <p>No policies uploaded yet.</p>
+        <div class="empty-icon-box">
+          <i class="fa-solid fa-folder-open"></i>
+        </div>
+        <h3>No policies uploaded</h3>
+        <p>Start by adding a new policy using the form on the left.</p>
       </div>
     </div>
 
     <!-- Loading Skeleton -->
-    <div class="card skeleton" *ngIf="isLoading()">
-      <div class="skeleton-line long"></div>
-      <div class="skeleton-line medium"></div>
+    <div class="card skeleton-card" *ngIf="isLoading()">
+      <div class="skeleton-header"></div>
+      <div class="skeleton-row" *ngFor="let i of [1,2,3]"></div>
     </div>
   </div>
 </div>

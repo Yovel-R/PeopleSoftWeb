@@ -1,13 +1,12 @@
 import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../../services/api.service';
-import { LucideAngularModule } from 'lucide-angular';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-employee-details',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, RouterModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './employee-details.html',
   styleUrl: './employee-details.css',
 })

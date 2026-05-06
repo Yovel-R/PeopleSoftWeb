@@ -1,6 +1,6 @@
-<div class="app-container">
+<div class="app-container" [class.login-mode]="isLoginPage()">
   <!-- Sidebar -->
-  <aside class="sidebar">
+  <aside class="sidebar" *ngIf="!isLoginPage()">
     <div class="sidebar-header">
       <div class="logo-box">
         <img src="logo/peoplesoft.png" alt="SoftPeople Logo">
@@ -12,53 +12,114 @@
     </div>
     
     <nav class="sidebar-nav">
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
-        <lucide-icon name="LayoutDashboard"></lucide-icon> Dashboard
-      </a>
-      <a routerLink="/org-hierarchy" routerLinkActive="active" class="nav-item">
-        <lucide-icon name="Network"></lucide-icon> Org Hierarchy
-      </a>
-      <a routerLink="/hr-policies" routerLinkActive="active" class="nav-item">
-        <lucide-icon name="FileText"></lucide-icon> HR Policies
-      </a>
-      <a routerLink="/holiday-calendar" routerLinkActive="active" class="nav-item">
-        <lucide-icon name="Calendar"></lucide-icon> Holiday Calendar
-      </a>
-      <div class="nav-divider"></div>
-      <p class="nav-label">Management</p>
-      <a routerLink="/interns" routerLinkActive="active" class="nav-item">
-        <lucide-icon name="Users"></lucide-icon> Manage Employee
-      </a>
+      <!-- HR MENU -->
+      <ng-container *ngIf="userRole() === 'hr'">
+        <div class="nav-section">
+          <p class="nav-label">General</p>
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+            <div class="icon-box blue"><i class="fa-solid fa-chart-pie"></i></div>
+            <span>Dashboard</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <p class="nav-label">Organization</p>
+          <a routerLink="/org-hierarchy" routerLinkActive="active" class="nav-item">
+            <div class="icon-box purple"><i class="fa-solid fa-sitemap"></i></div>
+            <span>Org Hierarchy</span>
+          </a>
+          <a routerLink="/hr-policies" routerLinkActive="active" class="nav-item">
+            <div class="icon-box orange"><i class="fa-solid fa-file-invoice"></i></div>
+            <span>HR Policies</span>
+          </a>
+          <a routerLink="/holiday-calendar" routerLinkActive="active" class="nav-item">
+            <div class="icon-box red"><i class="fa-solid fa-calendar-days"></i></div>
+            <span>Holiday Calendar</span>
+          </a>
+        </div>
+        
+        <div class="nav-section">
+          <p class="nav-label">Management</p>
+          <a routerLink="/employees" routerLinkActive="active" class="nav-item">
+            <div class="icon-box teal"><i class="fa-solid fa-briefcase"></i></div>
+            <span>Manage Employees</span>
+          </a>
+          <a routerLink="/interns" routerLinkActive="active" class="nav-item">
+            <div class="icon-box indigo"><i class="fa-solid fa-graduation-cap"></i></div>
+            <span>Manage Interns</span>
+          </a>
+          <a routerLink="/assignments" routerLinkActive="active" class="nav-item">
+            <div class="icon-box cyan"><i class="fa-solid fa-people-arrows"></i></div>
+            <span>Team Assignments</span>
+          </a>
+          <a routerLink="/leaves" routerLinkActive="active" class="nav-item">
+            <div class="icon-box green"><i class="fa-solid fa-clock"></i></div>
+            <span>Leave Requests</span>
+          </a>
+          <a routerLink="/interns/attendance/corrections" routerLinkActive="active" class="nav-item">
+            <div class="icon-box blue"><i class="fa-solid fa-calendar-check"></i></div>
+            <span>Attendance Corrections</span>
+          </a>
+        </div>
+      </ng-container>
+
+      <!-- EMPLOYEE MENU -->
+      <ng-container *ngIf="userRole() === 'employee'">
+        <div class="nav-section">
+          <p class="nav-label">Self Portal</p>
+          <a routerLink="/employee/dashboard" routerLinkActive="active" class="nav-item">
+            <div class="icon-box blue"><i class="fa-solid fa-house-user"></i></div>
+            <span>My Dashboard</span>
+          </a>
+          <a routerLink="/employee/attendance" routerLinkActive="active" class="nav-item">
+            <div class="icon-box green"><i class="fa-solid fa-calendar-check"></i></div>
+            <span>My Attendance</span>
+          </a>
+          <a routerLink="/employee/leaves" routerLinkActive="active" class="nav-item">
+            <div class="icon-box orange"><i class="fa-solid fa-paper-plane"></i></div>
+            <span>Leave Applications</span>
+          </a>
+          <a routerLink="/employee/payroll" routerLinkActive="active" class="nav-item">
+            <div class="icon-box purple"><i class="fa-solid fa-receipt"></i></div>
+            <span>My Payslips</span>
+          </a>
+        </div>
+      </ng-container>
     </nav>
 
     <div class="sidebar-footer">
       <div class="user-profile">
-        <div class="user-avatar">AD</div>
-        <div class="user-info">
-          <p class="user-name">Admin User</p>
-          <p class="user-role">HR Specialist</p>
+        <div class="user-avatar">
+          <span>{{ userRole() === 'hr' ? 'AD' : 'EM' }}</span>
         </div>
+        <div class="user-info">
+          <p class="user-name">{{ userRole() === 'hr' ? 'Admin User' : 'Employee' }}</p>
+          <p class="user-role">{{ userRole() === 'hr' ? 'HR Specialist' : 'Staff' }}</p>
+        </div>
+        <button class="logout-btn" title="Logout" (click)="logout()">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </button>
       </div>
     </div>
   </aside>
 
   <!-- Main Content -->
-  <main class="main-content">
-    <header class="top-bar">
+  <main class="main-content" [class.full-width]="isLoginPage()">
+    <header class="top-bar" *ngIf="!isLoginPage()">
       <div class="search-container">
-        <lucide-icon name="Search" class="search-icon"></lucide-icon>
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
         <input type="text" placeholder="Search for employees, interns, or documents...">
       </div>
       <div class="top-actions">
         <button class="icon-btn" title="Notifications">
-          <lucide-icon name="Bell"></lucide-icon>
+          <i class="fa-solid fa-bell"></i>
           <span class="dot"></span>
         </button>
         <button class="icon-btn" title="Messages">
-          <lucide-icon name="Mail"></lucide-icon>
+          <i class="fa-solid fa-envelope"></i>
         </button>
-        <button class="btn-primary">
-          <lucide-icon name="Plus"></lucide-icon> Add New
+        <button class="btn-primary" routerLink="/interns/requests">
+          <i class="fa-solid fa-bell"></i> New Requests
         </button>
       </div>
     </header>

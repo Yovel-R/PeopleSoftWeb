@@ -31,13 +31,13 @@
 }
 
 .hero-text h3 {
-  font-size: 1.5rem;
+  font-size: var(--text-4xl); /* 24px */
   margin-bottom: 0.5rem;
 }
 
 .hero-text p {
   opacity: 0.8;
-  font-size: 0.95rem;
+  font-size: var(--text-xl); /* 15px */
 }
 
 .form-section {
@@ -50,7 +50,7 @@
 
 .form-group label {
   display: block;
-  font-size: 0.875rem;
+  font-size: var(--text-lg); /* 14px */
   font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 0.75rem;
@@ -75,7 +75,7 @@
   padding: 1rem 1rem 1rem 3rem;
   border: 2px solid var(--border-color);
   border-radius: 12px;
-  font-size: 1rem;
+  font-size: var(--text-2xl); /* 16px */
   transition: var(--transition-fast);
 }
 
@@ -86,7 +86,7 @@
 }
 
 .input-hint {
-  font-size: 0.75rem;
+  font-size: var(--text-md); /* 12px */
   color: var(--text-muted);
   margin-top: 0.75rem;
 }
@@ -100,7 +100,7 @@
   flex: 1;
   padding: 1rem;
   height: auto;
-  font-size: 1rem;
+  font-size: var(--text-2xl); /* 16px */
 }
 
 @media (max-width: 640px) {

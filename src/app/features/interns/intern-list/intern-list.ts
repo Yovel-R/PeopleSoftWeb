@@ -1,19 +1,23 @@
 import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../../services/api.service';
-import { LucideAngularModule } from 'lucide-angular';
 import { RouterModule } from '@angular/router';
+
+import { InternRequests } from '../intern-requests/intern-requests';
+import { LeaveManagement } from '../../leaves/leave-management/leave-management';
+import { AttendanceCorrections } from '../attendance-corrections/attendance-corrections';
 
 @Component({
   selector: 'app-intern-list',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, RouterModule],
+  imports: [CommonModule, RouterModule, InternRequests, LeaveManagement, AttendanceCorrections],
   templateUrl: './intern-list.html',
   styleUrl: './intern-list.css'
 })
 export class InternList implements OnInit {
   private apiService = inject(ApiService);
   
+  currentTab = signal<'list' | 'leaves' | 'requests' | 'corrections'>('list');
   interns = signal<any[]>([]);
   isLoading = signal(true);
   statusFilter = signal<string>('all');
@@ -65,5 +69,11 @@ export class InternList implements OnInit {
       default:
         return 'status-gray';
     }
+  }
+
+  exportInternData() {
+    const baseUrl = this.apiService.getBaseUrl();
+    const url = `${baseUrl}/api/intern/export/excel?status=${this.statusFilter()}&range=${this.rangeFilter()}`;
+    window.open(url, '_blank');
   }
 }

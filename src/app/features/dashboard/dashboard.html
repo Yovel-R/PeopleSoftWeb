@@ -1,16 +1,4 @@
 <div class="dashboard-wrapper">
-  <!-- Section Toggle -->
-  <div class="section-toggle-container">
-    <div class="toggle-switch">
-      <button 
-        class="active">
-        Employees
-      </button>
-    </div>
-    <button class="export-btn">
-      <lucide-icon name="Download"></lucide-icon> Export {{ selectedModel() === 'interns' ? 'Intern' : 'Employee' }} Data
-    </button>
-  </div>
 
   <div class="welcome-header">
     <h1>Dashboard Overview</h1>
@@ -22,7 +10,7 @@
   <div class="stats-grid" [class.loading]="isLoading()">
     <div class="card stat-card" *ngFor="let stat of stats()[selectedModel()]">
       <div class="stat-icon-wrapper" [ngClass]="stat.color">
-        <lucide-icon [name]="stat.icon" class="stat-icon"></lucide-icon>
+        <i [class]="stat.icon + ' stat-icon'"></i>
       </div>
       <div class="stat-details">
         <p class="stat-label">{{ stat.label }}</p>
@@ -45,28 +33,28 @@
   <!-- Quick Actions Grid -->
   <div class="actions-grid">
     <div class="card action-card">
-      <div class="action-icon teal"><lucide-icon name="Plus"></lucide-icon></div>
+      <div class="action-icon teal"><i class="fa-solid fa-plus"></i></div>
       <div class="action-info">
         <h4>Add {{ selectedModel() === 'interns' ? 'Intern' : 'Employee' }}</h4>
         <p>Onboard new talent to the team.</p>
       </div>
     </div>
     <div class="card action-card" routerLink="/leaves">
-      <div class="action-icon orange"><lucide-icon name="ClipboardList"></lucide-icon></div>
+      <div class="action-icon orange"><i class="fa-solid fa-list-check"></i></div>
       <div class="action-info">
         <h4>Leave Requests</h4>
-        <p>Approve or review pending leaves.</p>
+        <p>Review pending leaves.</p>
       </div>
     </div>
     <div class="card action-card">
-      <div class="action-icon purple"><lucide-icon name="LogOut"></lucide-icon></div>
+      <div class="action-icon purple"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
       <div class="action-info">
         <h4>Off-boarding</h4>
         <p>Manage resignations and exits.</p>
       </div>
     </div>
     <div class="card action-card">
-      <div class="action-icon blue"><lucide-icon name="LineChart"></lucide-icon></div>
+      <div class="action-icon blue"><i class="fa-solid fa-chart-line"></i></div>
       <div class="action-info">
         <h4>Review Performance</h4>
         <p>Track progress and milestones.</p>
@@ -87,16 +75,10 @@
       </div>
       <div class="chart-mockup">
         <div class="bar-group">
-          <div class="bar" style="height: 70%"></div>
-          <div class="bar" style="height: 85%"></div>
-          <div class="bar" style="height: 60%"></div>
-          <div class="bar" style="height: 95%"></div>
-          <div class="bar" style="height: 80%"></div>
-          <div class="bar" style="height: 75%"></div>
-          <div class="bar" style="height: 90%"></div>
-        </div>
-        <div class="chart-labels">
-          <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+          <div class="bar-item" *ngFor="let day of (selectedModel() === 'interns' ? stats().internTrend : stats().employeeTrend)">
+            <div class="bar" [style.height.%]="day.height || 0" [title]="day.count + ' present'"></div>
+            <span class="bar-label">{{ day.day }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -105,7 +87,7 @@
     <div class="card activity-card">
       <div class="card-header">
         <h3>Recent Activity</h3>
-        <button class="view-all">View All</button>
+        <button class="view-all">View All <i class="fa-solid fa-arrow-right"></i></button>
       </div>
       <div class="activity-list" [class.loading]="isLoading()">
         <div class="activity-item" *ngFor="let activity of stats().activities">

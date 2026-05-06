@@ -1,0 +1,163 @@
+<div class="dashboard-container">
+  <!-- Welcome Header -->
+  <header class="welcome-section">
+    <div class="welcome-text">
+      <h1>{{ greeting }}, {{ employeeData()?.fullName?.split(' ')[0] }}! 👋</h1>
+      <p>Today is {{ currentTime() | date:'EEEE, MMMM d, y' }}</p>
+    </div>
+    <div class="clock-card">
+      <div class="time">{{ currentTime() | date:'hh:mm:ss a' }}</div>
+      <div class="status-indicator">
+        <span class="dot"></span>
+        Shift Ongoing
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card attendance">
+      <div class="icon-box">
+        <i class="fa-solid fa-calendar-check"></i>
+      </div>
+      <div class="stat-info">
+        <label>Monthly Attendance</label>
+        <h3>98%</h3>
+        <p>Excellent progress!</p>
+      </div>
+    </div>
+
+    <div class="stat-card leaves">
+      <div class="icon-box">
+        <i class="fa-solid fa-plane-departure"></i>
+      </div>
+      <div class="stat-info">
+        <label>Leaves Available</label>
+        <h3>12 Days</h3>
+        <p>Casual & Sick leaves</p>
+      </div>
+    </div>
+
+    <div class="stat-card tasks">
+      <div class="icon-box">
+        <i class="fa-solid fa-list-check"></i>
+      </div>
+      <div class="stat-info">
+        <label>Active Tasks</label>
+        <h3>04</h3>
+        <p>2 due this week</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manager Assignment Section -->
+  <div class="manager-requests-section" *ngIf="isManager() && pendingTeamRequests().length > 0">
+    <div class="section-header">
+      <h2><i class="fa-solid fa-users-viewfinder"></i> Pending Team Requests</h2>
+      <span class="count">{{ pendingTeamRequests().length }} NEW</span>
+    </div>
+    
+    <div class="requests-list">
+      <div class="team-request-card" *ngFor="let req of pendingTeamRequests()">
+        <div class="req-main">
+          <div class="avatar-small">{{ req.fullName[0] }}</div>
+          <div class="req-details">
+            <h4>{{ req.fullName }}</h4>
+            <p>{{ req.applicationType }} • {{ req.role }}</p>
+          </div>
+        </div>
+        <div class="req-info">
+          <p class="college"><i class="fa-solid fa-graduation-cap"></i> {{ req.college }}</p>
+          <p class="time"><i class="fa-solid fa-clock"></i> Applied on {{ req.createdAt | date:'shortDate' }}</p>
+        </div>
+        <div class="req-actions">
+          <button class="btn-reject-sm" (click)="reviewRequest(req._id, 'rejected')">
+            <i class="fa-solid fa-xmark"></i> Reject
+          </button>
+          <button class="btn-approve-sm" (click)="reviewRequest(req._id, 'approved')">
+            <i class="fa-solid fa-check"></i> Approve
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-row">
+    <!-- Profile Summary -->
+    <div class="card profile-card">
+      <div class="card-header">
+        <h3>My Profile</h3>
+        <button class="edit-btn">View Full Details</button>
+      </div>
+      <div class="profile-body">
+        <div class="avatar-large">{{ employeeData()?.fullName[0] }}</div>
+        <div class="user-details">
+          <h2>{{ employeeData()?.fullName }}</h2>
+          <p class="designation">{{ employeeData()?.designation || 'Team Member' }}</p>
+          <div class="id-badge">{{ employeeData()?.EmployeeId }}</div>
+        </div>
+        <div class="info-list">
+          <div class="info-item">
+            <i class="fa-solid fa-envelope"></i>
+            <span>{{ employeeData()?.email }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-phone"></i>
+            <span>{{ employeeData()?.phone || 'Not Provided' }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-building"></i>
+            <span>{{ employeeData()?.department || 'Softrate' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions & Upcoming -->
+    <div class="right-column">
+      <div class="card actions-card">
+        <h3>Quick Actions</h3>
+        <div class="action-buttons">
+          <button class="action-btn">
+            <i class="fa-solid fa-clock"></i>
+            Request Leave
+          </button>
+          <button class="action-btn">
+            <i class="fa-solid fa-file-invoice"></i>
+            Payslip
+          </button>
+          <button class="action-btn">
+            <i class="fa-solid fa-id-card"></i>
+            ID Card
+          </button>
+        </div>
+      </div>
+
+      <div class="card holiday-card">
+        <h3>Upcoming Holidays</h3>
+        <div class="holiday-list">
+          <div class="holiday-item">
+            <div class="date">
+              <span class="day">15</span>
+              <span class="month">AUG</span>
+            </div>
+            <div class="details">
+              <p class="name">Independence Day</p>
+              <p class="type">Public Holiday</p>
+            </div>
+          </div>
+          <div class="holiday-item">
+            <div class="date">
+              <span class="day">02</span>
+              <span class="month">OCT</span>
+            </div>
+            <div class="details">
+              <p class="name">Gandhi Jayanti</p>
+              <p class="type">Public Holiday</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

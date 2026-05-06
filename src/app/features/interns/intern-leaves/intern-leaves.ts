@@ -30,7 +30,7 @@ export class InternLeaves implements OnInit {
     this.apiService.getInternLeaves(this.internId()).subscribe({
       next: (data: any) => {
         console.log('Leaves data received:', data);
-        this.leaves.set(data.leaves || []);
+        this.leaves.set(Array.isArray(data) ? data : (data.leaves || []));
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -40,12 +40,23 @@ export class InternLeaves implements OnInit {
     });
   }
 
-  getStatusColor(status: string): string {
-    switch(status.toLowerCase()) {
-      case 'approved': return 'status-green';
-      case 'pending': return 'status-orange';
-      case 'rejected': return 'status-red';
-      default: return 'status-gray';
-    }
+  getStatusColor(hrStatus: string, managerStatus: string): string {
+    const hr = hrStatus?.toLowerCase();
+    const mgr = managerStatus?.toLowerCase();
+
+    if (hr === 'accepted') return 'status-green';
+    if (hr === 'rejected' || mgr === 'rejected') return 'status-red';
+    return 'status-orange';
+  }
+
+  getStatusLabel(hrStatus: string, managerStatus: string): string {
+    const hr = hrStatus?.toLowerCase();
+    const mgr = managerStatus?.toLowerCase();
+
+    if (hr === 'accepted') return 'Approved';
+    if (hr === 'rejected') return 'Rejected by HR';
+    if (mgr === 'rejected') return 'Rejected by Manager';
+    if (mgr === 'accepted') return 'Awaiting HR';
+    return 'Awaiting Manager';
   }
 }

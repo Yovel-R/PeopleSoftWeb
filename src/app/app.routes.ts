@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { Login } from './features/auth/login/login';
 import { Dashboard } from './features/dashboard/dashboard';
 import { InternList } from './features/interns/intern-list/intern-list';
 import { InternAdd } from './features/interns/intern-add/intern-add';
@@ -15,25 +16,34 @@ import { LeaveManagement } from './features/leaves/leave-management/leave-manage
 import { OrgHierarchy } from './features/org-hierarchy/org-hierarchy';
 import { HrPolicies } from './features/hr-policies/hr-policies';
 import { HolidayCalendar } from './features/holiday-calendar/holiday-calendar';
+import { InternRequests } from './features/interns/intern-requests/intern-requests';
+import { EmployeeRequests } from './features/employees/employee-requests/employee-requests';
+import { EmployeeDashboard } from './features/employees/employee-dashboard/employee-dashboard';
 import { EmployeeAdd } from './features/employees/employee-add/employee-add';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: Login },
   { path: 'dashboard', component: Dashboard },
+  { path: 'employee/dashboard', component: EmployeeDashboard },
   { path: 'org-hierarchy', component: OrgHierarchy },
   { path: 'hr-policies', component: HrPolicies },
-  { path: 'holiday-calendar', component: HolidayCalendar },
+  { path: 'holiday-calendar', component: HolidayCalendar }, 
   { path: 'interns', component: InternList },
-  { path: 'interns/add', component: InternAdd },
+  { path: 'interns/requests', component: InternRequests },
+  { path: 'interns/approve/:id', component: InternAdd },
   { path: 'interns/:id', component: InternDetails },
   { path: 'interns/:id/attendance', component: InternAttendance },
   { path: 'interns/:id/leaves', component: InternLeaves },
   { path: 'interns/:id/review', component: InternReview },
   { path: 'employees', component: EmployeeList },
-  { path: 'employees/add', component: EmployeeAdd },
+  { path: 'employees/requests', component: EmployeeRequests },
+  { path: 'employees/approve/:id', component: EmployeeAdd }, // We'll update details to handle approval if needed, or create EmployeeApprove
   { path: 'employees/:id', component: EmployeeDetails },
   { path: 'employees/:id/attendance', component: EmployeeAttendance },
   { path: 'employees/:id/payroll', component: EmployeePayroll },
   { path: 'employees/:id/review', component: EmployeeReview },
   { path: 'leaves', component: LeaveManagement },
+  { path: 'assignments', loadComponent: () => import('./features/assignments/manager-assignments/manager-assignments').then(m => m.ManagerAssignments) },
+  { path: 'interns/attendance/corrections', loadComponent: () => import('./features/interns/attendance-corrections/attendance-corrections').then(m => m.AttendanceCorrections) },
 ];

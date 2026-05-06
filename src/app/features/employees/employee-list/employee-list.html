@@ -1,97 +1,132 @@
-<div class="page-header">
-  <div class="header-content">
-    <h1>Manage Employees</h1>
-    <p>View and manage all organization employees.</p>
-  </div>
-  <div class="header-actions">
-    <button class="export-btn">
-      <lucide-icon name="Download"></lucide-icon> Export Payroll
-    </button>
-    <button class="btn-primary" routerLink="/employees/add">
-      <lucide-icon name="Plus"></lucide-icon> Add Employee
-    </button>
-  </div>
-</div>
+<div class="main-content-layout">
+  <!-- LEFT: DYNAMIC CONTENT SECTION -->
+  <div class="data-section">
+    <ng-container *ngIf="currentTab() === 'list'">
+      <div class="page-header-embedded">
+        <div class="header-content">
+          <h1>Manage Employees</h1>
+          <p>Complete overview of your organization's human capital.</p>
+        </div>
+      </div>
 
-<div class="filter-bar">
-  <div class="search-box">
-    <lucide-icon name="Search" class="search-icon"></lucide-icon>
-    <input type="text" placeholder="Search by name, ID or department...">
-  </div>
-  
-  <div class="status-filter">
-    <select [value]="statusFilter()" (change)="setStatus($any($event.target).value)">
-      <option value="all">All Status</option>
-      <option value="active">Active</option>
-      <option value="on leave">On Leave</option>
-      <option value="terminated">Terminated</option>
-    </select>
-  </div>
-</div>
+      <div class="filter-bar">
+        <div class="status-filters">
+          <button class="filter-chip" [class.active]="statusFilter() === 'all'" (click)="setStatus('all')">All Staff</button>
+          <button class="filter-chip" [class.active]="statusFilter() === 'approved'" (click)="setStatus('approved')">Active</button>
+          <button class="filter-chip" [class.active]="statusFilter() === 'on leave'" (click)="setStatus('on leave')">On Leave</button>
+        </div>
+      </div>
 
-<div class="data-container" [class.loading]="isLoading()">
-  <div class="table-responsive" *ngIf="!isLoading() && employees().length > 0">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Employee</th>
-          <th>ID</th>
-          <th>Department</th>
-          <th>Designation</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let emp of employees()">
-          <td>
-            <div class="user-cell">
-              <div class="avatar">{{ emp.fullName[0] }}</div>
-              <div class="user-info">
-                <span class="name">{{ emp.fullName }}</span>
-                <span class="email">{{ emp.email }}</span>
-              </div>
+      <div class="employee-list-container" [class.loading]="isLoading()">
+        <!-- Row Cards -->
+        <div class="employee-row-card" *ngFor="let emp of employees()">
+          <!-- IDENTITY -->
+          <div class="user-identity">
+            <div class="avatar-initial">{{ emp.fullName[0] }}</div>
+            <div class="identity-text">
+              <span class="full-name">
+                {{ emp.fullName }}
+                <i *ngIf="emp.isManager" class="fa-solid fa-crown" style="color: #f59e0b; font-size: 0.75rem;"></i>
+              </span>
+              <span class="emp-id">{{ emp.employeeId || emp._id.substring(0, 8) }}</span>
             </div>
-          </td>
-          <td>{{ emp.EmployeeId || 'N/A' }}</td>
-          <td>{{ emp.department || 'N/A' }}</td>
-          <td>{{ emp.designation || 'N/A' }}</td>
-          <td>
-            <span class="status-badge" [ngClass]="getStatusColor(emp.status)">
-              {{ emp.status }}
+          </div>
+
+          <!-- ROLE -->
+          <div class="info-block">
+            <span class="info-label">Designation</span>
+            <span class="info-value">{{ emp.role || 'Staff Member' }}</span>
+          </div>
+
+          <!-- DEPARTMENT -->
+          <div class="info-block">
+            <span class="info-label">Department</span>
+            <span class="info-value">{{ emp.department || 'Operations' }}</span>
+          </div>
+
+          <!-- STATUS -->
+          <div class="status-block">
+            <span class="premium-badge" [ngClass]="{
+              'badge-active': emp.status?.toLowerCase() === 'active' || emp.status?.toLowerCase() === 'approved',
+              'badge-leave': emp.status?.toLowerCase() === 'on leave',
+              'badge-pending': !emp.status || emp.status?.toLowerCase() === 'pending'
+            }">
+              {{ emp.status || 'Active' }}
             </span>
-          </td>
-          <td>
-            <div class="action-group">
-              <button class="icon-btn-sm teal" title="Attendance" [routerLink]="['/employees', emp.EmployeeId, 'attendance']">
-                <lucide-icon name="Calendar"></lucide-icon>
-              </button>
-              <button class="icon-btn-sm orange" title="Payroll" [routerLink]="['/employees', emp.EmployeeId, 'payroll']">
-                <lucide-icon name="CircleDollarSign"></lucide-icon>
-              </button>
-              <button class="icon-btn-sm blue" title="Edit" [routerLink]="['/employees', emp.EmployeeId, 'edit']">
-                <lucide-icon name="Edit3"></lucide-icon>
-              </button>
-              <button class="icon-btn-sm purple" title="Details" [routerLink]="['/employees', emp.EmployeeId]">
-                <lucide-icon name="FileText"></lucide-icon>
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </div>
+
+          <!-- ACTIONS -->
+          <div class="row-actions">
+            <button class="action-pill" [routerLink]="['/employees', emp.employeeId || emp._id]" title="View Profile">
+              <i class="fa-solid fa-user-gear"></i>
+              Profile
+            </button>
+            <button class="action-pill" [class.active-manager]="emp.isManager" (click)="toggleManager(emp)" [title]="emp.isManager ? 'Demote' : 'Promote to Manager'">
+              <i class="fa-solid" [ngClass]="emp.isManager ? 'fa-shield-check' : 'fa-shield'"></i>
+              {{ emp.isManager ? 'Manager' : 'Promote' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="!isLoading() && employees().length === 0">
+          <i class="fa-solid fa-users-slash empty-icon"></i>
+          <h3>No records found</h3>
+          <p>Refine your search or filter criteria to find staff members.</p>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading-overlay" *ngIf="isLoading()">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- VIEW 2: LEAVE REQUESTS -->
+    <app-leave-management *ngIf="currentTab() === 'leaves'"></app-leave-management>
+
+    <!-- VIEW 3: EMPLOYEE REQUESTS -->
+    <app-employee-requests *ngIf="currentTab() === 'requests'"></app-employee-requests>
   </div>
 
-  <!-- Empty State -->
-  <div class="empty-state" *ngIf="!isLoading() && employees().length === 0">
-    <lucide-icon name="Briefcase" class="empty-icon"></lucide-icon>
-    <h3>No employees found</h3>
-    <p>We couldn't find any employees matching your search.</p>
-  </div>
+  <!-- RIGHT: VERTICAL ACTION SIDEBAR -->
+  <aside class="action-sidebar">
+    <!-- EMPLOYEE LIST (Home) -->
+    <button (click)="currentTab.set('list')" class="sidebar-action-item" [class.active]="currentTab() === 'list'" title="Employee List">
+      <div class="action-icon-circle">
+        <i class="fa-solid fa-users"></i>
+      </div>
+      <span class="action-label">Employee List</span>
+    </button>
 
-  <!-- Loading Overlay -->
-  <div class="loading-overlay" *ngIf="isLoading()">
-    <div class="spinner"></div>
-    <p>Loading employees...</p>
-  </div>
+    <div class="sidebar-divider"></div>
+
+    <!-- LEAVE REQUESTS -->
+    <button (click)="currentTab.set('leaves')" class="sidebar-action-item" [class.active]="currentTab() === 'leaves'" title="Leave Requests">
+      <div class="action-icon-circle">
+        <i class="fa-solid fa-clock icon-green"></i>
+      </div>
+      <span class="action-label">Leave Requests</span>
+    </button>
+
+    <div class="sidebar-divider"></div>
+
+    <!-- EMPLOYEE REQUESTS -->
+    <button (click)="currentTab.set('requests')" class="sidebar-action-item" [class.active]="currentTab() === 'requests'" title="Employee Requests">
+      <div class="action-icon-circle">
+        <i class="fa-solid fa-user-plus icon-orange"></i>
+      </div>
+      <span class="action-label">New Requests</span>
+    </button>
+
+    <div class="sidebar-divider"></div>
+
+    <!-- EXPORT DATA -->
+    <button class="sidebar-action-item" title="Export Data">
+      <div class="action-icon-circle">
+        <i class="fa-solid fa-file-export icon-purple"></i>
+      </div>
+      <span class="action-label">Export Data</span>
+    </button>
+  </aside>
 </div>

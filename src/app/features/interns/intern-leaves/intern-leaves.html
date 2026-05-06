@@ -32,8 +32,8 @@
           <td>{{ leave.toDate | date:'mediumDate' }}</td>
           <td>{{ leave.reason || 'No reason provided' }}</td>
           <td>
-            <span class="status-badge" [ngClass]="getStatusColor(leave.status)">
-              {{ leave.status }}
+            <span class="status-badge" [ngClass]="getStatusColor(leave.hrStatus, leave.managerStatus)">
+              {{ getStatusLabel(leave.hrStatus, leave.managerStatus) }}
             </span>
           </td>
         </tr>
@@ -52,7 +52,4 @@
     <p>Loading leave history...</p>
   </div>
 
-  <pre style="background: #eee; padding: 10px; font-size: 10px; overflow: auto; max-height: 200px; margin-top: 2rem;">
-    DEBUG DATA: {{ leaves() | json }}
-  </pre>
 </div>

@@ -1,71 +1,63 @@
 <div class="page-header">
   <div class="header-content">
     <div class="breadcrumb">
-      <a routerLink="/employees" class="back-link">
-        <lucide-icon name="ArrowLeft"></lucide-icon> Back to List
+      <a routerLink="/employees/requests" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i> Back to Requests
       </a>
     </div>
-    <h1>Add New Employee</h1>
-    <p>Register a new employee into the system</p>
+    <h1>{{ isApprovalMode() ? 'Review & Onboard' : 'Add New Employee' }}</h1>
+    <p>{{ isApprovalMode() ? 'Finalize details to onboard ' + employee.fullName : 'Register a new employee into the system' }}</p>
   </div>
 </div>
 
 <div class="data-container">
   <div class="card form-card">
-    <form (ngSubmit)="saveEmployee()" #employeeForm="ngForm">
+    <form (ngSubmit)="saveEmployee()" #empForm="ngForm">
       <div class="form-grid">
         <!-- Personal Details -->
         <div class="form-section">
           <h3>Personal Details</h3>
           <div class="form-group">
             <label>Full Name *</label>
-            <input type="text" [(ngModel)]="employee.fullName" name="fullName" required placeholder="Jane Doe">
+            <input type="text" [(ngModel)]="employee.fullName" name="fullName" required placeholder="John Doe">
           </div>
           <div class="form-group">
             <label>Email Address *</label>
-            <input type="email" [(ngModel)]="employee.email" name="email" required placeholder="jane@example.com">
+            <input type="email" [(ngModel)]="employee.email" name="email" required placeholder="john@example.com">
           </div>
           <div class="form-group">
             <label>Phone Number *</label>
             <input type="text" [(ngModel)]="employee.phone" name="phone" required placeholder="+91 ...">
           </div>
           <div class="form-group">
-            <label>Address</label>
-            <input type="text" [(ngModel)]="employee.address" name="address" placeholder="Residential Address">
+            <label>Current Address</label>
+            <textarea [(ngModel)]="employee.address" name="address" placeholder="Address..."></textarea>
           </div>
         </div>
 
-        <!-- Employment Details -->
+        <!-- Work Details -->
         <div class="form-section">
-          <h3>Employment Configuration</h3>
+          <h3>Work & Role</h3>
           <div class="form-group">
             <label>Department</label>
-            <input type="text" [(ngModel)]="employee.department" name="department" placeholder="Engineering, HR, etc.">
+            <input type="text" [(ngModel)]="employee.department" name="department" placeholder="Sales, HR, IT...">
           </div>
           <div class="form-group">
-            <label>Designation / Position</label>
-            <input type="text" [(ngModel)]="employee.designation" name="designation" placeholder="Senior Developer">
+            <label>Designation</label>
+            <input type="text" [(ngModel)]="employee.designation" name="designation" placeholder="Manager, Senior, etc.">
           </div>
           <div class="form-group">
-            <label>Onboarding Date</label>
-            <input type="date" [(ngModel)]="employee.onboardingDate" name="onboardingDate">
-          </div>
-          <div class="form-group">
-            <label>System Role</label>
-            <select [(ngModel)]="employee.role" name="role">
-              <option value="Employee">Employee</option>
-              <option value="Manager">Manager</option>
-              <option value="Admin">Admin</option>
-            </select>
+            <label>Onboarding Date *</label>
+            <input type="date" [(ngModel)]="employee.onboardingDate" name="onboardingDate" required>
           </div>
         </div>
       </div>
 
       <div class="form-actions">
-        <button type="button" class="btn-secondary" routerLink="/employees">Cancel</button>
-        <button type="submit" class="btn-primary" [disabled]="isSaving() || !employeeForm.valid">
-          <lucide-icon name="Save" *ngIf="!isSaving()"></lucide-icon>
-          <span *ngIf="!isSaving()">Register Employee</span>
+        <button type="button" class="btn-secondary" routerLink="/employees/requests">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="isSaving() || !empForm.valid">
+          <i class="fa-solid fa-user-check" *ngIf="!isSaving()"></i>
+          <span *ngIf="!isSaving()">{{ isApprovalMode() ? 'Approve & Onboard' : 'Register Employee' }}</span>
           <span *ngIf="isSaving()">Saving...</span>
         </button>
       </div>
