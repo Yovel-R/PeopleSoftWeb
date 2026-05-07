@@ -1,8 +1,10 @@
+<div class="main-content-layout">
+<div class="data-section">
 <div class="page-header">
   <div class="header-content">
     <div class="breadcrumb">
-      <a [routerLink]="['/employees', employeeId()]" class="back-link">
-        <lucide-icon name="ArrowLeft"></lucide-icon> Back to Profile
+      <a routerLink="/employees" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i> Back to Employees
       </a>
     </div>
     <h1>Performance Reviews</h1>
@@ -17,7 +19,7 @@
       <div class="review-header">
         <div class="reviewer-info">
           <div class="reviewer-avatar">
-            <lucide-icon name="User"></lucide-icon>
+            <hugeicons-icon [icon]="UserCircleIcon" size="24" [strokeWidth]="1.5"></hugeicons-icon>
           </div>
           <div class="info">
             <h4>{{ review.reviewerName || 'Project Manager' }}</h4>
@@ -66,7 +68,7 @@
   <!-- Empty State -->
   <div class="empty-state" *ngIf="!isLoading() && reviews().length === 0">
     <div class="empty-content">
-      <lucide-icon name="LineChart" class="empty-icon"></lucide-icon>
+      <hugeicons-icon [icon]="LicenseDraftIcon" size="48" [strokeWidth]="1.5" color="#94a3b8"></hugeicons-icon>
       <h3>No reviews yet</h3>
       <p>This employee hasn't received any performance reviews for the current cycle.</p>
     </div>
@@ -77,4 +79,7 @@
     <div class="spinner"></div>
     <p>Loading performance reviews...</p>
   </div>
+</div>
+</div>
+<app-employee-sidebar></app-employee-sidebar>
 </div>

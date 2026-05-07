@@ -1,12 +1,14 @@
+<div class="main-content-layout">
+<div class="data-section">
 <div class="page-header">
   <div class="header-content">
     <div class="breadcrumb">
-      <a [routerLink]="['/employees', employeeId()]" class="back-link">
-        <lucide-icon name="ArrowLeft"></lucide-icon> Back to Profile
+      <a routerLink="/employees" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i> Back to Employees
       </a>
     </div>
-    <h1>Attendance History</h1>
-    <p>Detailed punch-in/out records for Employee ID: {{ employeeId() }}</p>
+    <h1>Attendance Details</h1>
+    <p>Viewing attendance history for Employee ID: {{ employeeId() }}</p>
   </div>
 </div>
 
@@ -18,24 +20,22 @@
         <tr>
           <th>Date</th>
           <th>Status</th>
-          <th>Punch In</th>
-          <th>Punch Out</th>
-          <th>Work Duration</th>
-          <th>Location</th>
+          <th>Check In</th>
+          <th>Check Out</th>
+          <th>Work Hours</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let record of attendance()">
           <td>{{ record.date | date:'mediumDate' }}</td>
           <td>
-            <span class="status-badge" [ngClass]="record.punchOutTime ? 'status-green' : 'status-orange'">
-              {{ record.punchOutTime ? 'Present' : 'Active' }}
+            <span class="status-badge" [ngClass]="getStatusColor(record.status)">
+              {{ record.status }}
             </span>
           </td>
           <td>{{ record.punchInTime | date:'shortTime' }}</td>
           <td>{{ record.punchOutTime ? (record.punchOutTime | date:'shortTime') : '--:--' }}</td>
           <td>{{ record.duration || '--:--' }}</td>
-          <td>{{ record.location || 'Office' }}</td>
         </tr>
       </tbody>
     </table>
@@ -44,15 +44,18 @@
   <!-- Empty State -->
   <div class="empty-state" *ngIf="!isLoading() && (!attendance() || attendance().length === 0)">
     <div class="empty-content">
-      <lucide-icon name="Calendar" class="empty-icon"></lucide-icon>
-      <h3>No attendance records</h3>
-      <p>This employee hasn't marked any attendance yet.</p>
+      <hugeicons-icon [icon]="FingerAccessIcon" size="48" [strokeWidth]="1.5" color="#94a3b8"></hugeicons-icon>
+      <h3>No records found</h3>
+      <p>This employee hasn't marked any attendance yet for the selected period.</p>
     </div>
   </div>
 
   <!-- Loading Overlay -->
   <div class="loading-overlay" *ngIf="isLoading()">
     <div class="spinner"></div>
-    <p>Loading attendance data...</p>
+    <p>Loading records...</p>
   </div>
+</div>
+</div>
+<app-employee-sidebar></app-employee-sidebar>
 </div>

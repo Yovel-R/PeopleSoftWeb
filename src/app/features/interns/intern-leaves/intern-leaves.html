@@ -1,3 +1,5 @@
+<div class="main-content-layout">
+<div class="data-section">
 <div class="page-header">
   <div class="header-content">
     <div class="breadcrumb">
@@ -8,7 +10,7 @@
   </div>
   <div class="header-actions">
     <button class="btn-primary" (click)="fetchLeaves()">
-      <lucide-icon name="RefreshCw"></lucide-icon> Refresh
+      <i class="fa-solid fa-arrows-rotate"></i> Refresh
     </button>
   </div>
 </div>
@@ -42,7 +44,7 @@
   </div>
 
   <div class="empty-state" *ngIf="!isLoading() && leaves().length === 0">
-    <lucide-icon name="Clock" class="empty-icon"></lucide-icon>
+    <i class="fa-solid fa-clock empty-icon"></i>
     <h3>No leaves found</h3>
     <p>This intern hasn't applied for any leaves yet.</p>
   </div>
@@ -52,4 +54,7 @@
     <p>Loading leave history...</p>
   </div>
 
+</div>
+</div>
+<app-intern-sidebar></app-intern-sidebar>
 </div>

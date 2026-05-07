@@ -119,18 +119,24 @@
   color: var(--text-secondary);
   text-decoration: none;
   font-weight: 500;
+  font-size: var(--text-base);
+  font-family: var(--font-body);
   transition: var(--transition-fast);
   background: #f9fafb;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
 }
 
-.nav-item lucide-icon {
-  width: 18px;
-  height: 18px;
+.nav-item hugeicons-icon {
+  flex-shrink: 0;
 }
 
 .nav-item:hover {
-  background: rgba(0, 101, 127, 0.05);
-  color: var(--accent-primary);
+  background: #f1f5f9;
+  color: var(--text-primary);
+  transform: translateX(3px);
 }
 
 /* Main Content */

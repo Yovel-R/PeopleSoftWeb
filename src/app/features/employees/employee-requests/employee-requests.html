@@ -1,3 +1,5 @@
+<div class="main-content-layout">
+<div class="data-section">
 <div class="page-header">
   <div class="header-content">
     <div class="breadcrumb">
@@ -54,7 +56,7 @@
         <button class="btn-reject" (click)="rejectRequest(req._id)">
           <i class="fa-solid fa-xmark"></i> Reject
         </button>
-        <button class="btn-approve" [routerLink]="['/employees/approve', req._id]">
+        <button class="btn-approve" (click)="navigateTo(['/employees/approve', req._id])">
           <i class="fa-solid fa-user-plus"></i> Review & Accept
         </button>
       </div>
@@ -62,13 +64,18 @@
   </div>
 
   <div class="empty-state" *ngIf="!isLoading() && requests().length === 0">
-    <i class="fa-solid fa-user-slash empty-icon"></i>
-    <h3>No pending employees</h3>
-    <p>All clear! No new employee submissions found.</p>
+    <div class="empty-content">
+      <hugeicons-icon [icon]="UserCircleIcon" size="48" [strokeWidth]="1.5" color="#94a3b8"></hugeicons-icon>
+      <h3>No pending employees</h3>
+      <p>All clear! No new employee submissions found.</p>
+    </div>
   </div>
 
   <div class="loading-overlay" *ngIf="isLoading()">
     <div class="spinner"></div>
     <p>Fetching requests...</p>
   </div>
+</div>
+</div>
+<app-employee-sidebar></app-employee-sidebar>
 </div>

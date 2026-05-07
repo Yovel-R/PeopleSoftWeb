@@ -25,7 +25,9 @@
         <div class="nav-section">
           <p class="nav-label">Organization</p>
           <a routerLink="/org-hierarchy" routerLinkActive="active" class="nav-item">
-            <div class="icon-box purple"><i class="fa-solid fa-sitemap"></i></div>
+            <div class="icon-box purple">
+              <hugeicons-icon [icon]="WorkflowSquare03Icon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
             <span>Org Hierarchy</span>
           </a>
           <a routerLink="/hr-policies" routerLinkActive="active" class="nav-item">
@@ -45,7 +47,7 @@
             <span>Manage Employees</span>
           </a>
           <a routerLink="/interns" routerLinkActive="active" class="nav-item">
-            <div class="icon-box indigo"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="icon-box indigo"><hugeicons-icon [icon]="StudentsIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon></div>
             <span>Manage Interns</span>
           </a>
           <a routerLink="/assignments" routerLinkActive="active" class="nav-item">
@@ -111,16 +113,48 @@
         <input type="text" placeholder="Search for employees, interns, or documents...">
       </div>
       <div class="top-actions">
-        <button class="icon-btn" title="Notifications">
-          <i class="fa-solid fa-bell"></i>
-          <span class="dot"></span>
-        </button>
-        <button class="icon-btn" title="Messages">
-          <i class="fa-solid fa-envelope"></i>
-        </button>
-        <button class="btn-primary" routerLink="/interns/requests">
-          <i class="fa-solid fa-bell"></i> New Requests
-        </button>
+        <div class="notification-wrapper">
+          <button class="icon-btn" title="Notifications" (click)="toggleNotifications()">
+            <i class="fa-solid fa-bell"></i>
+            <span class="dot" *ngIf="hasNotifications()"></span>
+          </button>
+        </div>
+
+        <!-- Notification Dropdown -->
+        <div class="notification-dropdown" *ngIf="showNotifications()">
+          <div class="dropdown-header">
+            <h3>Pending Requests</h3>
+            <span class="count-badge">{{ notificationItems().length }} items</span>
+          </div>
+          <div class="dropdown-body">
+            <div class="notification-item" *ngFor="let item of notificationItems()" [routerLink]="item.link" (click)="showNotifications.set(false)">
+              <div class="item-icon-circle" [ngClass]="item.color">
+                <i [class]="item.icon"></i>
+              </div>
+              <div class="item-details">
+                <div class="item-top">
+                  <span class="item-label">{{ item.type }}</span>
+                </div>
+                <p class="item-subject">{{ item.title }}</p>
+                <p class="item-snippet">{{ item.desc }}</p>
+              </div>
+            </div>
+
+            <div class="no-pending" *ngIf="notificationItems().length === 0">
+              <i class="fa-solid fa-circle-check"></i>
+              <p>Everything is up to date!</p>
+            </div>
+          </div>
+          <div class="dropdown-footer">
+            <button class="view-all-btn" (click)="showNotifications.set(false)" routerLink="/employees">Go to Management</button>
+          </div>
+        </div>
+        
+        <div class="top-bar-divider"></div>
+        <div class="greeting-container">
+          <span class="greeting-text">{{ getGreeting() }},</span>
+          <span class="user-display-name">{{ userRole() === 'hr' ? 'HR Manager' : 'Team Member' }}</span>
+        </div>
       </div>
     </header>
 

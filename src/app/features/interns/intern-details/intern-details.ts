@@ -1,23 +1,40 @@
 import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../../services/api.service';
-import { LucideAngularModule } from 'lucide-angular';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { HugeiconsIconComponent } from '@hugeicons/angular';
+import { FingerAccessIcon, CalendarCheckOut01Icon, LicenseDraftIcon, UserCircleIcon } from '@hugeicons/core-free-icons';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { InternSidebar } from '../intern-sidebar/intern-sidebar';
 
 @Component({
   selector: 'app-intern-details',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, RouterModule],
+  imports: [CommonModule, RouterModule, InternSidebar, HugeiconsIconComponent],
   templateUrl: './intern-details.html',
-  styleUrl: './intern-details.css',
+  styleUrls: ['./intern-details.css', '../intern-list/intern-list.css'],
 })
 export class InternDetails implements OnInit {
   private apiService = inject(ApiService);
   private route = inject(ActivatedRoute);
-  
+  private router = inject(Router);
+
+  readonly FingerAccessIcon = FingerAccessIcon;
+  readonly CalendarCheckOut01Icon = CalendarCheckOut01Icon;
+  readonly LicenseDraftIcon = LicenseDraftIcon;
+  readonly UserCircleIcon = UserCircleIcon;
+
   internId = signal<string>('');
   intern = signal<any>(null);
   isLoading = signal(true);
+
+  navigateTo(path: string[]) {
+    this.router.navigate(path).then(() => {
+      // Scroll the main content area to top after navigation
+      const mainContent = document.querySelector('.main-content');
+      if (mainContent) mainContent.scrollTop = 0;
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    });
+  }
 
   ngOnInit() {
     this.internId.set(this.route.snapshot.paramMap.get('id') || '');

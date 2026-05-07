@@ -1,3 +1,28 @@
+.main-content-layout {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  padding-right: 106px; /* 90px sidebar + 16px gap */
+  align-items: flex-start;
+  background: #f4f6f8;
+  min-height: 100vh;
+}
+
+.data-section {
+  flex: 1;
+  min-width: 0;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.page-header {
+  padding: 1.5rem 2rem;
+  background: white;
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 20px 20px 0 0;
+}
+
 .back-link {
   display: flex;
   align-items: center;
@@ -14,11 +39,15 @@
   color: var(--accent-primary);
 }
 
+.data-container {
+  padding: 2rem;
+  min-height: 400px;
+}
+
 .request-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
   gap: 2rem;
-  padding: 2rem;
 }
 
 .request-card {
@@ -35,7 +64,6 @@
 .request-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  border-color: var(--accent-primary);
 }
 
 .card-header {
@@ -72,8 +100,8 @@
 .role-badge {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--accent-primary);
-  background: rgba(0, 101, 127, 0.1);
+  color: #344f6b;
+  background: #eaeff5;
   padding: 0.25rem 0.75rem;
   border-radius: 99px;
   display: inline-block;
@@ -124,9 +152,9 @@
 .btn-reject {
   padding: 0.75rem;
   border-radius: 12px;
-  border: 1px solid #FEE2E2;
-  background: #FEF2F2;
-  color: #DC2626;
+  border: 1px solid #f4eeee;
+  background: #f4eeee;
+  color: #6b3a3a;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -137,7 +165,7 @@
 }
 
 .btn-reject:hover {
-  background: #FEE2E2;
+  background: #ecdcdc;
 }
 
 .btn-approve {
@@ -158,6 +186,27 @@
 .btn-approve:hover {
   background: #00556b;
   transform: scale(1.02);
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  text-align: center;
+}
+
+.empty-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (max-width: 992px) {
+  .main-content-layout {
+    padding-right: 1.5rem;
+  }
 }
 
 @media (max-width: 600px) {

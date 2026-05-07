@@ -1,3 +1,28 @@
+.main-content-layout {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  padding-right: 106px; /* 90px sidebar + 16px gap */
+  align-items: flex-start;
+  background: var(--bg-primary);
+  min-height: 100vh;
+}
+
+.data-section {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-secondary);
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+}
+
+.page-header {
+  padding: 1.5rem 2rem;
+  background: white;
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 20px 20px 0 0;
+}
+
 .back-link {
   display: flex;
   align-items: center;
@@ -14,20 +39,12 @@
   color: var(--accent-primary);
 }
 
-.back-link lucide-icon {
-  width: 16px;
-  height: 16px;
-}
-
 .data-container {
   padding: 2rem;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  min-height: 400px;
 }
 
 .empty-state {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,8 +56,25 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 1rem;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
 }
 
 .loading-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 4rem;
+}
+
+@media (max-width: 992px) {
+  .main-content-layout {
+    padding-right: 1.5rem;
+  }
 }

@@ -8,37 +8,36 @@
           <h1>Manage Interns</h1>
           <p>View and manage all interns across different stages.</p>
         </div>
-      </div>
-
-      <div class="filter-bar">
-        <div class="range-filters">
-          <button 
-            class="filter-chip" 
-            [class.active]="rangeFilter() === 'thisMonth'"
-            (click)="setFilter('thisMonth')">
-            This month
-          </button>
-          <button 
-            class="filter-chip" 
-            [class.active]="rangeFilter() === 'sixMonths'"
-            (click)="setFilter('sixMonths')">
-            Last 6 months
-          </button>
-          <button 
-            class="filter-chip" 
-            [class.active]="rangeFilter() === 'all'"
-            (click)="setFilter('all')">
-            All time
-          </button>
-        </div>
-        
-        <div class="status-filter">
-          <select [value]="statusFilter()" (change)="setStatus($any($event.target).value)">
-            <option value="all">All Status</option>
-            <option value="approved">Approved</option>
-            <option value="ongoing">Ongoing</option>
-            <option value="remote">Remote</option>
-          </select>
+        <div class="header-filters">
+          <div class="range-filters">
+            <button 
+              class="filter-chip" 
+              [class.active]="rangeFilter() === 'thisMonth'"
+              (click)="setFilter('thisMonth')">
+              This month
+            </button>
+            <button 
+              class="filter-chip" 
+              [class.active]="rangeFilter() === 'sixMonths'"
+              (click)="setFilter('sixMonths')">
+              Last 6 months
+            </button>
+            <button 
+              class="filter-chip" 
+              [class.active]="rangeFilter() === 'all'"
+              (click)="setFilter('all')">
+              All time
+            </button>
+          </div>
+          
+          <div class="status-filter">
+            <select [value]="statusFilter()" (change)="setStatus($any($event.target).value)">
+              <option value="all">All Status</option>
+              <option value="approved">Approved</option>
+              <option value="ongoing">Ongoing</option>
+              <option value="remote">Remote</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -71,17 +70,17 @@
                 </td>
                 <td>
                   <div class="action-group">
-                    <button class="icon-btn-sm teal" title="Attendance" [routerLink]="['/interns', intern.internid || intern.internId, 'attendance']">
-                      <i class="fa-solid fa-calendar-days"></i>
+                    <button class="icon-btn-sm teal" title="Attendance" (click)="navigateTo(['/interns', intern.internid || intern.internId, 'attendance'])">
+                      <hugeicons-icon [icon]="FingerAccessIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
                     </button>
-                    <button class="icon-btn-sm orange" title="Leaves" [routerLink]="['/interns', intern.internid || intern.internId, 'leaves']">
-                      <i class="fa-solid fa-clock"></i>
+                    <button class="icon-btn-sm orange" title="Leaves" (click)="navigateTo(['/interns', intern.internid || intern.internId, 'leaves'])">
+                      <hugeicons-icon [icon]="CalendarCheckOut01Icon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
                     </button>
-                    <button class="icon-btn-sm blue" title="Review" [routerLink]="['/interns', intern.internid || intern.internId, 'review']">
-                      <i class="fa-solid fa-chart-line"></i>
+                    <button class="icon-btn-sm blue" title="Review" (click)="navigateTo(['/interns', intern.internid || intern.internId, 'review'])">
+                      <hugeicons-icon [icon]="LicenseDraftIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
                     </button>
-                    <button class="icon-btn-sm purple" title="Details" [routerLink]="['/interns', intern.internid || intern.internId]">
-                      <i class="fa-solid fa-file-invoice"></i>
+                    <button class="icon-btn-sm purple" title="Profile" (click)="navigateTo(['/interns', intern.internid || intern.internId])">
+                      <hugeicons-icon [icon]="UserCircleIcon" size="18" [strokeWidth]="2" color="currentColor"></hugeicons-icon>
                     </button>
                   </div>
                 </td>
@@ -92,7 +91,7 @@
 
         <!-- Empty State -->
         <div class="empty-state" *ngIf="!isLoading() && interns().length === 0">
-          <i class="fa-solid fa-users empty-icon"></i>
+          <hugeicons-icon [icon]="Home01Icon" size="48" [strokeWidth]="1.5" color="#94a3b8"></hugeicons-icon>
           <h3>No interns found</h3>
           <p>Try adjusting your filters or add a new intern.</p>
         </div>
@@ -116,53 +115,5 @@
   </div>
 
   <!-- RIGHT: VERTICAL ACTION SIDEBAR -->
-  <aside class="action-sidebar">
-    <!-- MANAGE LIST (Home) -->
-    <button (click)="currentTab.set('list')" class="sidebar-action-item" [class.active]="currentTab() === 'list'" title="Intern List">
-      <div class="action-icon-circle">
-        <i class="fa-solid fa-house"></i>
-      </div>
-      <span class="action-label">Intern List</span>
-    </button>
-
-    <div class="sidebar-divider"></div>
-
-    <!-- APPROVE LEAVE -->
-    <button (click)="currentTab.set('leaves')" class="sidebar-action-item" [class.active]="currentTab() === 'leaves'" title="Approve Leave">
-      <div class="action-icon-circle">
-        <i class="fa-solid fa-calendar-check icon-green"></i>
-      </div>
-      <span class="action-label">Approve Leave</span>
-    </button>
-
-    <div class="sidebar-divider"></div>
-
-    <!-- PENDING REQUESTS -->
-    <button (click)="currentTab.set('requests')" class="sidebar-action-item" [class.active]="currentTab() === 'requests'" title="Pending Requests">
-      <div class="action-icon-circle">
-        <i class="fa-solid fa-clock-rotate-left icon-orange"></i>
-      </div>
-      <span class="action-label">Pending Requests</span>
-    </button>
-
-    <div class="sidebar-divider"></div>
-
-    <!-- ATTENDANCE CORRECTIONS -->
-    <button (click)="currentTab.set('corrections')" class="sidebar-action-item" [class.active]="currentTab() === 'corrections'" title="Attendance Corrections">
-      <div class="action-icon-circle">
-        <i class="fa-solid fa-clipboard-check icon-blue"></i>
-      </div>
-      <span class="action-label">Corrections</span>
-    </button>
-
-    <div class="sidebar-divider"></div>
-
-    <!-- EXPORT DATA -->
-    <button (click)="exportInternData()" class="sidebar-action-item" title="Export Data">
-      <div class="action-icon-circle">
-        <i class="fa-solid fa-file-export icon-purple"></i>
-      </div>
-      <span class="action-label">Export Data</span>
-    </button>
-  </aside>
+  <app-intern-sidebar [activeTab]="currentTab()"></app-intern-sidebar>
 </div>

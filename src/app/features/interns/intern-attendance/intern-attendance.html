@@ -1,3 +1,5 @@
+<div class="main-content-layout">
+<div class="data-section">
 <div class="page-header">
   <div class="header-content">
     <div class="breadcrumb">
@@ -40,7 +42,7 @@
   <!-- Empty State -->
   <div class="empty-state" *ngIf="!isLoading() && (!attendance() || attendance().length === 0)">
     <div class="empty-content">
-      <lucide-icon name="Calendar" class="empty-icon"></lucide-icon>
+      <i class="fa-solid fa-calendar-days empty-icon"></i>
       <h3>No records found</h3>
       <p>This intern hasn't marked any attendance yet for the selected period.</p>
     </div>
@@ -51,4 +53,7 @@
     <div class="spinner"></div>
     <p>Loading records...</p>
   </div>
+</div>
+</div>
+<app-intern-sidebar></app-intern-sidebar>
 </div>

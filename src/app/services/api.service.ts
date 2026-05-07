@@ -159,7 +159,7 @@ export class ApiService {
   }
 
   getEmployeeReview(employeeId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/api/employeeReview/employee/${employeeId}`);
+    return this.http.get<any[]>(`${this.baseUrl}/api/employee-reviews/employee/${employeeId}`);
   }
 
   // Holidays
@@ -169,6 +169,10 @@ export class ApiService {
 
   saveHoliday(holiday: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/api/holidays`, holiday);
+  }
+
+  saveBulkHolidays(holidays: any[]): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/holidays/bulk`, holidays);
   }
 
   deleteHoliday(id: string): Observable<any> {
@@ -189,14 +193,17 @@ export class ApiService {
   }
 
   // Hierarchy (Org Hierarchy)
-  getOrgHierarchy(): Observable<any> {
-    // Backend seems to use hr policy logic for hierarchy too
-    return this.http.get<any>(`${this.baseUrl}/api/hr/policy?email=admin@softrate.com`);
+  getOrgHierarchy(email: string = 'admin@softrate.com'): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/api/hr/policy?email=${email}`);
   }
 
-  saveOrgHierarchy(url: string): Observable<any> {
+  getGlobalPolicyUrl(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/api/hr/policy-only`);
+  }
+
+  saveOrgHierarchy(url: string, email: string = 'admin@softrate.com'): Observable<any> {
     return this.http.post(`${this.baseUrl}/api/hr/policy/save`, {
-      email: 'admin@softrate.com',
+      email: email,
       policyUrl: url
     });
   }

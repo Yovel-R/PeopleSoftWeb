@@ -1,3 +1,5 @@
+<div class="main-content-layout">
+<div class="data-section">
 <div class="page-header">
   <div class="header-content">
     <div class="breadcrumb">
@@ -8,7 +10,7 @@
   </div>
   <div class="header-actions">
     <div class="month-selector-wrapper">
-      <lucide-icon name="Calendar"></lucide-icon>
+      <i class="fa-solid fa-calendar-days"></i>
       <select [value]="selectedMonth()" (change)="onMonthChange($event)" class="month-select">
         <option *ngFor="let month of months()" [value]="month">{{ month }}</option>
       </select>
@@ -21,7 +23,7 @@
   <div class="review-overview" *ngIf="!isLoading() && reviewData()">
     <div class="overview-header">
       <div class="team-info">
-        <lucide-icon name="Users"></lucide-icon>
+        <i class="fa-solid fa-users"></i>
         <span>{{ reviewData().team || 'Team not set' }}</span>
       </div>
       <div class="score-badge" *ngIf="reviewData().isGraded">
@@ -55,7 +57,7 @@
   </div>
 
   <div class="empty-state" *ngIf="!isLoading() && !reviewData()">
-    <lucide-icon name="LineChart" class="empty-icon"></lucide-icon>
+    <i class="fa-solid fa-chart-line empty-icon"></i>
     <h3>No review for this month</h3>
     <p>There are no performance goals submitted for {{ selectedMonth() }}.</p>
   </div>
@@ -64,4 +66,7 @@
     <div class="spinner"></div>
     <p>Loading performance data...</p>
   </div>
+</div>
+</div>
+<app-intern-sidebar></app-intern-sidebar>
 </div>

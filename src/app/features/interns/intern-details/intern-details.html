@@ -1,8 +1,10 @@
+<div class="main-content-layout">
+<div class="data-section">
 <div class="page-header">
   <div class="header-content">
     <div class="breadcrumb">
       <a routerLink="/interns" class="back-link">
-        <lucide-icon name="ArrowLeft"></lucide-icon> Back to List
+        <i class="fa-solid fa-arrow-left"></i> Back to List
       </a>
     </div>
     <h1>Intern Profile</h1>
@@ -10,7 +12,7 @@
   </div>
   <div class="header-actions">
     <button class="btn-secondary">
-      <lucide-icon name="Edit3"></lucide-icon> Edit Profile
+      <i class="fa-solid fa-pen-to-square"></i> Edit Profile
     </button>
   </div>
 </div>
@@ -44,15 +46,22 @@
       <div class="card nav-card">
         <h4>Navigation</h4>
         <div class="nav-links">
-          <a [routerLink]="['/interns', internId(), 'attendance']" class="nav-item">
-            <lucide-icon name="Calendar"></lucide-icon> Attendance History
-          </a>
-          <a [routerLink]="['/interns', internId(), 'leaves']" class="nav-item">
-            <lucide-icon name="Clock"></lucide-icon> Leave Requests
-          </a>
-          <a [routerLink]="['/interns', internId(), 'review']" class="nav-item">
-            <lucide-icon name="LineChart"></lucide-icon> Performance Reviews
-          </a>
+          <button (click)="navigateTo(['/interns', internId()])" class="nav-item">
+            <hugeicons-icon [icon]="UserCircleIcon" size="16" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            Profile
+          </button>
+          <button (click)="navigateTo(['/interns', internId(), 'attendance'])" class="nav-item">
+            <hugeicons-icon [icon]="FingerAccessIcon" size="16" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            Attendance
+          </button>
+          <button (click)="navigateTo(['/interns', internId(), 'leaves'])" class="nav-item">
+            <hugeicons-icon [icon]="CalendarCheckOut01Icon" size="16" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            Leave
+          </button>
+          <button (click)="navigateTo(['/interns', internId(), 'review'])" class="nav-item">
+            <hugeicons-icon [icon]="LicenseDraftIcon" size="16" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            Performance
+          </button>
         </div>
       </div>
     </div>
@@ -74,11 +83,11 @@
           </div>
           <div class="info-item">
             <label>Phone Number</label>
-            <p>{{ intern().phoneNumber }}</p>
+            <p>{{ intern().contact || intern().phoneNumber || 'Not provided' }}</p>
           </div>
           <div class="info-item">
             <label>Joining Date</label>
-            <p>{{ intern().joiningDate | date:'longDate' }}</p>
+            <p>{{ (intern().onboardingDate || intern().joiningDate) | date:'longDate' }}</p>
           </div>
           <div class="info-item">
             <label>Internship Duration</label>
@@ -98,7 +107,7 @@
         <div class="info-grid">
           <div class="info-item">
             <label>University / College</label>
-            <p>{{ intern().collegeName || 'N/A' }}</p>
+            <p>{{ intern().college || intern().collegeName || 'N/A' }}</p>
           </div>
           <div class="info-item">
             <label>Department</label>
@@ -120,8 +129,11 @@
   </div>
   
   <div class="empty-state" *ngIf="!isLoading() && !intern()">
-    <lucide-icon name="UserX" class="empty-icon"></lucide-icon>
+    <i class="fa-solid fa-user-xmark empty-icon"></i>
     <h3>Intern not found</h3>
     <p>The intern details could not be retrieved. Please check the ID.</p>
   </div>
+</div>
+</div>
+<app-intern-sidebar></app-intern-sidebar>
 </div>
