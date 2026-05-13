@@ -8,6 +8,7 @@
   background: var(--hc-bg);
   color: var(--hc-text-1);
   min-height: 100vh;
+  position: relative; /* Allow absolute children to be contained here */
 }
 
 /* ── PAGE HEADER ─────────────────────────── */
@@ -90,6 +91,12 @@
 }
 
 /* ── CARD ────────────────────────────────── */
+.hc-main {
+  flex: 1;
+  position: relative; /* Scopes the loading overlay to this section */
+  min-height: 500px;
+}
+
 .hc-card {
   background: var(--hc-surface);
   border: 1px solid var(--hc-border);
@@ -722,14 +729,14 @@
 
 /* ── OVERLAY ─────────────────────────────── */
 .hc-overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  background: rgba(255,255,255,.75);
-  backdrop-filter: blur(3px);
+  background: rgba(255,255,255,.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
+  border-radius: var(--hc-radius-lg);
 }
 
 .hc-overlay-inner {

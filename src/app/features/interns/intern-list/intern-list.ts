@@ -9,11 +9,12 @@ import { ApiService } from '../../../services/api.service';
 import { InternRequests } from '../intern-requests/intern-requests';
 import { LeaveManagement } from '../../leaves/leave-management/leave-management';
 import { AttendanceCorrections } from '../attendance-corrections/attendance-corrections';
+import { OffboardingRequests } from '../../offboarding/offboarding-requests/offboarding-requests';
 
 @Component({
   selector: 'app-intern-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, InternRequests, LeaveManagement, AttendanceCorrections, HugeiconsIconComponent, InternSidebar],
+  imports: [CommonModule, RouterModule, InternRequests, LeaveManagement, AttendanceCorrections, OffboardingRequests, HugeiconsIconComponent, InternSidebar],
   templateUrl: './intern-list.html',
   styleUrl: './intern-list.css'
 })
@@ -36,7 +37,7 @@ export class InternList implements OnInit {
     });
   }
 
-  currentTab = signal<'list' | 'leaves' | 'requests' | 'corrections'>('list');
+  currentTab = signal<'list' | 'leaves' | 'requests' | 'corrections' | 'offboarding'>('list');
   interns = signal<any[]>([]);
   isLoading = signal(true);
   statusFilter = signal<string>('all');

@@ -6,6 +6,7 @@
   grid-template-columns: 1fr 380px;
   gap: 2rem;
   font-family: var(--font-body);
+  position: relative; /* Container for absolute loading overlay */
 }
 
 /* Main Config Card */
@@ -167,6 +168,12 @@
   box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
 }
 
+.btn-save:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: #475569;
+}
+
 .btn-preview {
   flex: 1;
   background: white;
@@ -272,19 +279,16 @@
 
 /* Loading & Saving Overlay */
 .loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(4px);
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.6);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 100;
   gap: 1.5rem;
+  border-radius: 24px;
 }
 
 .loading-overlay p {
@@ -322,4 +326,26 @@
     text-align: center;
     gap: 1rem;
   }
+}
+/* Skeletons */
+.hierarchy-skeletons {
+  position: absolute;
+  inset: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2rem;
+  z-index: 5;
+  background: var(--bg-primary);
+}
+
+.sk-main-card, .sk-sidebar-card {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 24px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }

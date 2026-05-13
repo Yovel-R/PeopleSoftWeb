@@ -1,14 +1,14 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ApiService } from '../../../services/api.service';
 import { App } from '../../../app';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -40,7 +40,8 @@ export class Login {
       this.apiService.hrLogin(this.credentials.email, this.credentials.password).subscribe({
         next: (res) => {
           localStorage.setItem('user_role', 'hr');
-          localStorage.setItem('user_data', JSON.stringify(res.hr));
+          localStorage.setItem('user_data', JSON.stringify(res.user));
+          if (res.token) localStorage.setItem('auth_token', res.token);
           this.app.userRole.set('hr');
           this.router.navigate(['/dashboard']);
         },
@@ -54,6 +55,7 @@ export class Login {
         next: (res) => {
           localStorage.setItem('user_role', 'employee');
           localStorage.setItem('user_data', JSON.stringify(res.employee));
+          if (res.token) localStorage.setItem('auth_token', res.token);
           this.app.userRole.set('employee');
           this.router.navigate(['/employee/dashboard']);
         },

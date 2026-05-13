@@ -14,16 +14,28 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   // Authentication
+  login(identifier: string, password: string): Observable<any> {
+    // Backend handles both email and employeeId in the email/employeeId field
+    return this.http.post(`${this.baseUrl}/api/auth/login`, { 
+      email: identifier, 
+      password 
+    });
+  }
+
   hrLogin(email: string, password: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/api/hr/login`, { email, password });
+    return this.login(email, password);
   }
 
   employeeLogin(employeeId: string, password: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/api/employee/login`, { employeeId, password });
+    return this.login(employeeId, password);
   }
 
   getBaseUrl(): string {
     return this.baseUrl;
+  }
+
+  registerCompany(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/onboarding/register`, data);
   }
 
   toggleManager(id: string): Observable<any> {
@@ -257,5 +269,39 @@ export class ApiService {
 
   hrReviewLeave(id: string, status: 'approved' | 'rejected', rejectionReason: string): Observable<any> {
     return this.http.put(`${this.baseUrl}/api/employee-leave/hr-action/${id}`, { status, rejectionReason });
+  }
+
+  // Company Settings
+  getCompanySettings(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/api/settings/company`);
+  }
+
+  updateCompanySettings(settings: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/settings/company`, settings);
+  }
+
+  // Offboarding / Resignations
+  getPendingOffboarding(): Observable<any[]> {
+    return this.http.get<any>(`${this.baseUrl}/api/resignation/pending`).pipe(
+      map(res => res.data)
+    );
+  }
+
+  getManagerPendingOffboarding(managerId: string): Observable<any[]> {
+    return this.http.get<any>(`${this.baseUrl}/api/resignation/manager-pending/${managerId}`).pipe(
+      map(res => res.data)
+    );
+  }
+
+  managerReviewOffboarding(id: string, status: 'approved' | 'rejected', remarks: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/resignation/manager-review/${id}`, { status, remarks });
+  }
+
+  hrReviewOffboarding(id: string, action: 'accept' | 'reject', remarks: string, files: File[] = []): Observable<any> {
+    const formData = new FormData();
+    formData.append('remarks', remarks);
+    files.forEach(file => formData.append('files', file));
+    
+    return this.http.put(`${this.baseUrl}/api/resignation/hr-review/${action}/${id}`, formData);
   }
 }

@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { FormsModule } from '@angular/forms';
 import { HugeiconsIconComponent } from '@hugeicons/angular';
-import { WorkflowSquare03Icon } from '@hugeicons/core-free-icons';
+import { DashboardSquare01Icon, Mail01Icon, Settings01Icon } from '@hugeicons/core-free-icons';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-org-hierarchy',
@@ -14,28 +15,40 @@ import { WorkflowSquare03Icon } from '@hugeicons/core-free-icons';
 })
 export class OrgHierarchy implements OnInit {
   private apiService = inject(ApiService);
-  readonly WorkflowSquare03Icon = WorkflowSquare03Icon;
+  readonly DashboardSquare01Icon = DashboardSquare01Icon;
+  readonly Mail01Icon = Mail01Icon;
+  readonly Settings01Icon = Settings01Icon;
   
   hierarchyUrl: string = '';
   publishedUrl = signal('');
+  
   userEmail: string = '';
   isLoading = signal(true);
   isSaving = signal(false);
 
   ngOnInit() {
-    const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
-    this.userEmail = userData.email || 'admin@softrate.com';
+    const rawData = localStorage.getItem('user_data');
+    let userData: any = {};
+    if (rawData && rawData !== 'undefined') {
+      try {
+        userData = JSON.parse(rawData);
+      } catch (e) {
+        console.error('Failed to parse user_data', e);
+      }
+    }
+    this.userEmail = userData.email || 'admin@gmail.com';
     this.fetchHierarchy();
   }
 
   fetchHierarchy() {
     this.isLoading.set(true);
-    this.apiService.getOrgHierarchy(this.userEmail).subscribe({
+    this.apiService.getOrgHierarchy(this.userEmail).pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (data: any) => {
         if (data.success && data.policy_url) {
           this.hierarchyUrl = data.policy_url;
           this.publishedUrl.set(data.policy_url);
-          this.isLoading.set(false);
         } else {
           this.fetchGlobalHierarchy();
         }
@@ -45,17 +58,18 @@ export class OrgHierarchy implements OnInit {
   }
 
   fetchGlobalHierarchy() {
-    this.apiService.getGlobalPolicyUrl().subscribe({
+    this.isLoading.set(true);
+    this.apiService.getGlobalPolicyUrl().pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
       next: (data: any) => {
         if (data.success && data.policy_url) {
           this.hierarchyUrl = data.policy_url;
           this.publishedUrl.set(data.policy_url);
         }
-        this.isLoading.set(false);
       },
       error: (err: any) => {
         console.error('Failed to fetch global hierarchy', err);
-        this.isLoading.set(false);
       }
     });
   }
@@ -67,15 +81,15 @@ export class OrgHierarchy implements OnInit {
     }
 
     this.isSaving.set(true);
-    this.apiService.saveOrgHierarchy(this.hierarchyUrl, this.userEmail).subscribe({
+    this.apiService.saveOrgHierarchy(this.hierarchyUrl, this.userEmail).pipe(
+      finalize(() => this.isSaving.set(false))
+    ).subscribe({
       next: () => {
         this.publishedUrl.set(this.hierarchyUrl);
         alert('Hierarchy URL saved and published successfully');
-        this.isSaving.set(false);
       },
       error: (err: any) => {
         alert('Failed to save: ' + (err.error?.msg || err.message));
-        this.isSaving.set(false);
       }
     });
   }

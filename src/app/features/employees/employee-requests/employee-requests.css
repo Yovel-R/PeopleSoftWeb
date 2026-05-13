@@ -1,7 +1,6 @@
 .main-content-layout {
   display: flex;
   gap: 1rem;
-  padding: 1.5rem;
   padding-right: 106px; /* 90px sidebar + 16px gap */
   align-items: flex-start;
   background: #f4f6f8;
@@ -9,6 +8,7 @@
 }
 
 .data-section {
+  margin: 1.5rem;
   flex: 1;
   min-width: 0;
   background: white;
@@ -46,7 +46,7 @@
 
 .request-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
 }
 
@@ -140,6 +140,40 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);
+}
+
+.info-divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 0.5rem 0;
+}
+
+.details-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.section-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.no-data {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-style: italic;
+  margin: 0;
+}
+
+.info-item.full-width {
+  grid-column: span 2;
 }
 
 .card-actions {

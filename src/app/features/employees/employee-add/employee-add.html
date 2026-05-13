@@ -33,11 +33,47 @@
             <label>Current Address</label>
             <textarea [(ngModel)]="employee.address" name="address" placeholder="Address..."></textarea>
           </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Gender</label>
+              <input type="text" [(ngModel)]="employee.gender" name="gender">
+            </div>
+            <div class="form-group">
+              <label>Nationality</label>
+              <input type="text" [(ngModel)]="employee.nationality" name="nationality">
+            </div>
+          </div>
+        </div>
+
+        <!-- Education Details -->
+        <div class="form-section">
+          <h3>Education</h3>
+          <div class="form-group">
+            <label>Qualification & Specialization</label>
+            <div class="input-group">
+              <input type="text" [(ngModel)]="employee.qualification" name="qualification" placeholder="Degree">
+              <input type="text" [(ngModel)]="employee.specialization" name="specialization" placeholder="Major">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>College / University</label>
+            <input type="text" [(ngModel)]="employee.college" name="college">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Passing Year</label>
+              <input type="text" [(ngModel)]="employee.passingYear" name="passingYear">
+            </div>
+            <div class="form-group">
+              <label>UG CGPA</label>
+              <input type="text" [(ngModel)]="employee.ugCgpa" name="ugCgpa">
+            </div>
+          </div>
         </div>
 
         <!-- Work Details -->
         <div class="form-section">
-          <h3>Work & Role</h3>
+          <h3>Official Details</h3>
           <div class="form-group">
             <label>Department</label>
             <input type="text" [(ngModel)]="employee.department" name="department" placeholder="Sales, HR, IT...">

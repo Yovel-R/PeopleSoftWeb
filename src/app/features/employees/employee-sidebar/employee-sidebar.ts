@@ -2,7 +2,7 @@ import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HugeiconsIconComponent } from '@hugeicons/angular';
-import { Home01Icon, FileDownloadIcon, Calendar01Icon, Chat01Icon } from '@hugeicons/core-free-icons';
+import { Home01Icon, FileDownloadIcon, Calendar01Icon, Chat01Icon, LogoutIcon } from '@hugeicons/core-free-icons';
 import { ApiService } from '../../../services/api.service';
 
 @Component({
@@ -41,6 +41,16 @@ import { ApiService } from '../../../services/api.service';
 
     <div class="sidebar-divider"></div>
 
+    <!-- OFFBOARDING -->
+    <button routerLink="/employees" [queryParams]="{tab: 'offboarding'}" class="sidebar-action-item" [class.active]="activeTab === 'offboarding'" title="Offboarding">
+      <div class="action-icon-circle">
+        <hugeicons-icon [icon]="LogoutIcon" size="20" [strokeWidth]="1.5" color="#ef4444"></hugeicons-icon>
+      </div>
+      <span class="action-label">Offboarding</span>
+    </button>
+
+    <div class="sidebar-divider"></div>
+
     <!-- EXPORT DATA -->
     <button (click)="exportEmployeeData()" class="sidebar-action-item" title="Export Data">
       <div class="action-icon-circle">
@@ -60,6 +70,7 @@ export class EmployeeSidebar {
   readonly FileDownloadIcon = FileDownloadIcon;
   readonly Calendar01Icon = Calendar01Icon;
   readonly Chat01Icon = Chat01Icon;
+  readonly LogoutIcon = LogoutIcon;
 
   exportEmployeeData() {
     const baseUrl = this.apiService.getBaseUrl();

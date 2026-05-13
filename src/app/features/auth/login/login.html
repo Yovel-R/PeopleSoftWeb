@@ -1,28 +1,28 @@
 <div class="login-container">
-  <div class="login-brand">
-    <div class="logo-box">
-      <i class="fa-solid fa-users-gear"></i>
+  <!-- Left Branding Panel -->
+  <div class="branding-panel">
+    <div class="logo-container">
+      <div class="logo-text">Softrate <span>HRM</span></div>
     </div>
-    <h1>Softrate HRM</h1>
-    <p>Empowering your workforce</p>
+    <span class="crm-tag">Employee CRM</span>
+    <h1>Sharp operational workspace for daily lead execution.</h1>
   </div>
 
-  <div class="login-card">
-    <div class="login-tabs">
-      <button type="button" [class.active]="loginType() === 'hr'" (click)="setLoginType('hr')">
-        <i class="fa-solid fa-user-shield"></i>
-        HR Portal
-      </button>
-      <button type="button" [class.active]="loginType() === 'employee'" (click)="setLoginType('employee')">
-        <i class="fa-solid fa-user"></i>
-        Employee
-      </button>
-    </div>
+  <!-- Right Form Panel -->
+  <div class="form-panel">
+    <div class="login-card">
+      <div class="login-tabs">
+        <button type="button" [class.active]="loginType() === 'hr'" (click)="setLoginType('hr')">
+          HR Portal
+        </button>
+        <button type="button" [class.active]="loginType() === 'employee'" (click)="setLoginType('employee')">
+          Employee
+        </button>
+      </div>
 
-    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
       <div class="form-header">
-        <h2>{{ loginType() === 'hr' ? 'HR Login' : 'Employee Login' }}</h2>
-        <p>Enter your credentials to continue</p>
+        <h2>{{ loginType() === 'hr' ? 'HR Access' : 'Employee Access' }}</h2>
+        <p>Welcome back! Please enter your details.</p>
       </div>
 
       <div class="error-banner" *ngIf="errorMessage()">
@@ -30,38 +30,60 @@
         {{ errorMessage() }}
       </div>
 
-      <div class="form-group" *ngIf="loginType() === 'hr'">
-        <label>Email Address</label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-envelope"></i>
-          <input type="email" [(ngModel)]="credentials.email" name="email" required placeholder="admin@softrate.com">
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+        <!-- HR Login Field -->
+        <div class="form-group" *ngIf="loginType() === 'hr'">
+          <label for="email">Email Address</label>
+          <div class="input-wrapper">
+            <input 
+              id="email"
+              type="email" 
+              [(ngModel)]="credentials.email" 
+              name="email" 
+              required 
+              placeholder="e.g. admin@softrate.com">
+          </div>
         </div>
-      </div>
 
-      <div class="form-group" *ngIf="loginType() === 'employee'">
-        <label>Employee ID</label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-id-card"></i>
-          <input type="text" [(ngModel)]="credentials.employeeId" name="employeeId" required placeholder="STP2024001">
+        <!-- Employee Login Field -->
+        <div class="form-group" *ngIf="loginType() === 'employee'">
+          <label for="employeeId">Employee ID</label>
+          <div class="input-wrapper">
+            <input 
+              id="employeeId"
+              type="text" 
+              [(ngModel)]="credentials.employeeId" 
+              name="employeeId" 
+              required 
+              placeholder="e.g. STP-1603-2026">
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label>Password</label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-lock"></i>
-          <input type="password" [(ngModel)]="credentials.password" name="password" required placeholder="••••••••">
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <input 
+              id="password"
+              type="password" 
+              [(ngModel)]="credentials.password" 
+              name="password" 
+              required 
+              placeholder="Enter your password">
+          </div>
         </div>
-      </div>
 
-      <button type="submit" class="submit-btn" [disabled]="isLoading() || !loginForm.valid">
-        <span *ngIf="!isLoading()">Login to Dashboard</span>
-        <div class="spinner" *ngIf="isLoading()"></div>
-      </button>
+        <button type="submit" class="submit-btn" [disabled]="isLoading() || !loginForm.valid">
+          <span *ngIf="!isLoading()">Sign In</span>
+          <div class="spinner" *ngIf="isLoading()"></div>
+        </button>
 
-      <div class="form-footer">
-        <a href="#">Forgot Password?</a>
-      </div>
-    </form>
+        <div class="form-footer">
+          <a routerLink="/register">Register Company</a>
+          <a href="#">Forgot Password?</a>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
+

@@ -193,11 +193,11 @@
       </button>
     </div>
   </div>
+  <!-- LOADING -->
+  @if (isLoading()) {
+    <div class="loading-overlay-ta">
+      <div class="spinner"></div>
+      <p>Syncing Data...</p>
+    </div>
+  }
 </div>
-
-@if (isLoading()) {
-  <div class="loading-overlay-ta">
-    <div class="spinner"></div>
-    <p>Syncing Data...</p>
-  </div>
-}

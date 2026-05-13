@@ -8,11 +8,12 @@ import { ApiService } from '../../../services/api.service';
 import { EmployeeRequests } from '../employee-requests/employee-requests';
 import { LeaveManagement } from '../../leaves/leave-management/leave-management';
 import { EmployeeSidebar } from '../employee-sidebar/employee-sidebar';
+import { OffboardingRequests } from '../../offboarding/offboarding-requests/offboarding-requests';
 
 @Component({
   selector: 'app-employee-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, EmployeeRequests, LeaveManagement, HugeiconsIconComponent, EmployeeSidebar],
+  imports: [CommonModule, RouterModule, EmployeeRequests, LeaveManagement, OffboardingRequests, HugeiconsIconComponent, EmployeeSidebar],
   templateUrl: './employee-list.html',
   styleUrl: './employee-list.css'
 })
@@ -37,7 +38,7 @@ export class EmployeeList implements OnInit {
     });
   }
 
-  currentTab = signal<'list' | 'leaves' | 'requests'>('list');
+  currentTab = signal<'list' | 'leaves' | 'requests' | 'offboarding'>('list');
   employees = signal<any[]>([]);
   isLoading = signal(true);
   statusFilter = signal<string>('all');

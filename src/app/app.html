@@ -17,7 +17,9 @@
         <div class="nav-section">
           <p class="nav-label">General</p>
           <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
-            <div class="icon-box blue"><i class="fa-solid fa-chart-pie"></i></div>
+            <div class="icon-box blue">
+              <hugeicons-icon [icon]="DashboardSquareRemoveIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
             <span>Dashboard</span>
           </a>
         </div>
@@ -29,6 +31,18 @@
               <hugeicons-icon [icon]="WorkflowSquare03Icon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
             </div>
             <span>Org Hierarchy</span>
+          </a>
+          <a routerLink="/app-settings" routerLinkActive="active" class="nav-item">
+            <div class="icon-box dark-blue">
+              <hugeicons-icon [icon]="Settings01Icon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
+            <span>App Settings</span>
+          </a>
+          <a routerLink="/certificate-settings" routerLinkActive="active" class="nav-item">
+            <div class="icon-box indigo">
+              <hugeicons-icon [icon]="SignatureIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
+            <span>Documents & Certs</span>
           </a>
           <a routerLink="/hr-policies" routerLinkActive="active" class="nav-item">
             <div class="icon-box orange"><i class="fa-solid fa-file-invoice"></i></div>
@@ -54,14 +68,6 @@
             <div class="icon-box cyan"><i class="fa-solid fa-people-arrows"></i></div>
             <span>Team Assignments</span>
           </a>
-          <a routerLink="/leaves" routerLinkActive="active" class="nav-item">
-            <div class="icon-box green"><i class="fa-solid fa-clock"></i></div>
-            <span>Leave Requests</span>
-          </a>
-          <a routerLink="/interns/attendance/corrections" routerLinkActive="active" class="nav-item">
-            <div class="icon-box blue"><i class="fa-solid fa-calendar-check"></i></div>
-            <span>Attendance Corrections</span>
-          </a>
         </div>
       </ng-container>
 
@@ -70,7 +76,9 @@
         <div class="nav-section">
           <p class="nav-label">Self Portal</p>
           <a routerLink="/employee/dashboard" routerLinkActive="active" class="nav-item">
-            <div class="icon-box blue"><i class="fa-solid fa-house-user"></i></div>
+            <div class="icon-box blue">
+              <hugeicons-icon [icon]="DashboardSquareRemoveIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
             <span>My Dashboard</span>
           </a>
           <a routerLink="/employee/attendance" routerLinkActive="active" class="nav-item">

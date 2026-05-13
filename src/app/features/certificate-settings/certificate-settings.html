@@ -1,0 +1,142 @@
+<div class="settings-container">
+  <div class="page-header">
+    <h1>Certificate & Documents</h1>
+    <p>Manage branding, signatures, and document templates for your organization.</p>
+  </div>
+
+  <div class="settings-grid">
+    <!-- Document Selector Sidebar -->
+    <div class="doc-sidebar">
+      <div class="doc-category" *ngFor="let cat of docCategories">
+        <h3>{{cat.name}}</h3>
+        <div class="doc-list">
+          <button class="doc-btn" 
+                  *ngFor="let doc of cat.docs"
+                  [class.active]="selectedDocType === doc.id"
+                  (click)="selectedDocType = doc.id">
+            <hugeicons-icon [icon]="StampIcon" size="18"></hugeicons-icon>
+            <span>{{doc.label}}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <!-- Dynamic Template Builder -->
+      <div class="config-card">
+        <div class="card-header-gradient" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);">
+          <div class="hero-visual">
+            <div class="icon-wrapper">
+              <hugeicons-icon [icon]="StampIcon" size="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
+            <div class="hero-content">
+              <h2>{{ selectedDocType | titlecase }} Template Builder</h2>
+              <p>Customize the background and placeholders for this document.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-body">
+          <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+          
+          <div class="settings-sub-grid">
+            <div class="input-group">
+              <label>Document Orientation</label>
+              <div class="orientation-toggle">
+                <button [class.active]="currentTemplate.orientation === 'portrait'" (click)="currentTemplate.orientation = 'portrait'">
+                  <i class="fa-solid fa-file"></i> Portrait
+                </button>
+                <button [class.active]="currentTemplate.orientation === 'landscape'" (click)="currentTemplate.orientation = 'landscape'">
+                  <i class="fa-solid fa-file-export"></i> Landscape
+                </button>
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Template Background</label>
+              <div class="upload-zone-compact" (click)="fileInput.click()">
+                <span *ngIf="!currentTemplate.backgroundUrl">Upload Template Image</span>
+                <span *ngIf="currentTemplate.backgroundUrl">Change Template Image</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-divider"></div>
+
+          <div class="section-title">
+            <h3>Placeholders Mapping</h3>
+            <button class="btn-add" (click)="addPlaceholder()" style="width: auto; padding: 6px 12px; font-size: 13px;">
+              <i class="fa-solid fa-plus"></i> Add Field
+            </button>
+          </div>
+
+          <div class="placeholders-list">
+            <div class="placeholder-row header-row">
+              <span>Data Field</span>
+              <span>X Axis</span>
+              <span>Y Axis</span>
+              <span>Font</span>
+              <span>Bold</span>
+              <span></span>
+            </div>
+
+            <div class="placeholder-row" *ngFor="let p of currentTemplate.placeholders; let i = index">
+              <select class="location-input" [(ngModel)]="p.key">
+                <option *ngFor="let key of availablePlaceholderKeys" [value]="key.key">{{key.label}}</option>
+              </select>
+              <input type="number" class="location-input" [(ngModel)]="p.x" placeholder="X">
+              <input type="number" class="location-input" [(ngModel)]="p.y" placeholder="Y">
+              <input type="number" class="location-input" [(ngModel)]="p.fontSize" placeholder="Size">
+              <div class="checkbox-container">
+                <input type="checkbox" [(ngModel)]="p.isBold">
+              </div>
+              <button class="btn-remove" (click)="removePlaceholder(i)">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+
+            <div *ngIf="currentTemplate.placeholders.length === 0" class="empty-state">
+              No placeholders added yet.
+            </div>
+          </div>
+
+          <div class="section-divider"></div>
+
+          <div class="section-title">
+            <h3>Visual Mapping Guide</h3>
+          </div>
+
+          <div class="cert-visual-builder">
+            <div class="cert-canvas-container" 
+                 #canvasContainer
+                 (mousemove)="onMouseMove($event)"
+                 (mouseup)="onMouseUp()"
+                 [style.width.px]="currentTemplate.orientation === 'portrait' ? 595 : 842"
+                 [style.height.px]="currentTemplate.orientation === 'portrait' ? 842 : 595"
+                 [style.backgroundImage]="'url(' + (currentTemplate.backgroundUrl || 'assets/images/cert_fallback.png') + ')'">
+              <div class="placeholder-overlay" 
+                   *ngFor="let p of currentTemplate.placeholders; let i = index"
+                   (mousedown)="onMouseDown($event, i)"
+                   [class.dragging]="draggingIndex === i"
+                   [style.left.px]="p.x" 
+                   [style.top.px]="p.y"
+                   [style.fontSize.px]="p.fontSize"
+                   [style.fontWeight]="p.isBold ? 'bold' : 'normal'"
+                   [style.color]="p.color || '#000'">
+                <i class="fa-solid fa-arrows-up-down-left-right"></i>
+                {{ '{' + '{' + p.key + '}' + '}' }}
+              </div>
+            </div>
+          </div>
+          <p class="help-text center" style="margin-top: 12px; text-align: center;">💡 Tip: You can drag the blue boxes to position them exactly where you want.</p>
+        </div>
+
+        <div class="actions-footer" style="padding: 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+          <button class="btn-save-all" (click)="saveSettings()" [disabled]="isSaving" style="width: auto; padding: 12px 24px;">
+            <hugeicons-icon [icon]="CheckmarkCircle01Icon" size="20" [strokeWidth]="2" color="currentColor"></hugeicons-icon>
+            <span>{{ isSaving ? 'Saving Changes...' : 'Save All Templates' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

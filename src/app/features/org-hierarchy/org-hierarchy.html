@@ -5,13 +5,21 @@
   </div>
 </div>
 
-<div class="hierarchy-container">
+<div class="hierarchy-container" [class.loading]="isLoading()">
+  <!-- Skeletons for immediate feedback -->
+  @if (isLoading()) {
+    <div class="hierarchy-skeletons">
+      <div class="sk-main-card"></div>
+      <div class="sk-sidebar-card"></div>
+    </div>
+  }
+
   <!-- Main Configuration -->
   <div class="main-config-card">
     <div class="card-header-gradient">
       <div class="hero-visual">
         <div class="icon-wrapper">
-          <hugeicons-icon [icon]="WorkflowSquare03Icon" size="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+          <hugeicons-icon [icon]="DashboardSquare01Icon" size="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
         </div>
         <div class="hero-content">
           <h2>Hierarchy Document</h2>
@@ -40,9 +48,8 @@
 
       <div class="actions-container">
         <button class="btn-save" (click)="saveHierarchy()" [disabled]="isSaving() || !hierarchyUrl || hierarchyUrl === publishedUrl()">
-          <i class="fa-solid fa-cloud-arrow-up" *ngIf="!isSaving()"></i>
-          <span *ngIf="!isSaving()">Save & Publish Changes</span>
-          <span *ngIf="isSaving()">Publishing...</span>
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>{{ isSaving() ? 'Publishing Changes...' : 'Save & Publish Changes' }}</span>
         </button>
         <button class="btn-preview" (click)="viewHierarchy()" [disabled]="!publishedUrl()">
           <i class="fa-solid fa-eye"></i> View Published
@@ -51,10 +58,11 @@
     </div>
   </div>
 
+
   <!-- Sidebar Info -->
   <div class="sidebar-info">
     <div class="info-card">
-      <h4><hugeicons-icon [icon]="WorkflowSquare03Icon" size="20" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon> How to Publish</h4>
+      <h4><hugeicons-icon [icon]="DashboardSquare01Icon" size="20" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon> How to Publish</h4>
       <div class="guide-list">
         <div class="guide-step">
           <div class="step-num">01</div>
@@ -80,15 +88,16 @@
     <div class="status-card">
       <div class="status-row">
         <span class="status-label">Visibility Status</span>
-        <span class="status-value online" *ngIf="publishedUrl()">Publicly Visible</span>
-        <span class="status-value offline" *ngIf="!publishedUrl()">Not Configured</span>
+        <span class="status-value online" *ngIf="publishedUrl().length > 0">Publicly Visible</span>
+        <span class="status-value offline" *ngIf="publishedUrl().length === 0">Not Configured</span>
       </div>
     </div>
   </div>
+  <!-- Global Overlay (Loading or Saving) -->
+  <div class="loading-overlay" *ngIf="isLoading() || isSaving()">
+    <div class="spinner"></div>
+    <p>{{ isSaving() ? 'Publishing...' : 'Syncing...' }}</p>
+  </div>
 </div>
 
-<!-- Global Overlay (Loading or Saving) -->
-<div class="loading-overlay" *ngIf="isLoading() || isSaving()">
-  <div class="spinner"></div>
-  <p>{{ isSaving() ? 'Publishing hierarchy changes...' : 'Synchronizing hierarchy data...' }}</p>
-</div>
+

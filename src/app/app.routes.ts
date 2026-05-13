@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Login } from './features/auth/login/login';
+import { Register } from './features/auth/register/register';
 import { Dashboard } from './features/dashboard/dashboard';
 import { InternList } from './features/interns/intern-list/intern-list';
 import { InternAdd } from './features/interns/intern-add/intern-add';
@@ -20,13 +21,19 @@ import { InternRequests } from './features/interns/intern-requests/intern-reques
 import { EmployeeRequests } from './features/employees/employee-requests/employee-requests';
 import { EmployeeDashboard } from './features/employees/employee-dashboard/employee-dashboard';
 import { EmployeeAdd } from './features/employees/employee-add/employee-add';
+import { AppSettings } from './features/app-settings/app-settings';
+import { CertificateSettings } from './features/certificate-settings/certificate-settings';
+import { OffboardingRequests } from './features/offboarding/offboarding-requests/offboarding-requests';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: Login },
+  { path: 'register', component: Register },
   { path: 'dashboard', component: Dashboard },
   { path: 'employee/dashboard', component: EmployeeDashboard },
   { path: 'org-hierarchy', component: OrgHierarchy },
+  { path: 'app-settings', component: AppSettings },
+  { path: 'certificate-settings', component: CertificateSettings },
   { path: 'hr-policies', component: HrPolicies },
   { path: 'holiday-calendar', component: HolidayCalendar }, 
   { path: 'interns', component: InternList },
@@ -45,5 +52,6 @@ export const routes: Routes = [
   { path: 'employees/:id/review', component: EmployeeReview },
   { path: 'leaves', component: LeaveManagement },
   { path: 'assignments', loadComponent: () => import('./features/assignments/manager-assignments/manager-assignments').then(m => m.ManagerAssignments) },
+  { path: 'offboarding', component: OffboardingRequests },
   { path: 'interns/attendance/corrections', loadComponent: () => import('./features/interns/attendance-corrections/attendance-corrections').then(m => m.AttendanceCorrections) },
 ];

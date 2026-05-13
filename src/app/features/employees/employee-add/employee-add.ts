@@ -30,7 +30,23 @@ export class EmployeeAdd implements OnInit {
     designation: '',
     onboardingDate: '',
     address: '',
-    role: 'Employee'
+    role: 'Employee',
+    qualification: '',
+    specialization: '',
+    college: '',
+    passingYear: '',
+    ugCgpa: '',
+    pgCgpa: '',
+    isExperienced: false,
+    experienceYears: '',
+    previousOrg: '',
+    gender: '',
+    nationality: '',
+    maritalStatus: '',
+    dob: '',
+    linkedin: '',
+    emergencyName: '',
+    emergencyPhone: ''
   };
 
   ngOnInit() {
@@ -46,12 +62,14 @@ export class EmployeeAdd implements OnInit {
     this.apiService.getEmployeeById(id).subscribe({
       next: (data) => {
         console.log('Fetched employee data:', data);
-        this.employee.fullName = data.fullName || '';
-        this.employee.email = data.email || '';
-        this.employee.phone = data.phone || '';
-        this.employee.department = data.department || '';
-        this.employee.designation = data.designation || '';
-        this.employee.address = data.address || '';
+        this.employee = {
+          ...this.employee,
+          ...data,
+          // Handle potential date format issues
+          dob: data.dob ? new Date(data.dob).toISOString().split('T')[0] : '',
+          onboardingDate: data.onboardingDate ? new Date(data.onboardingDate).toISOString().split('T')[0] : '',
+          designation: data.designation || data.role || ''
+        };
         this.cdr.detectChanges();
       },
       error: (err) => {

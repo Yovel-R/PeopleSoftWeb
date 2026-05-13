@@ -1,113 +1,202 @@
 <div class="dashboard-wrapper">
-
-  <div class="welcome-header">
-    <h1>Dashboard Overview</h1>
-    <p *ngIf="!isLoading()">Welcome back! Here is a summary of the <strong>{{ selectedModel() }}</strong> management.</p>
-    <p *ngIf="isLoading()">Fetching latest dashboard data...</p>
-  </div>
-
-  <!-- Stats Grid -->
-  <div class="stats-grid" [class.loading]="isLoading()">
-    <div class="card stat-card" *ngFor="let stat of stats()[selectedModel()]">
-      <div class="stat-icon-wrapper" [ngClass]="stat.color">
-        <i [class]="stat.icon + ' stat-icon'"></i>
+  
+  <!-- Header Section -->
+  <header class="welcome-header">
+    <div class="header-main">
+      <h1>Dashboard Overview</h1>
+      <div class="model-toggle-group">
+        <button [class.active]="selectedModel() === 'interns'" (click)="selectModel('interns')">
+          Interns
+        </button>
+        <button [class.active]="selectedModel() === 'employees'" (click)="selectModel('employees')">
+          Employees
+        </button>
       </div>
-      <div class="stat-details">
-        <p class="stat-label">{{ stat.label }}</p>
+    </div>
+
+    <div class="header-actions">
+      <!-- Search Bar -->
+      <div class="search-container" style="position: relative;">
+        <hugeicons-icon [icon]="FilterIcon" size="18" [strokeWidth]="1.5" color="#94A3B8" 
+          style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;">
+        </hugeicons-icon>
+        <input type="text" placeholder="Search data..." 
+          style="padding: 0.625rem 1rem 0.625rem 2.5rem; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-secondary); font-size: var(--text-sm); outline: none; width: 240px; transition: border-color 0.2s;">
+      </div>
+
+      <!-- Date Display -->
+      <div class="date-display">
+        <span class="time">{{ currentTime() | date:'hh:mm:ss a' }}</span>
+        <span class="date">{{ currentTime() | date:'EEEE, d MMMM y' }}</span>
+      </div>
+      
+      <!-- Notifications & Profile -->
+      <div class="top-meta" style="display: flex; align-items: center; gap: 1rem;">
+        <button class="icon-btn" style="width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border-color); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative;">
+          <hugeicons-icon [icon]="Chat01Icon" size="20" [strokeWidth]="1.5" color="var(--text-secondary)"></hugeicons-icon>
+          <span style="position: absolute; top: 10px; right: 10px; width: 6px; height: 6px; background: #EF4444; border-radius: 50%; border: 1.5px solid white;"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Statistics Grid -->
+  <div class="stats-grid" *ngIf="!isLoading()">
+    <div class="stat-card" *ngFor="let stat of stats()[selectedModel()]; let i = index" [ngClass]="stat.color">
+      <div class="stat-icon-container">
+        <hugeicons-icon *ngIf="stat.label.includes('Attendance')" [icon]="FingerAccessIcon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+        <hugeicons-icon *ngIf="stat.label.includes('Leaves')" [icon]="CalendarCheckOut01Icon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+        <hugeicons-icon *ngIf="stat.label.includes('Interns') || stat.label.includes('Employees')" [icon]="StudentsIcon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+        <hugeicons-icon *ngIf="stat.label.includes('Applications')" [icon]="UserCircleIcon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+        <hugeicons-icon *ngIf="stat.label.includes('Projects')" [icon]="WorkflowSquare03Icon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+        <hugeicons-icon *ngIf="stat.label.includes('Payroll')" [icon]="Money03Icon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">{{ stat.label }}</span>
         <h3 class="stat-value">{{ stat.value }}</h3>
+        <div class="stat-trend" [style.color]="stat.color === 'green' ? '#10B981' : '#64748B'">
+          <span>Live updates</span>
+        </div>
       </div>
     </div>
+  </div>
+
+  <!-- Loading Skeletons for Stats -->
+  <div class="stats-grid" *ngIf="isLoading()">
+    <div class="stat-card" *ngFor="let i of [1,2,3,4]">
+      <div class="stat-icon-container skeleton"></div>
+      <div class="stat-info">
+        <div class="skeleton-text" style="width: 80px;"></div>
+        <div class="skeleton-text" style="width: 40px; height: 1.5rem;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions Section -->
+  <section class="actions-section">
+    <h3 class="section-title">
+      <hugeicons-icon [icon]="PlusSignIcon" size="20" [strokeWidth]="2" color="var(--accent-primary)"></hugeicons-icon>
+      Quick Management
+    </h3>
+    <div class="actions-grid">
+      <div class="action-card teal" routerLink="/interns" [queryParams]="{tab: 'list'}">
+        <div class="action-icon-box">
+          <hugeicons-icon [icon]="UserCircleIcon" size="20" [strokeWidth]="1.5"></hugeicons-icon>
+        </div>
+        <div class="action-details">
+          <h4>Add {{ selectedModel() === 'interns' ? 'Intern' : 'Employee' }}</h4>
+          <p>Onboard new talent</p>
+        </div>
+      </div>
+
+      <div class="action-card orange" routerLink="/leaves">
+        <div class="action-icon-box">
+          <hugeicons-icon [icon]="Calendar01Icon" size="20" [strokeWidth]="1.5"></hugeicons-icon>
+        </div>
+        <div class="action-details">
+          <h4>Leave Requests</h4>
+          <p>Review and approve</p>
+        </div>
+      </div>
+
+      <div class="action-card purple">
+        <div class="action-icon-box">
+          <hugeicons-icon [icon]="Delete01Icon" size="20" [strokeWidth]="1.5"></hugeicons-icon>
+        </div>
+        <div class="action-details">
+          <h4>Off-boarding</h4>
+          <p>Process exits</p>
+        </div>
+      </div>
+
+      <div class="action-card blue">
+        <div class="action-icon-box">
+          <hugeicons-icon [icon]="LicenseDraftIcon" size="20" [strokeWidth]="1.5"></hugeicons-icon>
+        </div>
+        <div class="action-details">
+          <h4>Review Performance</h4>
+          <p>Track progress</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content Grid -->
+  <div class="dashboard-content-layout">
     
-    <!-- Loading Skeletons -->
-    <ng-container *ngIf="isLoading()">
-      <div class="card stat-card skeleton" *ngFor="let i of [1,2,3,4]">
-        <div class="stat-icon-wrapper gray"></div>
-        <div class="stat-details">
-          <div class="skeleton-line short"></div>
-          <div class="skeleton-line long"></div>
-        </div>
-      </div>
-    </ng-container>
-  </div>
-
-  <!-- Quick Actions Grid -->
-  <div class="actions-grid">
-    <div class="card action-card">
-      <div class="action-icon teal"><i class="fa-solid fa-plus"></i></div>
-      <div class="action-info">
-        <h4>Add {{ selectedModel() === 'interns' ? 'Intern' : 'Employee' }}</h4>
-        <p>Onboard new talent to the team.</p>
-      </div>
-    </div>
-    <div class="card action-card" routerLink="/leaves">
-      <div class="action-icon orange"><i class="fa-solid fa-list-check"></i></div>
-      <div class="action-info">
-        <h4>Leave Requests</h4>
-        <p>Review pending leaves.</p>
-      </div>
-    </div>
-    <div class="card action-card">
-      <div class="action-icon purple"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
-      <div class="action-info">
-        <h4>Off-boarding</h4>
-        <p>Manage resignations and exits.</p>
-      </div>
-    </div>
-    <div class="card action-card">
-      <div class="action-icon blue"><i class="fa-solid fa-chart-line"></i></div>
-      <div class="action-info">
-        <h4>Review Performance</h4>
-        <p>Track progress and milestones.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Content Row -->
-  <div class="content-row">
-    <!-- Attendance Chart Card -->
-    <div class="card chart-card">
+    <!-- Attendance Trend Chart -->
+    <div class="analytics-card">
       <div class="card-header">
-        <h3>Attendance Trend</h3>
-        <select class="period-select">
-          <option>Last 7 Days</option>
-          <option>Last 30 Days</option>
-        </select>
+        <div class="header-main">
+          <h3>Attendance Trend</h3>
+          <p class="caption">Weekly participation analysis</p>
+        </div>
+        <div class="header-meta">
+          <select class="period-select">
+            <option>Last 7 Days</option>
+            <option>Last 30 Days</option>
+          </select>
+        </div>
       </div>
-      <div class="chart-mockup">
-        <div class="bar-group">
-          <div class="bar-item" *ngFor="let day of (selectedModel() === 'interns' ? stats().internTrend : stats().employeeTrend)">
-            <div class="bar" [style.height.%]="day.height || 0" [title]="day.count + ' present'"></div>
-            <span class="bar-label">{{ day.day }}</span>
+
+      <div class="chart-container">
+        <div class="chart-grid-lines">
+          <div class="grid-line" *ngFor="let line of [1,2,3,4]"></div>
+        </div>
+        
+        <div class="chart-bar-group" *ngFor="let day of (selectedModel() === 'interns' ? stats().internTrend : stats().employeeTrend)">
+          <div class="bar-wrapper">
+            <div class="bar" 
+              [style.height.%]="day.height || 0" 
+              [attr.data-value]="day.count"
+              [title]="day.count + ' present'">
+            </div>
           </div>
+          <span class="bar-label">{{ day.day }}</span>
         </div>
       </div>
     </div>
 
-    <!-- Recent Activity Card -->
-    <div class="card activity-card">
+    <!-- Recent Activity Panel -->
+    <div class="activity-card">
       <div class="card-header">
         <h3>Recent Activity</h3>
-        <button class="view-all">View All <i class="fa-solid fa-arrow-right"></i></button>
       </div>
-      <div class="activity-list" [class.loading]="isLoading()">
+      
+      <div class="activity-list" *ngIf="!isLoading()">
         <div class="activity-item" *ngFor="let activity of stats().activities">
-          <div class="activity-dot" [ngClass]="activity.color"></div>
+          <div class="activity-icon" [style.color]="activity.color === 'green' ? '#10B981' : activity.color === 'orange' ? '#F59E0B' : '#3B82F6'">
+            <hugeicons-icon *ngIf="activity.title.includes('Application')" [icon]="UserCircleIcon" size="16" [strokeWidth]="2"></hugeicons-icon>
+            <hugeicons-icon *ngIf="activity.title.includes('Leave')" [icon]="Calendar01Icon" size="16" [strokeWidth]="2"></hugeicons-icon>
+            <hugeicons-icon *ngIf="!activity.title.includes('Application') && !activity.title.includes('Leave')" [icon]="FingerAccessIcon" size="16" [strokeWidth]="2"></hugeicons-icon>
+          </div>
           <div class="activity-content">
-            <p><strong>{{ activity.title }}</strong></p>
-            <p class="activity-desc">{{ activity.description }}</p>
-            <span>{{ activity.time }}</span>
+            <h5>{{ activity.title }}</h5>
+            <p>{{ activity.description }}</p>
+            <span class="activity-time">
+              <hugeicons-icon [icon]="Chat01Icon" size="10" [strokeWidth]="1.5"></hugeicons-icon>
+              {{ activity.time }}
+            </span>
           </div>
         </div>
         
-        <!-- Loading Skeleton -->
-        <div class="activity-item skeleton" *ngIf="isLoading()" style="opacity: 0.5;">
-          <div class="activity-dot gray"></div>
+        <button class="view-all-btn">
+          View All Activities
+          <hugeicons-icon [icon]="Home01Icon" size="14" [strokeWidth]="2"></hugeicons-icon>
+        </button>
+      </div>
+
+      <!-- Activity Loading Skeleton -->
+      <div class="activity-list" *ngIf="isLoading()">
+        <div class="activity-item" *ngFor="let i of [1,2,3]">
+          <div class="activity-icon skeleton"></div>
           <div class="activity-content">
-            <div class="skeleton-line short"></div>
-            <div class="skeleton-line long"></div>
+            <div class="skeleton-text" style="width: 120px;"></div>
+            <div class="skeleton-text" style="width: 180px;"></div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </div>

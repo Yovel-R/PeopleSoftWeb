@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HugeiconsIconComponent } from '@hugeicons/angular';
-import { StudentsIcon, WorkflowSquare03Icon } from '@hugeicons/core-free-icons';
+import { StudentsIcon, WorkflowSquare03Icon, DashboardSquareRemoveIcon, Settings01Icon, SignatureIcon } from '@hugeicons/core-free-icons';
 import { ApiService } from './services/api.service';
 import { forkJoin } from 'rxjs';
 
@@ -24,6 +24,9 @@ export class App {
   router = inject(Router);
   readonly StudentsIcon = StudentsIcon;
   readonly WorkflowSquare03Icon = WorkflowSquare03Icon;
+  readonly DashboardSquareRemoveIcon = DashboardSquareRemoveIcon;
+  readonly Settings01Icon = Settings01Icon;
+  readonly SignatureIcon = SignatureIcon;
 
   userRole = signal<string | null>(localStorage.getItem('user_role'));
   hasNotifications = signal<boolean>(false);
@@ -50,7 +53,8 @@ export class App {
     forkJoin({
       leaves: this.apiService.getHrPendingLeaves(),
       requests: this.apiService.getHrPendingAttendanceRequests(),
-      applications: this.apiService.getAllActiveInterns('all', 'initial')
+      applications: this.apiService.getAllActiveInterns('all', 'initial'),
+      offboarding: this.apiService.getPendingOffboarding()
     }).subscribe({
       next: (data) => {
         const items: any[] = [];
@@ -88,6 +92,17 @@ export class App {
           }));
         }
 
+        if (data.offboarding) {
+          data.offboarding.forEach((o: any) => items.push({
+            type: 'Offboarding Request',
+            title: o.internName,
+            desc: `Pending HR approval for ${o.internId}`,
+            link: '/offboarding',
+            icon: 'fa-solid fa-user-minus',
+            color: 'red'
+          }));
+        }
+
         this.notificationItems.set(items);
         this.hasNotifications.set(items.length > 0);
       },
@@ -99,7 +114,7 @@ export class App {
   }
 
   isLoginPage(): boolean {
-    return this.router.url === '/login' || this.router.url === '/';
+    return this.router.url === '/login' || this.router.url === '/' || this.router.url === '/register';
   }
 
   getGreeting(): string {

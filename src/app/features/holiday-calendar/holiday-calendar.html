@@ -191,14 +191,13 @@
         </div>
       </div>
 
+      <!-- Global Overlay (Now scoped to main list) -->
+      <div class="hc-overlay" *ngIf="isLoading() || isSaving()">
+        <div class="hc-overlay-inner">
+          <div class="hc-loader"></div>
+          <span>{{ isSaving() ? 'Saving…' : 'Loading…' }}</span>
+        </div>
+      </div>
     </main>
-  </div>
-</div>
-
-<!-- Global Overlay -->
-<div class="hc-overlay" *ngIf="isLoading() || isSaving()">
-  <div class="hc-overlay-inner">
-    <div class="hc-loader"></div>
-    <span>{{ isSaving() ? 'Saving changes…' : 'Loading calendar…' }}</span>
   </div>
 </div>

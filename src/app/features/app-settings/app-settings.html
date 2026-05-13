@@ -1,0 +1,140 @@
+<div class="settings-container">
+  <div class="page-header">
+    <h1>App Settings</h1>
+    <p>Configure office locations, communication preferences, and system behavior.</p>
+  </div>
+
+  <div class="settings-grid">
+    <div class="main-content">
+      <!-- Location Settings -->
+      <div class="config-card">
+        <div class="card-header-gradient">
+          <div class="hero-visual">
+            <div class="icon-wrapper">
+              <hugeicons-icon [icon]="Location01Icon" size="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
+            <div class="hero-content">
+              <h2>Office Locations</h2>
+              <p>Define authorized locations for employee attendance punch-in.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-body">
+          <div class="section-title">
+            <h3>Authorized Geo-fences</h3>
+            <button class="btn-add" (click)="addLocation()" style="width: auto; padding: 6px 12px; font-size: 13px;">
+              <i class="fa-solid fa-plus"></i> Add New
+            </button>
+          </div>
+
+          <div class="locations-list">
+            <div class="location-header" style="display: grid; grid-template-columns: 1fr 120px 120px 80px 40px; gap: 12px; padding: 0 12px 8px; font-size: 12px; font-weight: 700; color: #64748b;">
+              <span>Location Name</span>
+              <span>Latitude</span>
+              <span>Longitude</span>
+              <span>Radius (m)</span>
+              <span></span>
+            </div>
+
+            <div class="location-item" *ngFor="let loc of locations; let i = index">
+              <input type="text" class="location-input" [(ngModel)]="loc.name" placeholder="Main Office">
+              <input type="number" class="location-input" [(ngModel)]="loc.latitude" placeholder="Lat">
+              <input type="number" class="location-input" [(ngModel)]="loc.longitude" placeholder="Lng">
+              <input type="number" class="location-input" [(ngModel)]="loc.radius" placeholder="200">
+              <button class="btn-remove" (click)="removeLocation(i)">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+
+            <div *ngIf="locations.length === 0" style="text-align: center; padding: 40px; color: #64748b; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
+              <i class="fa-solid fa-map-location-dot" style="font-size: 24px; margin-bottom: 12px; display: block;"></i>
+              No locations defined. Employees will be able to punch in from anywhere.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Communication Settings -->
+      <div class="config-card">
+        <div class="card-header-gradient" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+          <div class="hero-visual">
+            <div class="icon-wrapper">
+              <hugeicons-icon [icon]="Settings01Icon" size="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
+            <div class="hero-content">
+              <h2>Communication & Notifications</h2>
+              <p>Manage how the system interacts with employees and admins.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-body">
+          <div class="section-title">
+            <h3>Email Configuration</h3>
+          </div>
+          
+          <div style="margin-bottom: 24px;">
+            <label style="display: block; font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 8px;">Admin Notification Email</label>
+            <div style="position: relative;">
+              <i class="fa-solid fa-envelope" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
+              <input type="email" class="location-input" style="padding-left: 40px;" [(ngModel)]="receivingEmail" placeholder="hr@company.com">
+            </div>
+            <p style="font-size: 12px; color: #64748b; margin-top: 6px;">New applications and system alerts will be sent here.</p>
+          </div>
+
+          <div class="section-title">
+            <h3>Notification Channels</h3>
+          </div>
+
+          <div class="toggle-group">
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <h4>WhatsApp Notifications</h4>
+                <p>Send automated updates to employees via WhatsApp.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="communication.whatsappNotifications">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="toggle-item">
+              <div class="toggle-info">
+                <h4>Email Alerts</h4>
+                <p>Send system alerts and leave status updates via Email.</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="communication.emailNotifications">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-help">
+      <div class="config-card" style="background: #f8fafc; border-style: dashed;">
+        <div class="form-body">
+          <h4 style="margin: 0 0 12px 0; font-size: 14px; color: #334155; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-circle-info" style="color: #00657f;"></i>
+            How Geo-fencing Works
+          </h4>
+          <p style="font-size: 13px; color: #64748b; line-height: 1.6; margin: 0;">
+            Employees must be within the specified <strong>Radius</strong> of any authorized location to punch in. 
+            <br><br>
+            If no locations are added, geo-fencing is disabled and employees can punch in from any location.
+          </p>
+        </div>
+      </div>
+
+      <div class="actions-footer">
+        <button class="btn-save-all" (click)="saveAllSettings()" [disabled]="isSaving">
+          <hugeicons-icon [icon]="CheckmarkCircle01Icon" size="20" [strokeWidth]="2" color="currentColor"></hugeicons-icon>
+          <span>{{ isSaving ? 'Saving Changes...' : 'Save All Settings' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
