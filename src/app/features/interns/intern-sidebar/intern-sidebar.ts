@@ -85,7 +85,23 @@ export class InternSidebar {
 
   exportInternData() {
     const baseUrl = this.apiService.getBaseUrl();
-    const url = `${baseUrl}/api/intern/export/excel?status=all&range=all`;
-    window.open(url, '_blank');
+    const userRole = localStorage.getItem('user_role');
+    const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+    const managerId = userRole === 'manager' ? (userData._id || userData.employeeId) : '';
+
+    let url = `${baseUrl}/api/intern/export/excel?status=all&range=all`;
+    if (managerId) {
+      url += `&managerId=${managerId}`;
+    }
+
+    this.apiService.downloadFile(url).subscribe({
+      next: (blob) => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'Intern_Data.xlsx';
+        link.click();
+      },
+      error: (err) => console.error('Export failed', err)
+    });
   }
 }

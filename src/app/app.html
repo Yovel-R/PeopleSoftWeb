@@ -3,11 +3,11 @@
   <aside class="sidebar" *ngIf="!isLoginPage()">
     <div class="sidebar-header">
       <div class="logo-box">
-        <img src="logo/peoplesoft.png" alt="SoftPeople Logo">
+        <img src="logo/peoplesoft.png" alt="peoplesoft Logo">
       </div>
       <div class="header-text">
-        <h2 class="primary-color">SoftPeople</h2>
-        <p class="subtitle">HR Management</p>
+        <h2 class="primary-color">PeopleSoft</h2>
+        <p class="subtitle">{{ userRole() === 'manager' ? 'Manager Dashboard' : 'HR Management' }}</p>
       </div>
     </div>
     
@@ -40,16 +40,26 @@
           </a>
           <a routerLink="/certificate-settings" routerLinkActive="active" class="nav-item">
             <div class="icon-box indigo">
-              <hugeicons-icon [icon]="SignatureIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+              <hugeicons-icon [icon]="DiplomaIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
             </div>
             <span>Documents & Certs</span>
           </a>
           <a routerLink="/hr-policies" routerLinkActive="active" class="nav-item">
-            <div class="icon-box orange"><i class="fa-solid fa-file-invoice"></i></div>
+            <div class="icon-box orange">
+              <hugeicons-icon [icon]="PolicyIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
             <span>HR Policies</span>
           </a>
+          <a routerLink="/performance-goals" routerLinkActive="active" class="nav-item">
+            <div class="icon-box cyan">
+              <hugeicons-icon [icon]="DashboardSpeed01Icon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
+            <span>Performance Goals</span>
+          </a>
           <a routerLink="/holiday-calendar" routerLinkActive="active" class="nav-item">
-            <div class="icon-box red"><i class="fa-solid fa-calendar-days"></i></div>
+            <div class="icon-box red">
+              <hugeicons-icon [icon]="Calendar03Icon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
             <span>Holiday Calendar</span>
           </a>
         </div>
@@ -57,7 +67,9 @@
         <div class="nav-section">
           <p class="nav-label">Management</p>
           <a routerLink="/employees" routerLinkActive="active" class="nav-item">
-            <div class="icon-box teal"><i class="fa-solid fa-briefcase"></i></div>
+            <div class="icon-box teal">
+              <hugeicons-icon [icon]="WorkIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
             <span>Manage Employees</span>
           </a>
           <a routerLink="/interns" routerLinkActive="active" class="nav-item">
@@ -65,8 +77,53 @@
             <span>Manage Interns</span>
           </a>
           <a routerLink="/assignments" routerLinkActive="active" class="nav-item">
-            <div class="icon-box cyan"><i class="fa-solid fa-people-arrows"></i></div>
+            <div class="icon-box cyan">
+              <hugeicons-icon [icon]="UserGroupIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
             <span>Team Assignments</span>
+          </a>
+        </div>
+      </ng-container>
+
+      <!-- MANAGER MENU -->
+      <ng-container *ngIf="userRole() === 'manager'">
+        <div class="nav-section">
+          <p class="nav-label">Team Management</p>
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+            <div class="icon-box blue">
+              <hugeicons-icon [icon]="DashboardSquareRemoveIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
+            <span>Team Overview</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <p class="nav-label">Management</p>
+          <a routerLink="/projects" routerLinkActive="active" class="nav-item">
+            <div class="icon-box blue">
+              <hugeicons-icon [icon]="DashboardSquare02Icon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
+            <span>Manage Projects</span>
+          </a>
+          <a routerLink="/assignments" routerLinkActive="active" class="nav-item">
+            <div class="icon-box cyan">
+              <hugeicons-icon [icon]="UserGroupIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
+            <span>Team Assignments</span>
+          </a>
+          <a routerLink="/app-settings" routerLinkActive="active" class="nav-item">
+            <div class="icon-box dark-blue">
+              <hugeicons-icon [icon]="Settings01Icon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
+            <span>App Settings</span>
+          </a>
+          <a routerLink="/employees" routerLinkActive="active" class="nav-item">
+            <div class="icon-box teal"><i class="fa-solid fa-briefcase"></i></div>
+            <span>Manage Employees</span>
+          </a>
+          <a routerLink="/interns" routerLinkActive="active" class="nav-item">
+            <div class="icon-box indigo"><hugeicons-icon [icon]="StudentsIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon></div>
+            <span>Manage Interns</span>
           </a>
         </div>
       </ng-container>
@@ -100,11 +157,11 @@
     <div class="sidebar-footer">
       <div class="user-profile">
         <div class="user-avatar">
-          <span>{{ userRole() === 'hr' ? 'AD' : 'EM' }}</span>
+          <span>{{ userRole() === 'hr' ? 'AD' : (userRole() === 'manager' ? 'MN' : 'EM') }}</span>
         </div>
         <div class="user-info">
-          <p class="user-name">{{ userRole() === 'hr' ? 'Admin User' : 'Employee' }}</p>
-          <p class="user-role">{{ userRole() === 'hr' ? 'HR Specialist' : 'Staff' }}</p>
+          <p class="user-name">{{ userRole() === 'hr' ? 'Admin User' : (userRole() === 'manager' ? 'Team Manager' : 'Employee') }}</p>
+          <p class="user-role">{{ userRole() === 'hr' ? 'HR Specialist' : (userRole() === 'manager' ? 'Management' : 'Staff') }}</p>
         </div>
         <button class="logout-btn" title="Logout" (click)="logout()">
           <i class="fa-solid fa-arrow-right-from-bracket"></i>

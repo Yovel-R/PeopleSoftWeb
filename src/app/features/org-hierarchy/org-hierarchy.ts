@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { FormsModule } from '@angular/forms';
 import { HugeiconsIconComponent } from '@hugeicons/angular';
-import { DashboardSquare01Icon, Mail01Icon, Settings01Icon } from '@hugeicons/core-free-icons';
+import { WorkflowSquare03Icon, Mail01Icon, Settings01Icon } from '@hugeicons/core-free-icons';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -15,7 +15,7 @@ import { finalize } from 'rxjs';
 })
 export class OrgHierarchy implements OnInit {
   private apiService = inject(ApiService);
-  readonly DashboardSquare01Icon = DashboardSquare01Icon;
+  readonly WorkflowSquare03Icon = WorkflowSquare03Icon;
   readonly Mail01Icon = Mail01Icon;
   readonly Settings01Icon = Settings01Icon;
   

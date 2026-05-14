@@ -24,6 +24,9 @@ import { EmployeeAdd } from './features/employees/employee-add/employee-add';
 import { AppSettings } from './features/app-settings/app-settings';
 import { CertificateSettings } from './features/certificate-settings/certificate-settings';
 import { OffboardingRequests } from './features/offboarding/offboarding-requests/offboarding-requests';
+import { ProjectManagement } from './features/projects/project-management/project-management';
+
+import { PerformanceGoals } from './features/performance-goals/performance-goals';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -31,8 +34,10 @@ export const routes: Routes = [
   { path: 'register', component: Register },
   { path: 'dashboard', component: Dashboard },
   { path: 'employee/dashboard', component: EmployeeDashboard },
+  { path: 'performance-goals', component: PerformanceGoals },
   { path: 'org-hierarchy', component: OrgHierarchy },
   { path: 'app-settings', component: AppSettings },
+  { path: 'projects', component: ProjectManagement },
   { path: 'certificate-settings', component: CertificateSettings },
   { path: 'hr-policies', component: HrPolicies },
   { path: 'holiday-calendar', component: HolidayCalendar }, 

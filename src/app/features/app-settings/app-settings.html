@@ -4,14 +4,19 @@
     <p>Configure office locations, communication preferences, and system behavior.</p>
   </div>
 
-  <div class="settings-grid">
+  <div *ngIf="isLoading()" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>Loading Settings...</p>
+  </div>
+
+  <div class="settings-grid" *ngIf="!isLoading()">
     <div class="main-content">
       <!-- Location Settings -->
       <div class="config-card">
-        <div class="card-header-gradient">
+        <div class="card-header-minimal">
           <div class="hero-visual">
             <div class="icon-wrapper">
-              <hugeicons-icon [icon]="Location01Icon" size="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+              <hugeicons-icon [icon]="MapsLocation02Icon" size="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
             </div>
             <div class="hero-content">
               <h2>Office Locations</h2>
@@ -23,7 +28,7 @@
         <div class="form-body">
           <div class="section-title">
             <h3>Authorized Geo-fences</h3>
-            <button class="btn-add" (click)="addLocation()" style="width: auto; padding: 6px 12px; font-size: 13px;">
+            <button class="btn-add" (click)="addLocation()">
               <i class="fa-solid fa-plus"></i> Add New
             </button>
           </div>
@@ -37,17 +42,17 @@
               <span></span>
             </div>
 
-            <div class="location-item" *ngFor="let loc of locations; let i = index">
-              <input type="text" class="location-input" [(ngModel)]="loc.name" placeholder="Main Office">
-              <input type="number" class="location-input" [(ngModel)]="loc.latitude" placeholder="Lat">
-              <input type="number" class="location-input" [(ngModel)]="loc.longitude" placeholder="Lng">
-              <input type="number" class="location-input" [(ngModel)]="loc.radius" placeholder="200">
-              <button class="btn-remove" (click)="removeLocation(i)">
+            <div class="location-item" *ngFor="let loc of locations(); let i = index" [class.read-only]="!canEditLocation(loc)">
+              <input type="text" class="location-input" [(ngModel)]="loc.name" placeholder="Main Office" [disabled]="!canEditLocation(loc)">
+              <input type="number" class="location-input" [(ngModel)]="loc.latitude" placeholder="Lat" [disabled]="!canEditLocation(loc)">
+              <input type="number" class="location-input" [(ngModel)]="loc.longitude" placeholder="Lng" [disabled]="!canEditLocation(loc)">
+              <input type="number" class="location-input" [(ngModel)]="loc.radius" placeholder="200" [disabled]="!canEditLocation(loc)">
+              <button class="btn-remove" (click)="removeLocation(i)" [disabled]="!canEditLocation(loc)">
                 <i class="fa-solid fa-trash-can"></i>
               </button>
             </div>
 
-            <div *ngIf="locations.length === 0" style="text-align: center; padding: 40px; color: #64748b; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
+            <div *ngIf="locations().length === 0" style="text-align: center; padding: 40px; color: #64748b; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
               <i class="fa-solid fa-map-location-dot" style="font-size: 24px; margin-bottom: 12px; display: block;"></i>
               No locations defined. Employees will be able to punch in from anywhere.
             </div>
@@ -57,10 +62,10 @@
 
       <!-- Communication Settings -->
       <div class="config-card">
-        <div class="card-header-gradient" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+        <div class="card-header-minimal">
           <div class="hero-visual">
             <div class="icon-wrapper">
-              <hugeicons-icon [icon]="Settings01Icon" size="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+              <hugeicons-icon [icon]="MailReceive01Icon" size="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
             </div>
             <div class="hero-content">
               <h2>Communication & Notifications</h2>
@@ -74,11 +79,11 @@
             <h3>Email Configuration</h3>
           </div>
           
-          <div style="margin-bottom: 24px;">
-            <label style="display: block; font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 8px;">Admin Notification Email</label>
-            <div style="position: relative;">
-              <i class="fa-solid fa-envelope" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
-              <input type="email" class="location-input" style="padding-left: 40px;" [(ngModel)]="receivingEmail" placeholder="hr@company.com">
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-size: var(--text-base); font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">Admin Notification Email</label>
+            <div style="position: relative;" [class.read-only]="!canEditCommunication()">
+              <i class="fa-solid fa-envelope" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+              <input type="email" class="location-input" style="padding-left: 40px;" [ngModel]="receivingEmail()" (ngModelChange)="receivingEmail.set($event)" placeholder="hr@company.com" [disabled]="!canEditCommunication()">
             </div>
             <p style="font-size: 12px; color: #64748b; margin-top: 6px;">New applications and system alerts will be sent here.</p>
           </div>
@@ -90,22 +95,11 @@
           <div class="toggle-group">
             <div class="toggle-item">
               <div class="toggle-info">
-                <h4>WhatsApp Notifications</h4>
-                <p>Send automated updates to employees via WhatsApp.</p>
-              </div>
-              <label class="switch">
-                <input type="checkbox" [(ngModel)]="communication.whatsappNotifications">
-                <span class="slider"></span>
-              </label>
-            </div>
-
-            <div class="toggle-item">
-              <div class="toggle-info">
                 <h4>Email Alerts</h4>
                 <p>Send system alerts and leave status updates via Email.</p>
               </div>
-              <label class="switch">
-                <input type="checkbox" [(ngModel)]="communication.emailNotifications">
+              <label class="switch" [class.disabled]="!canEditCommunication()">
+                <input type="checkbox" [ngModel]="communication().emailNotifications" (ngModelChange)="communication.set({...communication(), emailNotifications: $event})" [disabled]="!canEditCommunication()">
                 <span class="slider"></span>
               </label>
             </div>
@@ -115,9 +109,9 @@
     </div>
 
     <div class="sidebar-help">
-      <div class="config-card" style="background: #f8fafc; border-style: dashed;">
-        <div class="form-body">
-          <h4 style="margin: 0 0 12px 0; font-size: 14px; color: #334155; display: flex; align-items: center; gap: 8px;">
+      <div class="help-card">
+        <div class="form-body" style="padding: 0;">
+          <h4>
             <i class="fa-solid fa-circle-info" style="color: #00657f;"></i>
             How Geo-fencing Works
           </h4>
@@ -126,13 +120,24 @@
             <br><br>
             If no locations are added, geo-fencing is disabled and employees can punch in from any location.
           </p>
+
+          <div class="step-guide">
+            <h5><hugeicons-icon [icon]="Coordinate01Icon" size="14" [strokeWidth]="1.5" color="currentColor" style="display: inline-flex; align-items: center;"></hugeicons-icon> How to get Lat/Long:</h5>
+            <ol>
+              <li>Open <strong>Google Maps</strong> on your computer.</li>
+              <li>Right-click the place or area on the map.</li>
+              <li>This will open a pop-up window. You can find your <strong>latitude and longitude</strong> at the top.</li>
+              <li>Left-click on the coordinates to automatically copy them to your clipboard.</li>
+            </ol>
+          </div>
         </div>
       </div>
 
       <div class="actions-footer">
-        <button class="btn-save-all" (click)="saveAllSettings()" [disabled]="isSaving">
-          <hugeicons-icon [icon]="CheckmarkCircle01Icon" size="20" [strokeWidth]="2" color="currentColor"></hugeicons-icon>
-          <span>{{ isSaving ? 'Saving Changes...' : 'Save All Settings' }}</span>
+        <button class="btn-save-all" (click)="saveAllSettings()" [disabled]="isSaving()">
+          <div class="btn-spinner" *ngIf="isSaving()"></div>
+          <hugeicons-icon [icon]="CheckmarkCircle01Icon" size="20" [strokeWidth]="2" color="currentColor" *ngIf="!isSaving()"></hugeicons-icon>
+          <span>{{ isSaving() ? 'Saving...' : 'Save All Settings' }}</span>
         </button>
       </div>
     </div>

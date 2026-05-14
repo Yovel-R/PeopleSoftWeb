@@ -131,22 +131,26 @@
   justify-content: center;
 }
 
-/* Icon Box Colors */
-.icon-box.blue { background-color: #1e8fc8; color: #ffffff; }
-.icon-box.purple { background-color: #9656d2; color: #ffffff; }
-.icon-box.orange { background-color: #ba5c2a; color: #ffffff; }
-.icon-box.red { background-color: #b03a3a; color: #ffffff; }
-.icon-box.teal { background-color: #01776c; color: #ffffff; }
-.icon-box.indigo { background-color: #5854c8; color: #ffffff; }
-.icon-box.green { background-color: #248a49; color: #ffffff; }
+/* Icon Box Colors - Organic "Human" Palette */
+.icon-box.blue      { color: #1e3a8a; background-color: transparent; } /* Deep Navy */
+.icon-box.purple    { color: #5b21b6; background-color: transparent; } /* Rich Plum */
+.icon-box.orange    { color: #9a3412; background-color: transparent; } /* Burnt Sienna */
+.icon-box.red       { color: #991b1b; background-color: transparent; } /* Deep Crimson */
+.icon-box.teal      { color: #065f46; background-color: transparent; } /* Forest Emerald */
+.icon-box.indigo    { color: #3730a3; background-color: transparent; } /* Royal Indigo */
+.icon-box.green     { color: #166534; background-color: transparent; } /* Deep Leaf */
+.icon-box.dark-blue { color: #0f172a; background-color: transparent; } /* Obsidian Blue */
+.icon-box.cyan      { color: #155e75; background-color: transparent; } /* Deep Ocean */
+
+
+
 
 .nav-item:hover .icon-box {
   transform: scale(1.05);
 }
 
 .nav-item.active .icon-box {
-  background-color: var(--accent-primary);
-  color: white;
+  background-color: transparent;
 }
 
 .sidebar-footer {

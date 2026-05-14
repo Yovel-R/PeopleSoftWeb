@@ -15,9 +15,9 @@ export class ApiService {
 
   // Authentication
   login(identifier: string, password: string): Observable<any> {
-    // Backend handles both email and employeeId in the email/employeeId field
-    return this.http.post(`${this.baseUrl}/api/auth/login`, { 
-      email: identifier, 
+    // Unified login handles email, employeeId, and internId
+    return this.http.post(`${this.baseUrl}/api/auth/unified-login`, { 
+      identifier: identifier, 
       password 
     });
   }
@@ -273,7 +273,7 @@ export class ApiService {
 
   // Company Settings
   getCompanySettings(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/api/settings/company`);
+    return this.http.get<any>(`${this.baseUrl}/api/settings/company`);
   }
 
   updateCompanySettings(settings: any): Observable<any> {
@@ -297,11 +297,51 @@ export class ApiService {
     return this.http.put(`${this.baseUrl}/api/resignation/manager-review/${id}`, { status, remarks });
   }
 
-  hrReviewOffboarding(id: string, action: 'accept' | 'reject', remarks: string, files: File[] = []): Observable<any> {
-    const formData = new FormData();
-    formData.append('remarks', remarks);
-    files.forEach(file => formData.append('files', file));
-    
-    return this.http.put(`${this.baseUrl}/api/resignation/hr-review/${action}/${id}`, formData);
+  hrReviewOffboarding(id: string, action: 'accept' | 'reject', remarks: string, flags: { internship: boolean, project: boolean, lor: boolean } = { internship: false, project: false, lor: false }): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/resignation/hr-review/${action}/${id}`, {
+      remarks,
+      internship: flags.internship,
+      project: flags.project,
+      lor: flags.lor
+    });
+  }
+
+  // Performance Templates
+  getPerformanceTemplates(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/api/performance-templates`);
+  }
+
+  savePerformanceTemplate(template: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/performance-templates`, template);
+  }
+
+  deletePerformanceTemplate(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/api/performance-templates/${id}`);
+  }
+
+  // Projects
+  getManagerProjects(managerId: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/api/projects/manager/${managerId}`);
+  }
+
+  createProject(project: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/projects/create`, project);
+  }
+
+  updateProject(projectId: string, project: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/projects/update/${projectId}`, project);
+  }
+
+  toggleProjectTask(projectId: string, taskId: string, userId: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/projects/toggle-task/${projectId}/${taskId}`, { userId });
+  }
+
+  deleteProject(projectId: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/api/projects/${projectId}`);
+  }
+
+  // Generic Download with Auth
+  downloadFile(url: string): Observable<Blob> {
+    return this.http.get(url, { responseType: 'blob' });
   }
 }

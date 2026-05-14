@@ -2,7 +2,7 @@ import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HugeiconsIconComponent } from '@hugeicons/angular';
-import { UserCircleIcon, FingerAccessIcon, CalendarCheckOut01Icon, LicenseDraftIcon, Money03Icon } from '@hugeicons/core-free-icons';
+import { UserCircleIcon, FingerAccessIcon, CalendarCheckOut01Icon, LicenseDraftIcon, Money03Icon, Location01Icon, FileDownloadIcon } from '@hugeicons/core-free-icons';
 import { EmployeeSidebar } from '../employee-sidebar/employee-sidebar';
 import { ApiService } from '../../../services/api.service';
 
@@ -23,6 +23,35 @@ export class EmployeeAttendance implements OnInit {
   readonly CalendarCheckOut01Icon = CalendarCheckOut01Icon;
   readonly LicenseDraftIcon = LicenseDraftIcon;
   readonly Money03Icon = Money03Icon;
+  readonly Location01Icon = Location01Icon;
+  readonly FileDownloadIcon = FileDownloadIcon;
+
+  exportAttendance() {
+    const from = prompt('Enter start date (YYYY-MM-DD):', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]);
+    const to = prompt('Enter end date (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
+    
+    if (!from || !to) return;
+
+    const url = `${this.apiService.getBaseUrl()}/api/attendance/export/pdf/${this.employeeId()}?from=${from}&to=${to}`;
+    
+    this.apiService.downloadFile(url).subscribe({
+      next: (blob) => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = `Attendance_${this.employeeId()}.pdf`;
+        link.click();
+      },
+      error: (err) => console.error('Export failed', err)
+    });
+  }
+
+  openMap(locationStr: string) {
+    if (locationStr) {
+      window.open(`https://www.google.com/maps?q=${locationStr}`, '_blank');
+    } else {
+      alert('Location not available for this record');
+    }
+  }
 
   navigateTo(path: string[]) {
     this.router.navigate(path).then(() => {

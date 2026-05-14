@@ -1,110 +1,108 @@
 <div class="page-header">
   <div class="header-content">
     <h1>HR Policies</h1>
-    <p>Upload and manage company guidelines for staff and interns</p>
+    <p>Manage and publish company policies for employees and interns.</p>
   </div>
 </div>
 
 <div class="policies-grid">
-  <!-- Add Policy Card -->
-  <div class="card add-form">
-    <div class="card-header">
-      <h3><i class="fa-solid fa-plus-circle"></i> Add New Policy</h3>
+  <!-- Add Policy Form -->
+  <div class="card">
+    <div class="card-header-minimal">
+      <h3>
+        <hugeicons-icon [icon]="AddInvoiceIcon" size="20" [strokeWidth]="2" color="currentColor"></hugeicons-icon>
+        Add New Policy
+      </h3>
     </div>
     <div class="card-body">
       <div class="form-group">
         <label>Policy Name</label>
         <div class="input-wrapper">
-          <i class="fa-solid fa-file-signature"></i>
-          <input type="text" [(ngModel)]="newPolicy.policy_name" placeholder="e.g. Leave Policy, Code of Conduct">
+          <i class="fa-solid fa-file-pen"></i>
+          <input type="text" [(ngModel)]="newPolicy.policy_name" placeholder="e.g. Leave Policy 2024">
         </div>
       </div>
+
       <div class="form-group">
-        <label>PDF URL (Google Drive / Dropbox)</label>
+        <label>Document Public URL (PDF)</label>
         <div class="input-wrapper">
           <i class="fa-solid fa-link"></i>
-          <input type="text" [(ngModel)]="newPolicy.policy_url" placeholder="https://...">
+          <input type="text" [(ngModel)]="newPolicy.policy_url" placeholder="https://drive.google.com/file/d/...">
         </div>
       </div>
+
       <div class="form-group">
-        <label>Visible To</label>
+        <label>Visibility</label>
         <div class="checkbox-group">
           <label class="checkbox-item">
-            <input type="checkbox" checked disabled> 
-            <span>Employees</span>
+            <input type="checkbox" [checked]="isRoleSelected('employee')" (change)="toggleVisibility('employee')">
+            <span>Employee</span>
           </label>
           <label class="checkbox-item">
-            <input type="checkbox" checked disabled> 
-            <span>Interns</span>
+            <input type="checkbox" [checked]="isRoleSelected('intern')" (change)="toggleVisibility('intern')">
+            <span>Intern</span>
           </label>
         </div>
       </div>
-      <button class="btn-primary full-width" (click)="addPolicy()" [disabled]="isSaving()">
-        <i class="fa-solid fa-save" *ngIf="!isSaving()"></i>
-        {{ isSaving() ? 'Saving...' : 'Save Policy' }}
+
+      <button class="btn-save-all" (click)="addPolicy()" [disabled]="isSaving()">
+        <hugeicons-icon [icon]="CheckmarkCircle01Icon" size="20" [strokeWidth]="2" color="currentColor" *ngIf="!isSaving()"></hugeicons-icon>
+        <div class="btn-spinner" *ngIf="isSaving()"></div>
+        <span>{{ isSaving() ? 'Saving...' : 'Publish Policy' }}</span>
       </button>
     </div>
   </div>
 
   <!-- Policies List -->
-  <div class="policies-list">
-    <div class="card" *ngIf="!isLoading()">
-      <div class="card-header">
-        <h3><i class="fa-solid fa-book"></i> Active Policies</h3>
-        <span class="count-badge">{{ policies().length }} Total</span>
-      </div>
-      <div class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Policy Name</th>
-              <th>Visibility</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let policy of policies()">
-              <td>
-                <div class="policy-info">
-                  <div class="icon-box">
-                    <i class="fa-solid fa-file-pdf"></i>
-                  </div>
-                  <span>{{ policy.policy_name }}</span>
-                </div>
-              </td>
-              <td>
-                <div class="badges">
-                  <span class="badge" *ngFor="let role of policy.policy_view_by">
-                    {{ role }}
-                  </span>
-                </div>
-              </td>
-              <td class="actions">
-                <button class="icon-btn view" (click)="openPdf(policy.policy_url)" title="View PDF">
-                  <i class="fa-solid fa-eye"></i>
-                </button>
-                <button class="icon-btn delete" (click)="deletePolicy(policy._id)" title="Delete">
-                  <i class="fa-solid fa-trash-can"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      
-      <div class="empty-state" *ngIf="policies().length === 0">
-        <div class="empty-icon-box">
-          <i class="fa-solid fa-folder-open"></i>
-        </div>
-        <h3>No policies uploaded</h3>
-        <p>Start by adding a new policy using the form on the left.</p>
-      </div>
+  <div class="card">
+    <div class="card-header-minimal">
+      <h3>
+        <hugeicons-icon [icon]="PolicyIcon" size="20" [strokeWidth]="2" color="currentColor"></hugeicons-icon>
+        Active Policies
+      </h3>
+      <span class="count-badge">{{ policies().length }} Policies</span>
     </div>
 
-    <!-- Loading Skeleton -->
-    <div class="card skeleton-card" *ngIf="isLoading()">
-      <div class="skeleton-header"></div>
-      <div class="skeleton-row" *ngFor="let i of [1,2,3]"></div>
+    <div class="card-body">
+      @if (isLoading()) {
+        <div class="skeleton-list">
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+        </div>
+      } @else if (policies().length > 0) {
+        <div class="policies-list">
+          <div class="policy-item" *ngFor="let policy of policies()">
+            <div class="policy-info">
+              <div class="icon-box">
+                <hugeicons-icon [icon]="PolicyIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+              </div>
+              <div>
+                <span>{{ policy.policy_name }}</span>
+                <div class="badges">
+                  <span class="badge" *ngFor="let role of policy.policy_view_by">{{ role }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="icon-btn" (click)="openPdf(policy.policy_url)" title="View Policy">
+                <hugeicons-icon [icon]="ViewIcon" size="16" [strokeWidth]="2" color="currentColor"></hugeicons-icon>
+              </button>
+              <button class="icon-btn delete" (click)="deletePolicy(policy._id)" title="Delete Policy">
+                <hugeicons-icon [icon]="Delete02Icon" size="16" [strokeWidth]="2" color="currentColor"></hugeicons-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <div class="empty-icon-box">
+            <hugeicons-icon [icon]="PolicyIcon" size="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+          </div>
+          <h3>No Policies Published</h3>
+          <p>Start by adding your first company policy using the form on the left.</p>
+        </div>
+      }
     </div>
   </div>
 </div>

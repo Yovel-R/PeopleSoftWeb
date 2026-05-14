@@ -47,7 +47,7 @@
 
         <!-- Employee Login Field -->
         <div class="form-group" *ngIf="loginType() === 'employee'">
-          <label for="employeeId">Employee ID</label>
+          <label for="employeeId">Employee ID / Email</label>
           <div class="input-wrapper">
             <input 
               id="employeeId"
@@ -55,7 +55,7 @@
               [(ngModel)]="credentials.employeeId" 
               name="employeeId" 
               required 
-              placeholder="e.g. STP-1603-2026">
+              placeholder="e.g. STP-1603-2026 or you@email.com">
           </div>
         </div>
 

@@ -16,16 +16,21 @@ export class OffboardingRequests implements OnInit {
   private apiService = inject(ApiService);
   private http = inject(HttpClient);
 
+  userRole = signal<string | null>(localStorage.getItem('user_role'));
   allRequests = signal<any[]>([]);
   isLoading = signal(true);
-  activeTab = signal<'manager' | 'hr' | 'completed'>('manager');
+  activeTab = signal<'manager' | 'hr' | 'completed'>(localStorage.getItem('user_role') === 'hr' ? 'hr' : 'manager');
 
   // Review state
   showReviewModal = signal(false);
   selectedRequest = signal<any>(null);
   reviewRemarks = signal('');
   reviewAction = signal<'approved' | 'rejected' | 'accept' | 'reject' | null>(null);
-  selectedFiles: File[] = [];
+  
+  // Certificate flags for HR Accept
+  certInternship = signal(false);
+  certProject = signal(false);
+  certLor = signal(false);
 
   ngOnInit() {
     this.fetchRequests();
@@ -58,11 +63,16 @@ export class OffboardingRequests implements OnInit {
   }
 
   get filteredRequests() {
-    const tab = this.activeTab();
+    const role = this.userRole();
     return this.allRequests().filter(r => {
-      if (tab === 'manager') return r.status === 'pending_manager';
-      if (tab === 'hr') return r.status === 'pending_hr';
-      if (tab === 'completed') return r.status === 'accepted' || r.status === 'rejected';
+      if (role === 'manager') {
+        // Managers only see what's pending their approval
+        return r.status === 'pending_manager';
+      }
+      if (role === 'hr') {
+        // HR sees everything except what's still with managers
+        return r.status === 'pending_hr' || r.status === 'accepted' || r.status === 'rejected';
+      }
       return false;
     });
   }
@@ -72,11 +82,11 @@ export class OffboardingRequests implements OnInit {
     this.reviewAction.set(action);
     this.showReviewModal.set(true);
     this.reviewRemarks.set('');
-    this.selectedFiles = [];
-  }
-
-  onFileSelected(event: any) {
-    this.selectedFiles = Array.from(event.target.files);
+    
+    // Reset certificate flags
+    this.certInternship.set(false);
+    this.certProject.set(false);
+    this.certLor.set(false);
   }
 
   submitReview() {
@@ -86,7 +96,7 @@ export class OffboardingRequests implements OnInit {
 
     this.isLoading.set(true);
 
-    if (this.activeTab() === 'manager') {
+    if (this.userRole() === 'manager') {
       this.apiService.managerReviewOffboarding(request._id, action as 'approved' | 'rejected', this.reviewRemarks())
         .pipe(finalize(() => this.isLoading.set(false)))
         .subscribe({
@@ -98,7 +108,13 @@ export class OffboardingRequests implements OnInit {
           error: (err) => alert('Failed to process review: ' + err.message)
         });
     } else {
-      this.apiService.hrReviewOffboarding(request._id, action as 'accept' | 'reject', this.reviewRemarks(), this.selectedFiles)
+      const flags = {
+        internship: this.certInternship(),
+        project: this.certProject(),
+        lor: this.certLor()
+      };
+
+      this.apiService.hrReviewOffboarding(request._id, action as 'accept' | 'reject', this.reviewRemarks(), flags)
         .pipe(finalize(() => this.isLoading.set(false)))
         .subscribe({
           next: () => {

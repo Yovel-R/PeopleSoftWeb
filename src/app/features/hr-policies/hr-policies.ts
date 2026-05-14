@@ -2,16 +2,24 @@ import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { FormsModule } from '@angular/forms';
+import { HugeiconsIconComponent } from '@hugeicons/angular';
+import { AddInvoiceIcon, PolicyIcon, CheckmarkCircle01Icon, ViewIcon, Delete02Icon } from '@hugeicons/core-free-icons';
 
 @Component({
   selector: 'app-hr-policies',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HugeiconsIconComponent],
   templateUrl: './hr-policies.html',
   styleUrl: './hr-policies.css'
 })
 export class HrPolicies implements OnInit {
   private apiService = inject(ApiService);
+  
+  readonly AddInvoiceIcon = AddInvoiceIcon;
+  readonly PolicyIcon = PolicyIcon;
+  readonly CheckmarkCircle01Icon = CheckmarkCircle01Icon;
+  readonly ViewIcon = ViewIcon;
+  readonly Delete02Icon = Delete02Icon;
   
   policies = signal<any[]>([]);
   isLoading = signal(true);
@@ -27,8 +35,8 @@ export class HrPolicies implements OnInit {
     this.fetchPolicies();
   }
 
-  fetchPolicies() {
-    this.isLoading.set(true);
+  fetchPolicies(isRefresh = false) {
+    if (!isRefresh) this.isLoading.set(true);
     this.apiService.getPolicies().subscribe({
       next: (data: any[]) => {
         this.policies.set(data);
@@ -50,9 +58,10 @@ export class HrPolicies implements OnInit {
     this.isSaving.set(true);
     this.apiService.savePolicy(this.newPolicy).subscribe({
       next: () => {
-        this.fetchPolicies();
+        this.fetchPolicies(true); // Silent refresh
         this.newPolicy = { policy_name: '', policy_url: '', policy_view_by: ['employee', 'intern'] };
         this.isSaving.set(false);
+        alert('Policy published successfully');
       },
       error: (err: any) => {
         alert('Failed to save: ' + err.message);
@@ -61,10 +70,25 @@ export class HrPolicies implements OnInit {
     });
   }
 
+  toggleVisibility(role: string) {
+    const current = this.newPolicy.policy_view_by;
+    if (current.includes(role)) {
+      this.newPolicy.policy_view_by = current.filter(r => r !== role);
+    } else {
+      this.newPolicy.policy_view_by = [...current, role];
+    }
+  }
+
+  isRoleSelected(role: string): boolean {
+    return this.newPolicy.policy_view_by.includes(role);
+  }
+
   deletePolicy(id: string) {
     if (confirm('Delete this policy?')) {
       this.apiService.deletePolicy(id).subscribe({
-        next: () => this.fetchPolicies(),
+        next: () => {
+          this.fetchPolicies(true); // Silent refresh
+        },
         error: (err: any) => alert('Failed to delete: ' + err.message)
       });
     }

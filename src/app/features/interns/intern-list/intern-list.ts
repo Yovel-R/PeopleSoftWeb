@@ -100,7 +100,14 @@ export class InternList implements OnInit {
 
   exportInternData() {
     const baseUrl = this.apiService.getBaseUrl();
-    const url = `${baseUrl}/api/intern/export/excel?status=${this.statusFilter()}&range=${this.rangeFilter()}`;
+    const userRole = localStorage.getItem('user_role');
+    const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+    const managerId = userRole === 'manager' ? userData._id : '';
+
+    let url = `${baseUrl}/api/intern/export/excel?status=${this.statusFilter()}&range=${this.rangeFilter()}`;
+    if (managerId) {
+      url += `&managerId=${managerId}`;
+    }
     window.open(url, '_blank');
   }
 }

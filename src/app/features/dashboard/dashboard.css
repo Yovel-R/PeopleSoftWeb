@@ -5,7 +5,7 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
   animation: fadeIn 0.4s ease-out;
 }
 
@@ -19,7 +19,6 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 0.5rem;
 }
 
 .header-main h1 {
@@ -187,7 +186,7 @@
 .action-card {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 14px;
+  border-radius: 8px;
   padding: 1rem;
   display: flex;
   align-items: center;
@@ -233,7 +232,7 @@
 .dashboard-content-layout {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 @media (max-width: 1024px) {
@@ -246,7 +245,7 @@
 .analytics-card {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 20px;
+  border-radius: 8px;
   padding: 1.5rem;
   box-shadow: var(--card-shadow);
 }
@@ -366,7 +365,7 @@
 .activity-card {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 20px;
+  border-radius: 8px;
   padding: 1.5rem;
   box-shadow: var(--card-shadow);
 }

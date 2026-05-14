@@ -64,7 +64,7 @@
   box-sizing: border-box;
 }
 
-lucide-icon {
+lucide-icon, hugeicons-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;

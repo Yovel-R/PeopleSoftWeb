@@ -5,8 +5,18 @@
     <div class="breadcrumb">
       <a routerLink="/interns">Interns</a> / <span>Attendance</span>
     </div>
-    <h1>Attendance Details</h1>
-    <p>Viewing attendance history for Intern ID: {{ internId() }}</p>
+    <div class="header-main">
+      <div class="header-text">
+        <h1>Attendance Details</h1>
+        <p>Viewing attendance history for Intern ID: {{ internId() }}</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-export" (click)="exportAttendance()">
+          <hugeicons-icon [icon]="FileDownloadIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+          <span>Export PDF</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -21,6 +31,7 @@
           <th>In Time</th>
           <th>Out Time</th>
           <th>Duration</th>
+          <th>Location</th>
         </tr>
       </thead>
       <tbody>
@@ -34,6 +45,25 @@
           <td>{{ record.punchInTime | date:'shortTime' }}</td>
           <td>{{ record.punchOutTime ? (record.punchOutTime | date:'shortTime') : '--:--' }}</td>
           <td>{{ record.duration || '--:--' }}</td>
+          <td>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <!-- Punch In Location -->
+              <button class="icon-btn" title="Punch In Location" style="background: none; border: none; cursor: pointer;" 
+                      (click)="openMap(record.punchInLocation)"
+                      *ngIf="record.punchInLocation">
+                <hugeicons-icon [icon]="Location01Icon" size="20" [strokeWidth]="2" color="#16a34a"></hugeicons-icon>
+              </button>
+              
+              <!-- Punch Out Location -->
+              <button class="icon-btn" title="Punch Out Location" style="background: none; border: none; cursor: pointer;" 
+                      (click)="openMap(record.punchOutLocation)"
+                      *ngIf="record.punchOutLocation">
+                <hugeicons-icon [icon]="Location01Icon" size="20" [strokeWidth]="2" color="#dc2626"></hugeicons-icon>
+              </button>
+
+              <span *ngIf="!record.punchInLocation && !record.punchOutLocation" style="color: #94a3b8; font-size: 12px;">--</span>
+            </div>
+          </td>
         </tr>
       </tbody>
     </table>

@@ -4,20 +4,6 @@
     <p>Manage employee resignations through a multi-stage approval process.</p>
   </div>
 
-  <div class="tab-nav">
-    <button class="tab-btn" [class.active]="activeTab() === 'manager'" (click)="activeTab.set('manager')">
-      Manager Pending
-      <span class="count-badge">{{ allRequests().filter(r => r.status === 'pending_manager').length }}</span>
-    </button>
-    <button class="tab-btn" [class.active]="activeTab() === 'hr'" (click)="activeTab.set('hr')">
-      HR Pending
-      <span class="count-badge">{{ allRequests().filter(r => r.status === 'pending_hr').length }}</span>
-    </button>
-    <button class="tab-btn" [class.active]="activeTab() === 'completed'" (click)="activeTab.set('completed')">
-      Completed
-      <span class="count-badge">{{ allRequests().filter(r => r.status === 'accepted' || r.status === 'rejected').length }}</span>
-    </button>
-  </div>
 
   <div class="requests-grid" *ngIf="!isLoading(); else loading">
     <div class="request-card" *ngFor="let req of filteredRequests">
@@ -94,13 +80,22 @@
           <textarea [(ngModel)]="reviewRemarks" placeholder="Enter your comments here..." rows="4"></textarea>
         </div>
 
-        <!-- HR Specific: File Upload -->
-        <div class="form-group" *ngIf="activeTab() === 'hr' && reviewAction() === 'accept'">
-          <label>Attach Certificates (Optional)</label>
-          <div class="file-upload-zone" (click)="fileInput.click()">
-            <i class="fa-solid fa-cloud-arrow-up"></i>
-            <p>{{ selectedFiles.length ? selectedFiles.length + ' files selected' : 'Upload Internship/Project Certificates' }}</p>
-            <input type="file" #fileInput (change)="onFileSelected($event)" multiple style="display: none;">
+        <!-- HR Specific: Certificate Selection -->
+        <div class="form-group" *ngIf="userRole() === 'hr' && reviewAction() === 'accept'">
+          <label>Select Certificates to Generate & Send</label>
+          <div class="certificate-checkboxes" style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+              <input type="checkbox" [checked]="certInternship()" (change)="certInternship.set(!certInternship())">
+              Internship Completion Certificate
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+              <input type="checkbox" [checked]="certProject()" (change)="certProject.set(!certProject())">
+              Project Completion Certificate
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+              <input type="checkbox" [checked]="certLor()" (change)="certLor.set(!certLor())">
+              Letter of Recommendation (LOR)
+            </label>
           </div>
         </div>
       </div>

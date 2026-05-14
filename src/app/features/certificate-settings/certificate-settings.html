@@ -1,70 +1,95 @@
 <div class="settings-container">
   <div class="page-header">
-    <h1>Certificate & Documents</h1>
+    <h1>Certificate &amp; Documents</h1>
     <p>Manage branding, signatures, and document templates for your organization.</p>
   </div>
 
   <div class="settings-grid">
-    <!-- Document Selector Sidebar -->
+
+    <!-- Sidebar -->
     <div class="doc-sidebar">
       <div class="doc-category" *ngFor="let cat of docCategories">
         <h3>{{cat.name}}</h3>
         <div class="doc-list">
-          <button class="doc-btn" 
-                  *ngFor="let doc of cat.docs"
-                  [class.active]="selectedDocType === doc.id"
-                  (click)="selectedDocType = doc.id">
-            <hugeicons-icon [icon]="StampIcon" size="18"></hugeicons-icon>
+          <button class="doc-btn" *ngFor="let doc of cat.docs" [class.active]="selectedDocType === doc.id"
+            (click)="selectDoc(doc.id)">
+            <hugeicons-icon [icon]="DiplomaIcon" size="18"></hugeicons-icon>
             <span>{{doc.label}}</span>
           </button>
         </div>
       </div>
     </div>
 
+    <!-- Builder -->
     <div class="main-content">
-      <!-- Dynamic Template Builder -->
-      <div class="config-card">
-        <div class="card-header-gradient" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);">
+      <div class="config-card" style="position: relative;">
+
+        <!-- Loading overlay (sits on top of card while fetching) -->
+        <div class="card-loading-overlay" *ngIf="isLoading">
+          <div class="card-spinner"></div>
+          <p>Loading templates…</p>
+        </div>
+
+        <!-- Header -->
+        <div class="card-header-minimal">
           <div class="hero-visual">
             <div class="icon-wrapper">
-              <hugeicons-icon [icon]="StampIcon" size="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+              <hugeicons-icon [icon]="DiplomaIcon" size="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
             </div>
             <div class="hero-content">
               <h2>{{ selectedDocType | titlecase }} Template Builder</h2>
-              <p>Customize the background and placeholders for this document.</p>
+              <p>Add pages, upload backgrounds and drag-drop placeholders.</p>
             </div>
           </div>
         </div>
 
         <div class="form-body">
-          <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
-          
-          <div class="settings-sub-grid">
+          <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display:none">
+
+          <!-- Page Tabs -->
+          <div class="page-tabs-row">
+            <div class="page-tabs">
+              <button class="page-tab" *ngFor="let page of currentTemplate.pages; let i = index"
+                [class.active]="selectedPageIndex === i" (click)="selectedPageIndex = i">
+                Page {{ i + 1 }}
+                <span class="tab-remove" *ngIf="currentTemplate.pages.length > 1"
+                  (click)="$event.stopPropagation(); removePage(i)">×</span>
+              </button>
+            </div>
+            <button class="btn-add-page" (click)="addPage()">
+              <i class="fa-solid fa-plus"></i> Add Page
+            </button>
+          </div>
+
+          <!-- Orientation + Background Upload -->
+          <div class="settings-sub-grid" style="margin-top: 1rem;">
             <div class="input-group">
               <label>Document Orientation</label>
               <div class="orientation-toggle">
-                <button [class.active]="currentTemplate.orientation === 'portrait'" (click)="currentTemplate.orientation = 'portrait'">
-                  <i class="fa-solid fa-file"></i> Portrait
+                <button [class.active]="currentTemplate.orientation === 'portrait'"
+                  (click)="currentTemplate.orientation = 'portrait'">
+                  <hugeicons-icon [icon]="OrientationLandscapeToPotraitIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon> Portrait
                 </button>
-                <button [class.active]="currentTemplate.orientation === 'landscape'" (click)="currentTemplate.orientation = 'landscape'">
-                  <i class="fa-solid fa-file-export"></i> Landscape
+                <button [class.active]="currentTemplate.orientation === 'landscape'"
+                  (click)="currentTemplate.orientation = 'landscape'">
+                  <hugeicons-icon [icon]="OrientationPotraitToLandscapeIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon> Landscape
                 </button>
               </div>
             </div>
             <div class="input-group">
-              <label>Template Background</label>
+              <label>Page {{ selectedPageIndex + 1 }} Background</label>
               <div class="upload-zone-compact" (click)="fileInput.click()">
-                <span *ngIf="!currentTemplate.backgroundUrl">Upload Template Image</span>
-                <span *ngIf="currentTemplate.backgroundUrl">Change Template Image</span>
+                <span>{{ currentPage.backgroundUrl ? 'Change Background' : 'Upload Background' }}</span>
               </div>
             </div>
           </div>
 
           <div class="section-divider"></div>
 
+          <!-- Placeholders -->
           <div class="section-title">
-            <h3>Placeholders Mapping</h3>
-            <button class="btn-add" (click)="addPlaceholder()" style="width: auto; padding: 6px 12px; font-size: 13px;">
+            <h3>Placeholders – Page {{ selectedPageIndex + 1 }}</h3>
+            <button class="btn-add" (click)="addPlaceholder()">
               <i class="fa-solid fa-plus"></i> Add Field
             </button>
           </div>
@@ -72,14 +97,14 @@
           <div class="placeholders-list">
             <div class="placeholder-row header-row">
               <span>Data Field</span>
-              <span>X Axis</span>
-              <span>Y Axis</span>
+              <span>X</span>
+              <span>Y</span>
               <span>Font</span>
               <span>Bold</span>
               <span></span>
             </div>
 
-            <div class="placeholder-row" *ngFor="let p of currentTemplate.placeholders; let i = index">
+            <div class="placeholder-row" *ngFor="let p of currentPage.placeholders; let i = index">
               <select class="location-input" [(ngModel)]="p.key">
                 <option *ngFor="let key of availablePlaceholderKeys" [value]="key.key">{{key.label}}</option>
               </select>
@@ -94,49 +119,47 @@
               </button>
             </div>
 
-            <div *ngIf="currentTemplate.placeholders.length === 0" class="empty-state">
-              No placeholders added yet.
+            <div *ngIf="currentPage.placeholders.length === 0" class="empty-state">
+              No placeholders yet. Click <strong>Add Field</strong> to start.
             </div>
           </div>
 
           <div class="section-divider"></div>
 
+          <!-- Visual Canvas -->
           <div class="section-title">
-            <h3>Visual Mapping Guide</h3>
+            <h3>Visual Mapping – Page {{ selectedPageIndex + 1 }}</h3>
           </div>
 
           <div class="cert-visual-builder">
-            <div class="cert-canvas-container" 
-                 #canvasContainer
-                 (mousemove)="onMouseMove($event)"
-                 (mouseup)="onMouseUp()"
-                 [style.width.px]="currentTemplate.orientation === 'portrait' ? 595 : 842"
-                 [style.height.px]="currentTemplate.orientation === 'portrait' ? 842 : 595"
-                 [style.backgroundImage]="'url(' + (currentTemplate.backgroundUrl || 'assets/images/cert_fallback.png') + ')'">
-              <div class="placeholder-overlay" 
-                   *ngFor="let p of currentTemplate.placeholders; let i = index"
-                   (mousedown)="onMouseDown($event, i)"
-                   [class.dragging]="draggingIndex === i"
-                   [style.left.px]="p.x" 
-                   [style.top.px]="p.y"
-                   [style.fontSize.px]="p.fontSize"
-                   [style.fontWeight]="p.isBold ? 'bold' : 'normal'"
-                   [style.color]="p.color || '#000'">
+            <div class="cert-canvas-container" (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp()"
+              [style.width.px]="currentTemplate.orientation === 'portrait' ? 595 : 842"
+              [style.height.px]="currentTemplate.orientation === 'portrait' ? 842 : 595"
+              [style.backgroundImage]="'url(' + (currentPage.backgroundUrl || 'assets/images/cert_fallback.png') + ')'">
+              <div class="placeholder-overlay" *ngFor="let p of currentPage.placeholders; let i = index"
+                (mousedown)="onMouseDown($event, i)" [class.dragging]="draggingIndex === i" [style.left.px]="p.x"
+                [style.top.px]="p.y" [style.fontSize.px]="p.fontSize" [style.fontWeight]="p.isBold ? 'bold' : 'normal'"
+                [style.color]="p.color || '#000'">
                 <i class="fa-solid fa-arrows-up-down-left-right"></i>
                 {{ '{' + '{' + p.key + '}' + '}' }}
               </div>
             </div>
           </div>
-          <p class="help-text center" style="margin-top: 12px; text-align: center;">💡 Tip: You can drag the blue boxes to position them exactly where you want.</p>
+          <p class="help-text center" style="margin-top:12px;text-align:center">
+            💡 Each page becomes one PDF page. Drag labels to position them precisely.
+          </p>
         </div>
 
-        <div class="actions-footer" style="padding: 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
-          <button class="btn-save-all" (click)="saveSettings()" [disabled]="isSaving" style="width: auto; padding: 12px 24px;">
-            <hugeicons-icon [icon]="CheckmarkCircle01Icon" size="20" [strokeWidth]="2" color="currentColor"></hugeicons-icon>
+        <!-- Save -->
+        <div class="actions-footer">
+          <button class="btn-save-all" (click)="saveSettings()" [disabled]="isSaving">
+            <hugeicons-icon [icon]="CheckmarkCircle01Icon" size="20" [strokeWidth]="2"
+              color="currentColor"></hugeicons-icon>
             <span>{{ isSaving ? 'Saving Changes...' : 'Save All Templates' }}</span>
           </button>
         </div>
-      </div>
-    </div>
+
+      </div><!-- /config-card -->
+    </div><!-- /main-content -->
   </div>
 </div>

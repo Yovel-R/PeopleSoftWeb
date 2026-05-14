@@ -74,7 +74,23 @@ export class EmployeeSidebar {
 
   exportEmployeeData() {
     const baseUrl = this.apiService.getBaseUrl();
-    const url = `${baseUrl}/api/employee/export/excel/all-employees`;
-    window.open(url, '_blank');
+    const userRole = localStorage.getItem('user_role');
+    const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+    const managerId = userRole === 'manager' ? (userData._id || userData.employeeId) : '';
+
+    let url = `${baseUrl}/api/employee/export/excel/all-employees?status=all`;
+    if (managerId) {
+      url += `&managerId=${managerId}`;
+    }
+
+    this.apiService.downloadFile(url).subscribe({
+      next: (blob) => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'Employee_Data.xlsx';
+        link.click();
+      },
+      error: (err) => console.error('Export failed', err)
+    });
   }
 }
