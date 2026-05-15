@@ -76,6 +76,24 @@
   font-size: var(--text-sm); /* 11px */
 }
 
+.search-match-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background: #ef4444; /* Red dot */
+  border-radius: 50%;
+  border: 1px solid white;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
 .request-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

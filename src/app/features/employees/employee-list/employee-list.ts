@@ -40,8 +40,10 @@ export class EmployeeList implements OnInit {
 
   currentTab = signal<'list' | 'leaves' | 'requests' | 'offboarding'>('list');
   employees = signal<any[]>([]);
+  allEmployees = signal<any[]>([]);
   isLoading = signal(true);
-  statusFilter = signal<string>('all');
+  roleFilter = signal<string>('all');
+  searchQuery = signal<string>('');
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -56,12 +58,11 @@ export class EmployeeList implements OnInit {
 
   fetchEmployees() {
     this.isLoading.set(true);
-    console.log('Using Base URL:', this.apiService.getBaseUrl());
-    console.log('Fetching employees with status:', this.statusFilter());
-    this.apiService.getAllEmployees('all', this.statusFilter()).subscribe({
+    // Always fetch all approved employees to filter locally by role
+    this.apiService.getAllEmployees('all', 'approved').subscribe({
       next: (data) => {
-        console.log('Employees received:', data);
-        this.employees.set(data);
+        this.allEmployees.set(data);
+        this.applyFilter();
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -69,6 +70,45 @@ export class EmployeeList implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  applyFilter() {
+    const filter = this.roleFilter();
+    const query = this.searchQuery().toLowerCase();
+    const all = this.allEmployees();
+    
+    let filtered = all;
+
+    // First apply role filter
+    if (filter === 'manager') {
+      filtered = all.filter(e => e.isManager);
+    } else if (filter === 'hr') {
+      filtered = all.filter(e => e.isHr);
+    } else if (filter === 'employee') {
+      filtered = all.filter(e => !e.isManager && !e.isHr);
+    }
+
+    // Then apply search query
+    if (query) {
+      filtered = filtered.filter(e => 
+        e.fullName?.toLowerCase().includes(query) || 
+        e.EmployeeId?.toLowerCase().includes(query) ||
+        e.email?.toLowerCase().includes(query)
+      );
+    }
+
+    this.employees.set(filtered);
+  }
+
+  onSearch(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.searchQuery.set(input.value);
+    this.applyFilter();
+  }
+
+  setRoleFilter(role: string) {
+    this.roleFilter.set(role);
+    this.applyFilter();
   }
 
   toggleManager(emp: any) {
@@ -83,26 +123,5 @@ export class EmployeeList implements OnInit {
         console.error('Failed to toggle manager status', err);
       }
     });
-  }
-
-  setStatus(status: string) {
-    this.statusFilter.set(status);
-    this.fetchEmployees();
-  }
-
-  getStatusColor(status: string): string {
-    switch (status.toLowerCase()) {
-      case 'active':
-      case 'present':
-        return 'status-green';
-      case 'on leave':
-      case 'pending':
-        return 'status-orange';
-      case 'terminated':
-      case 'resigned':
-        return 'status-red';
-      default:
-        return 'status-gray';
-    }
   }
 }

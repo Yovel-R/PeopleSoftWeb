@@ -61,7 +61,6 @@ export class HrPolicies implements OnInit {
         this.fetchPolicies(true); // Silent refresh
         this.newPolicy = { policy_name: '', policy_url: '', policy_view_by: ['employee', 'intern'] };
         this.isSaving.set(false);
-        alert('Policy published successfully');
       },
       error: (err: any) => {
         alert('Failed to save: ' + err.message);

@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, inject } from '@angular/core';
+import { Component, signal, OnInit, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../../services/api.service';
 import { RouterModule } from '@angular/router';
@@ -66,63 +66,87 @@ export class InternRequests implements OnInit {
     this.searchQuery.set(input.value);
   }
 
-  get filteredRequests() {
+  filteredRequests = computed(() => {
     const query = this.searchQuery().toLowerCase();
+    const category = this.currentCategory();
+    const all = this.allRequests();
     
-    return this.allRequests().filter(r => {
-      // Search Logic
+    return all.filter(r => {
+      // 1. Search Logic
       const matchesSearch = !query || 
         r.fullName?.toLowerCase().includes(query) || 
         r.college?.toLowerCase().includes(query) || 
         r.department?.toLowerCase().includes(query) ||
-        r.contact?.toLowerCase().includes(query);
+        r.contact?.toLowerCase().includes(query) ||
+        r.email?.toLowerCase().includes(query) ||
+        (r.internid && r.internid.toLowerCase().includes(query));
 
       if (!matchesSearch) return false;
 
-      // Category filter
+      // 2. Category filter logic
       const type = r.applicationType || 'Internship';
       const isAssigned = !!r.assignedManager;
       const managerStatus = r.managerApprovalStatus || 'pending';
 
-      if (this.currentCategory() === 'Assigned') {
+      if (category === 'Assigned') {
         return isAssigned && managerStatus === 'pending';
       }
       
-      if (this.currentCategory() === 'Approved') {
+      if (category === 'Approved') {
         return managerStatus === 'approved';
       }
 
-      if (this.currentCategory() === 'Rejected') {
+      if (category === 'Rejected') {
         return managerStatus === 'rejected';
       }
 
-      // In Internship/Job tabs, show ONLY unassigned requests
-      return !isAssigned && type === this.currentCategory();
+      // In Internship/Job tabs, show ONLY unassigned requests matching the type
+      return !isAssigned && type === category;
     });
-  }
+  });
 
   setCategory(category: 'Internship' | 'Job' | 'Assigned' | 'Approved' | 'Rejected') {
     this.currentCategory.set(category);
   }
 
-  get internshipCount() {
-    return this.allRequests().filter(r => !r.assignedManager && (r.applicationType || 'Internship') === 'Internship').length;
+  internshipCount = computed(() => this.getFilteredCountForCategory('Internship'));
+  jobCount = computed(() => this.getFilteredCountForCategory('Job'));
+  assignedCount = computed(() => this.getFilteredCountForCategory('Assigned'));
+  approvedCount = computed(() => this.getFilteredCountForCategory('Approved'));
+  rejectedCount = computed(() => this.getFilteredCountForCategory('Rejected'));
+
+  private getFilteredCountForCategory(category: string) {
+    const query = this.searchQuery().toLowerCase();
+    const all = this.allRequests();
+    
+    return all.filter(r => {
+      // Category filter
+      const type = r.applicationType || 'Internship';
+      const isAssigned = !!r.assignedManager;
+      const managerStatus = r.managerApprovalStatus || 'pending';
+
+      let inCategory = false;
+      if (category === 'Assigned') inCategory = isAssigned && managerStatus === 'pending';
+      else if (category === 'Approved') inCategory = managerStatus === 'approved';
+      else if (category === 'Rejected') inCategory = managerStatus === 'rejected';
+      else inCategory = !isAssigned && type === category;
+
+      if (!inCategory) return false;
+
+      // Search filter
+      if (!query) return true;
+      return r.fullName?.toLowerCase().includes(query) || 
+             r.college?.toLowerCase().includes(query) || 
+             r.department?.toLowerCase().includes(query) ||
+             r.contact?.toLowerCase().includes(query) ||
+             r.email?.toLowerCase().includes(query) ||
+             (r.internid && r.internid.toLowerCase().includes(query));
+    }).length;
   }
 
-  get jobCount() {
-    return this.allRequests().filter(r => !r.assignedManager && r.applicationType === 'Job').length;
-  }
-
-  get assignedCount() {
-    return this.allRequests().filter(r => !!r.assignedManager && (r.managerApprovalStatus || 'pending') === 'pending').length;
-  }
-
-  get approvedCount() {
-    return this.allRequests().filter(r => r.managerApprovalStatus === 'approved').length;
-  }
-
-  get rejectedCount() {
-    return this.allRequests().filter(r => r.managerApprovalStatus === 'rejected').length;
+  hasSearchMatch(category: string): boolean {
+    if (!this.searchQuery()) return false;
+    return this.getFilteredCountForCategory(category) > 0;
   }
 
   rejectRequest(id: string) {

@@ -20,6 +20,7 @@ export class EmployeeAdd implements OnInit {
   
   isSaving = signal(false);
   isApprovalMode = signal(false);
+  isEditMode = signal(false);
   requestId = '';
   
   employee = {
@@ -49,13 +50,33 @@ export class EmployeeAdd implements OnInit {
     emergencyPhone: ''
   };
 
+  employeeRoles = signal<string[]>([]);
+
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
+    const isEdit = this.route.snapshot.queryParamMap.get('edit') === 'true';
+
     if (id) {
-      this.isApprovalMode.set(true);
+      if (isEdit) {
+        this.isEditMode.set(true);
+      } else {
+        this.isApprovalMode.set(true);
+      }
       this.requestId = id;
       this.fetchRequestData(id);
     }
+    this.fetchSettings();
+  }
+
+  fetchSettings() {
+    this.apiService.getCompanySettings().subscribe({
+      next: (res: any) => {
+        if (res.success && res.settings) {
+          this.employeeRoles.set(res.settings.employeeRoles || []);
+        }
+      },
+      error: (err) => console.error('Failed to fetch settings', err)
+    });
   }
 
   fetchRequestData(id: string) {
@@ -87,7 +108,19 @@ export class EmployeeAdd implements OnInit {
 
     this.isSaving.set(true);
 
-    if (this.isApprovalMode()) {
+    if (this.isEditMode()) {
+      this.apiService.updateEmployee(this.requestId, this.employee).subscribe({
+        next: () => {
+          alert('Employee profile updated successfully!');
+          this.router.navigate(['/employees', this.requestId]);
+        },
+        error: (err: any) => {
+          console.error('Failed to update employee', err);
+          alert('Failed to update: ' + (err.error?.message || err.message));
+          this.isSaving.set(false);
+        }
+      });
+    } else if (this.isApprovalMode()) {
       this.apiService.acceptEmployee(this.requestId, this.employee).subscribe({
         next: () => {
           alert('Employee onboarding started!');

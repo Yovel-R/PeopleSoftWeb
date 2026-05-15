@@ -1,163 +1,215 @@
-<div class="dashboard-container">
-  <!-- Welcome Header -->
-  <header class="welcome-section">
-    <div class="welcome-text">
+<div class="dashboard-wrapper">
+  
+  <!-- Header Section -->
+  <header class="welcome-header">
+    <div class="header-main">
       <h1>{{ greeting }}, {{ employeeData()?.fullName?.split(' ')[0] }}! 👋</h1>
-      <p>Today is {{ currentTime() | date:'EEEE, MMMM d, y' }}</p>
+      <p class="subtitle" style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">
+        Team Member Portal • ID: {{ employeeData()?.EmployeeId }}
+      </p>
     </div>
-    <div class="clock-card">
-      <div class="time">{{ currentTime() | date:'hh:mm:ss a' }}</div>
-      <div class="status-indicator">
-        <span class="dot"></span>
-        Shift Ongoing
+
+    <div class="header-actions">
+      <!-- Date Display -->
+      <div class="date-display">
+        <span class="time">{{ currentTime() | date:'hh:mm:ss a' }}</span>
+        <span class="date">{{ currentTime() | date:'EEEE, d MMMM y' }}</span>
+      </div>
+      
+      <!-- Notifications & Profile -->
+      <div class="top-meta" style="display: flex; align-items: center; gap: 1rem;">
+        <div class="status-indicator" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #10b981; font-weight: 600; background: #ecfdf5; padding: 0.4rem 1rem; border-radius: 99px;">
+          <span class="dot" style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite;"></span>
+          Shift Ongoing
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Quick Stats Grid -->
+  <!-- Statistics Grid -->
   <div class="stats-grid">
-    <div class="stat-card attendance">
-      <div class="icon-box">
-        <i class="fa-solid fa-calendar-check"></i>
+    <div class="stat-card green" routerLink="/employee/attendance" style="cursor: pointer;">
+      <div class="stat-icon-container">
+        <hugeicons-icon [icon]="FingerAccessIcon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
       </div>
       <div class="stat-info">
-        <label>Monthly Attendance</label>
-        <h3>98%</h3>
-        <p>Excellent progress!</p>
+        <span class="stat-label">Monthly Attendance</span>
+        <h3 class="stat-value">98%</h3>
+        <div class="stat-trend" style="color: #10B981">
+          <span>Excellent progress!</span>
+        </div>
       </div>
     </div>
 
-    <div class="stat-card leaves">
-      <div class="icon-box">
-        <i class="fa-solid fa-plane-departure"></i>
+    <div class="stat-card orange" routerLink="/employee/leaves" style="cursor: pointer;">
+      <div class="stat-icon-container">
+        <hugeicons-icon [icon]="CalendarCheckOut01Icon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
       </div>
       <div class="stat-info">
-        <label>Leaves Available</label>
-        <h3>12 Days</h3>
-        <p>Casual & Sick leaves</p>
+        <span class="stat-label">Leaves Available</span>
+        <h3 class="stat-value">12 Days</h3>
+        <div class="stat-trend" style="color: #F59E0B">
+          <span>Casual & Sick</span>
+        </div>
       </div>
     </div>
 
-    <div class="stat-card tasks">
-      <div class="icon-box">
-        <i class="fa-solid fa-list-check"></i>
+    <div class="stat-card blue" routerLink="/employee/dashboard" style="cursor: pointer;">
+      <div class="stat-icon-container">
+        <hugeicons-icon [icon]="WorkflowSquare03Icon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
       </div>
       <div class="stat-info">
-        <label>Active Tasks</label>
-        <h3>04</h3>
-        <p>2 due this week</p>
+        <span class="stat-label">Active Tasks</span>
+        <h3 class="stat-value">04</h3>
+        <div class="stat-trend" style="color: #3B82F6">
+          <span>2 due this week</span>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Manager Assignment Section -->
-  <div class="manager-requests-section" *ngIf="isManager() && pendingTeamRequests().length > 0">
-    <div class="section-header">
-      <h2><i class="fa-solid fa-users-viewfinder"></i> Pending Team Requests</h2>
-      <span class="count">{{ pendingTeamRequests().length }} NEW</span>
-    </div>
+  <section class="actions-section" *ngIf="isManager() && pendingTeamRequests().length > 0">
+    <h3 class="section-title" style="display: flex; justify-content: space-between;">
+      <span>
+        <hugeicons-icon [icon]="UserCircleIcon" size="20" [strokeWidth]="2" color="var(--accent-primary)"></hugeicons-icon>
+        Pending Team Requests
+      </span>
+      <span class="count" style="background: #fef3c7; color: #d97706; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight: 800;">{{ pendingTeamRequests().length }} NEW</span>
+    </h3>
     
-    <div class="requests-list">
-      <div class="team-request-card" *ngFor="let req of pendingTeamRequests()">
-        <div class="req-main">
-          <div class="avatar-small">{{ req.fullName[0] }}</div>
+    <div class="requests-list" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+      <div class="team-request-card" *ngFor="let req of pendingTeamRequests()" style="display: flex; align-items: center; justify-content: space-between; padding: 1.25rem; background: white; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);">
+        <div class="req-main" style="display: flex; align-items: center; gap: 1.25rem; flex: 1;">
+          <div class="avatar-small" style="width: 44px; height: 44px; background: #e2e8f0; color: #475569; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+            {{ req.fullName[0] }}
+          </div>
           <div class="req-details">
-            <h4>{{ req.fullName }}</h4>
-            <p>{{ req.applicationType }} • {{ req.role }}</p>
+            <h4 style="font-weight: 700; color: var(--text-primary); margin: 0 0 0.25rem 0;">{{ req.fullName }}</h4>
+            <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0;">{{ req.applicationType }} • {{ req.role }}</p>
           </div>
         </div>
-        <div class="req-info">
-          <p class="college"><i class="fa-solid fa-graduation-cap"></i> {{ req.college }}</p>
-          <p class="time"><i class="fa-solid fa-clock"></i> Applied on {{ req.createdAt | date:'shortDate' }}</p>
+        <div class="req-info" style="flex: 1; display: flex; flex-direction: column; gap: 0.25rem;">
+          <p class="college" style="font-size: 0.8125rem; color: var(--text-secondary); margin: 0; display: flex; align-items: center; gap: 0.5rem;"><hugeicons-icon [icon]="Home01Icon" size="14"></hugeicons-icon> {{ req.college }}</p>
+          <p class="time" style="font-size: 0.8125rem; color: var(--text-muted); margin: 0; display: flex; align-items: center; gap: 0.5rem;"><hugeicons-icon [icon]="Clock01Icon" size="14"></hugeicons-icon> Applied on {{ req.createdAt | date:'shortDate' }}</p>
         </div>
-        <div class="req-actions">
-          <button class="btn-reject-sm" (click)="reviewRequest(req._id, 'rejected')">
-            <i class="fa-solid fa-xmark"></i> Reject
+        <div class="req-actions" style="display: flex; gap: 0.75rem;">
+          <button class="btn-reject-sm" (click)="reviewRequest(req._id, 'rejected')" style="padding: 0.5rem 1rem; border: none; border-radius: 10px; font-size: 0.8125rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; background: #fee2e2; color: #dc2626;">
+            Reject
           </button>
-          <button class="btn-approve-sm" (click)="reviewRequest(req._id, 'approved')">
-            <i class="fa-solid fa-check"></i> Approve
+          <button class="btn-approve-sm" (click)="reviewRequest(req._id, 'approved')" style="padding: 0.5rem 1rem; border: none; border-radius: 10px; font-size: 0.8125rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; background: #d1fae5; color: #059669;">
+            Approve
           </button>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="content-row">
-    <!-- Profile Summary -->
-    <div class="card profile-card">
-      <div class="card-header">
-        <h3>My Profile</h3>
-        <button class="edit-btn">View Full Details</button>
-      </div>
-      <div class="profile-body">
-        <div class="avatar-large">{{ employeeData()?.fullName[0] }}</div>
-        <div class="user-details">
-          <h2>{{ employeeData()?.fullName }}</h2>
-          <p class="designation">{{ employeeData()?.designation || 'Team Member' }}</p>
-          <div class="id-badge">{{ employeeData()?.EmployeeId }}</div>
+  <!-- Quick Actions Section -->
+  <section class="actions-section">
+    <h3 class="section-title">
+      <hugeicons-icon [icon]="PlusSignIcon" size="20" [strokeWidth]="2" color="var(--accent-primary)"></hugeicons-icon>
+      Quick Actions
+    </h3>
+    <div class="actions-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+      <div class="action-card teal" routerLink="/employee/leaves">
+        <div class="action-icon-box">
+          <hugeicons-icon [icon]="Calendar01Icon" size="20" [strokeWidth]="1.5"></hugeicons-icon>
         </div>
-        <div class="info-list">
-          <div class="info-item">
-            <i class="fa-solid fa-envelope"></i>
+        <div class="action-details">
+          <h4>Request Leave</h4>
+          <p>Apply for time off</p>
+        </div>
+      </div>
+
+      <div class="action-card purple" routerLink="/employee/payroll">
+        <div class="action-icon-box">
+          <hugeicons-icon [icon]="Money03Icon" size="20" [strokeWidth]="1.5"></hugeicons-icon>
+        </div>
+        <div class="action-details">
+          <h4>My Payslips</h4>
+          <p>View and download</p>
+        </div>
+      </div>
+
+      <div class="action-card blue">
+        <div class="action-icon-box">
+          <hugeicons-icon [icon]="LicenseDraftIcon" size="20" [strokeWidth]="1.5"></hugeicons-icon>
+        </div>
+        <div class="action-details">
+          <h4>Digital ID</h4>
+          <p>View corporate ID</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content Grid -->
+  <div class="dashboard-content-layout">
+    
+    <!-- Profile Summary Panel -->
+    <div class="analytics-card" style="padding: 2rem;">
+      <div class="card-header" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <div class="header-main">
+          <h3>My Profile</h3>
+        </div>
+      </div>
+
+      <div class="profile-body" style="text-align: center;">
+        <div class="avatar-large" style="width: 100px; height: 100px; background: var(--accent-primary); color: white; font-size: 2.5rem; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 30px; margin: 0 auto 1.5rem;">
+          {{ employeeData()?.fullName[0] }}
+        </div>
+        <div class="user-details">
+          <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">{{ employeeData()?.fullName }}</h2>
+          <p class="designation" style="color: var(--text-muted); font-weight: 600; margin-bottom: 1rem;">{{ employeeData()?.designation || 'Team Member' }}</p>
+        </div>
+        <div class="info-list" style="display: flex; flex-direction: column; gap: 1.25rem; text-align: left; background: var(--bg-secondary); padding: 1.5rem; border-radius: 16px; margin-top: 2rem;">
+          <div class="info-item" style="display: flex; align-items: center; gap: 1rem; color: var(--text-secondary); font-weight: 500;">
+            <hugeicons-icon [icon]="Chat01Icon" size="18" color="var(--text-muted)"></hugeicons-icon>
             <span>{{ employeeData()?.email }}</span>
           </div>
-          <div class="info-item">
-            <i class="fa-solid fa-phone"></i>
+          <div class="info-item" style="display: flex; align-items: center; gap: 1rem; color: var(--text-secondary); font-weight: 500;">
+            <hugeicons-icon [icon]="FilterIcon" size="18" color="var(--text-muted)"></hugeicons-icon>
             <span>{{ employeeData()?.phone || 'Not Provided' }}</span>
           </div>
-          <div class="info-item">
-            <i class="fa-solid fa-building"></i>
+          <div class="info-item" style="display: flex; align-items: center; gap: 1rem; color: var(--text-secondary); font-weight: 500;">
+            <hugeicons-icon [icon]="Home01Icon" size="18" color="var(--text-muted)"></hugeicons-icon>
             <span>{{ employeeData()?.department || 'Softrate' }}</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Quick Actions & Upcoming -->
-    <div class="right-column">
-      <div class="card actions-card">
-        <h3>Quick Actions</h3>
-        <div class="action-buttons">
-          <button class="action-btn">
-            <i class="fa-solid fa-clock"></i>
-            Request Leave
-          </button>
-          <button class="action-btn">
-            <i class="fa-solid fa-file-invoice"></i>
-            Payslip
-          </button>
-          <button class="action-btn">
-            <i class="fa-solid fa-id-card"></i>
-            ID Card
-          </button>
-        </div>
-      </div>
-
-      <div class="card holiday-card">
+    <!-- Upcoming Holidays Panel -->
+    <div class="activity-card">
+      <div class="card-header">
         <h3>Upcoming Holidays</h3>
-        <div class="holiday-list">
-          <div class="holiday-item">
-            <div class="date">
-              <span class="day">15</span>
-              <span class="month">AUG</span>
-            </div>
-            <div class="details">
-              <p class="name">Independence Day</p>
-              <p class="type">Public Holiday</p>
-            </div>
+      </div>
+      
+      <div class="activity-list">
+        <div class="activity-item" style="background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+          <div class="date-box" style="width: 50px; height: 50px; background: #fef2f2; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #dc2626;">
+            <span style="font-size: 1.1rem; font-weight: 800; line-height: 1;">15</span>
+            <span style="font-size: 0.6rem; font-weight: 700;">AUG</span>
           </div>
-          <div class="holiday-item">
-            <div class="date">
-              <span class="day">02</span>
-              <span class="month">OCT</span>
-            </div>
-            <div class="details">
-              <p class="name">Gandhi Jayanti</p>
-              <p class="type">Public Holiday</p>
-            </div>
+          <div class="activity-content">
+            <h5 style="font-weight: 700; color: var(--text-primary); margin: 0 0 0.2rem 0;">Independence Day</h5>
+            <p style="color: var(--text-muted); font-size: 0.8125rem; margin: 0;">Public Holiday</p>
+          </div>
+        </div>
+        
+        <div class="activity-item" style="background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+          <div class="date-box" style="width: 50px; height: 50px; background: #fef2f2; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #dc2626;">
+            <span style="font-size: 1.1rem; font-weight: 800; line-height: 1;">02</span>
+            <span style="font-size: 0.6rem; font-weight: 700;">OCT</span>
+          </div>
+          <div class="activity-content">
+            <h5 style="font-weight: 700; color: var(--text-primary); margin: 0 0 0.2rem 0;">Gandhi Jayanti</h5>
+            <p style="color: var(--text-muted); font-size: 0.8125rem; margin: 0;">Public Holiday</p>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </div>

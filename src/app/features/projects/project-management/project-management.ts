@@ -1,7 +1,8 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../services/api.service';
+import { SocketService } from '../../../services/socket.service';
 import { HugeiconsIconComponent } from '@hugeicons/angular';
 import { 
   DashboardSquare02Icon, 
@@ -46,6 +47,7 @@ interface Project {
 })
 export class ProjectManagement implements OnInit {
   private apiService = inject(ApiService);
+  private socketService = inject(SocketService);
 
   readonly DashboardSquare02Icon = DashboardSquare02Icon;
   readonly PlusSignIcon = PlusSignIcon;
@@ -79,30 +81,75 @@ export class ProjectManagement implements OnInit {
 
   tempTask = signal<string>('');
 
+  private refreshInterval: any;
+
   ngOnInit() {
     const data = localStorage.getItem('user_data');
     if (data) {
       this.currentUser.set(JSON.parse(data));
     }
     this.fetchData();
+    this.setupRealtimeListeners();
+    
+    // Auto refresh as fallback every 60 seconds
+    this.refreshInterval = setInterval(() => {
+      this.fetchData(false);
+    }, 60000);
   }
 
-  fetchData() {
-    this.isLoading.set(true);
+  setupRealtimeListeners() {
+    // Listen for project updates (including task toggles)
+    this.socketService.on('project-updated').subscribe((data: { project: Project }) => {
+      const idx = this.projects().findIndex(p => p._id === data.project._id);
+      if (idx !== -1) {
+        const updatedProjects = [...this.projects()];
+        updatedProjects[idx] = data.project;
+        this.projects.set(updatedProjects);
+      }
+    });
+
+    // Listen for new projects
+    this.socketService.on('project-created').subscribe((data: { project: Project }) => {
+      // Only add if I'm the manager or a team member
+      const isManager = data.project.managerId === this.currentUser()?._id;
+      const isMember = data.project.teamMembers.some((m: any) => m.memberId === this.currentUser()?._id);
+      
+      if (isManager || isMember) {
+        this.projects.set([data.project, ...this.projects()]);
+      }
+    });
+
+    // Listen for deletions
+    this.socketService.on('project-deleted').subscribe((data: { projectId: string }) => {
+      this.projects.set(this.projects().filter(p => p._id !== data.projectId));
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
+  }
+
+  fetchData(showLoading = true) {
+    if (showLoading) this.isLoading.set(true);
     const managerId = this.currentUser()?._id || this.currentUser()?.employeeId;
-    
+    const isHr = this.userRole() === 'hr' || this.userRole() === 'hr_admin';
+
+    const projects$ = isHr ? this.apiService.getAllProjects() : this.apiService.getManagerProjects(managerId);
+    const team$ = isHr ? this.apiService.getGlobalTeam() : this.apiService.getManagerTeam(managerId);
+
     forkJoin({
-      projects: this.apiService.getManagerProjects(managerId),
-      interns: this.apiService.getAllActiveInterns('all', 'approved'),
-      employees: this.apiService.getAllEmployees('all', 'approved')
+      projects: projects$,
+      team: team$
     }).subscribe({
       next: (res: any) => {
         this.projects.set(res.projects.projects || []);
         
         // Combine interns and employees for member selection
         const members = [
-          ...res.interns.map((i: any) => ({ ...i, memberType: 'intern' })),
-          ...res.employees.map((e: any) => ({ ...e, memberType: 'employee' }))
+          ...(res.team.interns || []).map((i: any) => ({ ...i, memberType: 'intern' })),
+          ...(res.team.employees || []).map((e: any) => ({ ...e, memberType: 'employee' }))
         ];
         this.teamMembers.set(members);
         this.isLoading.set(false);
@@ -222,15 +269,34 @@ export class ProjectManagement implements OnInit {
 
   toggleTask(project: Project, task: ProjectTask) {
     if (!task._id) return;
+    
+    // Optimistic Update
+    const projectIdx = this.projects().findIndex(p => p._id === project._id);
+    if (projectIdx !== -1) {
+      const updatedProjects = [...this.projects()];
+      const updatedProject = { ...updatedProjects[projectIdx] };
+      const taskIdx = updatedProject.checklist.findIndex(t => t._id === task._id);
+      
+      if (taskIdx !== -1) {
+        updatedProject.checklist[taskIdx] = { 
+          ...updatedProject.checklist[taskIdx], 
+          isCompleted: !updatedProject.checklist[taskIdx].isCompleted 
+        };
+        
+        // Recalculate progress locally
+        const completedCount = updatedProject.checklist.filter(t => t.isCompleted).length;
+        updatedProject.progress = Math.round((completedCount / updatedProject.checklist.length) * 100);
+        
+        updatedProjects[projectIdx] = updatedProject;
+        this.projects.set(updatedProjects);
+      }
+    }
+
     this.apiService.toggleProjectTask(project._id, task._id, this.currentUser()?._id).subscribe({
-      next: (res: any) => {
-        // Update local state
-        const idx = this.projects().findIndex(p => p._id === project._id);
-        if (idx !== -1) {
-          const updatedProjects = [...this.projects()];
-          updatedProjects[idx] = res.project;
-          this.projects.set(updatedProjects);
-        }
+      error: (err) => {
+        // Rollback on error (simplified: just fetch full data)
+        console.error('Toggle task failed, rolling back...', err);
+        this.fetchData(false);
       }
     });
   }
@@ -238,9 +304,16 @@ export class ProjectManagement implements OnInit {
   deleteProject(projectId: string) {
     if (!confirm('Are you sure you want to delete this project?')) return;
     
+    // Optimistic Update
+    const originalProjects = this.projects();
+    this.projects.set(originalProjects.filter(p => p._id !== projectId));
+
     this.apiService.deleteProject(projectId).subscribe({
-      next: () => this.fetchData(),
-      error: (err) => alert('Failed to delete project')
+      error: (err) => {
+        // Rollback on error
+        alert('Failed to delete project');
+        this.projects.set(originalProjects);
+      }
     });
   }
 

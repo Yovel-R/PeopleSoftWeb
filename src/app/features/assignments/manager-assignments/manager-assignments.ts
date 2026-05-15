@@ -65,7 +65,11 @@ export class ManagerAssignments implements OnInit {
 
     // Fetch managers
     this.http.get<any[]>(`${baseUrl}/api/assignments/managers`).subscribe({
-      next: (data) => this.managers.set(data),
+      next: (data) => {
+        // Filter out HR staff from the manager list
+        const nonHrManagers = data.filter(m => !m.isHr && (m.role?.toLowerCase() !== 'hr' && m.role?.toLowerCase() !== 'hr admin'));
+        this.managers.set(nonHrManagers);
+      },
       error: (err) => {
         console.error('Failed to load managers', err);
         this.showError('Failed to load managers. Please try again.');
@@ -76,7 +80,10 @@ export class ManagerAssignments implements OnInit {
     this.http.get<any>(`${baseUrl}/api/assignments/unassigned`).subscribe({
       next: (data) => {
         this.unassignedInterns.set(data.interns || []);
-        this.unassignedEmployees.set(data.employees || []);
+        // Filter out HR from personnel selection
+        const employees = data.employees || [];
+        const nonHrEmployees = employees.filter((e: any) => !e.isHr && (e.role?.toLowerCase() !== 'hr' && e.role?.toLowerCase() !== 'hr admin'));
+        this.unassignedEmployees.set(nonHrEmployees);
         this.isLoading.set(false);
       },
       error: (err) => {

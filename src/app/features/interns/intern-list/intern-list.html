@@ -8,35 +8,47 @@
           <h1>Manage Interns</h1>
           <p>View and manage all interns across different stages.</p>
         </div>
-        <div class="header-filters">
-          <div class="range-filters">
-            <button 
-              class="filter-chip" 
-              [class.active]="rangeFilter() === 'thisMonth'"
-              (click)="setFilter('thisMonth')">
-              This month
-            </button>
-            <button 
-              class="filter-chip" 
-              [class.active]="rangeFilter() === 'sixMonths'"
-              (click)="setFilter('sixMonths')">
-              Last 6 months
-            </button>
-            <button 
-              class="filter-chip" 
-              [class.active]="rangeFilter() === 'all'"
-              (click)="setFilter('all')">
-              All time
-            </button>
+        <div class="header-tools">
+          <div class="header-filters">
+            <div class="range-filters">
+              <button 
+                class="filter-chip" 
+                [class.active]="rangeFilter() === 'thisMonth'"
+                (click)="setFilter('thisMonth')">
+                This month
+              </button>
+              <button 
+                class="filter-chip" 
+                [class.active]="rangeFilter() === 'sixMonths'"
+                (click)="setFilter('sixMonths')">
+                Last 6 months
+              </button>
+              <button 
+                class="filter-chip" 
+                [class.active]="rangeFilter() === 'all'"
+                (click)="setFilter('all')">
+                All time
+              </button>
+            </div>
+            
+            <div class="status-filter">
+              <select [value]="statusFilter()" (change)="setStatus($any($event.target).value)">
+                <option value="all">All Status</option>
+                <option value="approved">Approved</option>
+                <option value="ongoing">Ongoing</option>
+                <option value="remote">Remote</option>
+              </select>
+            </div>
           </div>
-          
-          <div class="status-filter">
-            <select [value]="statusFilter()" (change)="setStatus($any($event.target).value)">
-              <option value="all">All Status</option>
-              <option value="approved">Approved</option>
-              <option value="ongoing">Ongoing</option>
-              <option value="remote">Remote</option>
-            </select>
+
+          <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input 
+              type="text" 
+              placeholder="Search by name, ID or email..." 
+              (input)="onSearch($event)"
+              [value]="searchQuery()"
+            >
           </div>
         </div>
       </div>

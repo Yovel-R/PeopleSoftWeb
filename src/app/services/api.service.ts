@@ -6,12 +6,25 @@ import { Observable, forkJoin, map } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private useLocalBackend = false;
+  private useLocalBackend = true;
   private baseUrl = this.useLocalBackend 
     ? 'http://localhost:5001' 
     : 'https://peoplesoft-develop.onrender.com';
 
   constructor(private http: HttpClient) {}
+
+  private getHeaders() {
+    return {
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    };
+  }
+
+  private addCacheBuster(url: string): string {
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}_t=${new Date().getTime()}`;
+  }
 
   // Authentication
   login(identifier: string, password: string): Observable<any> {
@@ -20,6 +33,10 @@ export class ApiService {
       identifier: identifier, 
       password 
     });
+  }
+
+  getMe(): Observable<any> {
+    return this.http.get(this.addCacheBuster(`${this.baseUrl}/api/auth/me`), { headers: this.getHeaders() });
   }
 
   hrLogin(email: string, password: string): Observable<any> {
@@ -45,14 +62,15 @@ export class ApiService {
   // Dashboard Stats
   getDashboardStats(): Observable<any> {
     return forkJoin({
-      activeInterns: this.http.get<any[]>(`${this.baseUrl}/api/intern/all/active`),
-      initialInterns: this.http.get<any[]>(`${this.baseUrl}/api/intern/all/initial`),
-      activeEmployees: this.http.get<any[]>(`${this.baseUrl}/api/employee/all/active`),
-      internAttendance: this.http.get<any>(`${this.baseUrl}/api/attendance/today/all`),
-      employeeAttendance: this.http.get<any>(`${this.baseUrl}/api/employeeAttanance/employee/today/all`),
-      pendingLeaves: this.http.get<any[]>(`${this.baseUrl}/api/employee-leave/hr-pending`),
-      internTrend: this.http.get<any[]>(`${this.baseUrl}/api/attendance/trend`),
-      employeeTrend: this.http.get<any[]>(`${this.baseUrl}/api/employeeAttanance/trend`),
+      activeInterns: this.http.get<any[]>(this.addCacheBuster(`${this.baseUrl}/api/intern/all/active`), { headers: this.getHeaders() }),
+      initialInterns: this.http.get<any[]>(this.addCacheBuster(`${this.baseUrl}/api/intern/all/initial`), { headers: this.getHeaders() }),
+      activeEmployees: this.http.get<any[]>(this.addCacheBuster(`${this.baseUrl}/api/employee/all/active`), { headers: this.getHeaders() }),
+      internAttendance: this.http.get<any>(this.addCacheBuster(`${this.baseUrl}/api/attendance/today/all`), { headers: this.getHeaders() }),
+      employeeAttendance: this.http.get<any>(this.addCacheBuster(`${this.baseUrl}/api/employeeAttanance/employee/today/all`), { headers: this.getHeaders() }),
+      pendingLeaves: this.http.get<any[]>(this.addCacheBuster(`${this.baseUrl}/api/employee-leave/hr-pending`), { headers: this.getHeaders() }),
+      activeProjects: this.http.get<any>(this.addCacheBuster(`${this.baseUrl}/api/projects/all`), { headers: this.getHeaders() }),
+      internTrend: this.http.get<any[]>(this.addCacheBuster(`${this.baseUrl}/api/attendance/trend`), { headers: this.getHeaders() }),
+      employeeTrend: this.http.get<any[]>(this.addCacheBuster(`${this.baseUrl}/api/employeeAttanance/trend`), { headers: this.getHeaders() }),
     }).pipe(
       map(data => {
         // Map recent activities
@@ -89,16 +107,16 @@ export class ApiService {
 
         return {
           interns: [
-            { label: 'Today Attendance', value: data.internAttendance.count.toString(), icon: 'fa-solid fa-circle-check', color: 'green' },
-            { label: 'Pending Leaves', value: data.pendingLeaves.length.toString(), icon: 'fa-solid fa-clock', color: 'orange' },
-            { label: 'Active Interns', value: data.activeInterns.length.toString(), icon: 'fa-solid fa-users', color: 'teal' },
-            { label: 'New Applications', value: data.initialInterns.length.toString(), icon: 'fa-solid fa-list-check', color: 'blue' }
+            { label: 'Today Attendance', value: data.internAttendance.count.toString(), icon: 'fa-solid fa-circle-check', color: 'green', link: '/attendance/today' },
+            { label: 'Pending Leaves', value: data.pendingLeaves.length.toString(), icon: 'fa-solid fa-clock', color: 'orange', link: '/leaves' },
+            { label: 'Active Interns', value: data.activeInterns.length.toString(), icon: 'fa-solid fa-users', color: 'teal', link: '/interns' },
+            { label: 'New Applications', value: data.initialInterns.length.toString(), icon: 'fa-solid fa-list-check', color: 'blue', link: '/interns/requests' }
           ],
           employees: [
-            { label: 'Today Attendance', value: data.employeeAttendance.count.toString(), icon: 'fa-solid fa-circle-check', color: 'green' },
-            { label: 'Total Employees', value: data.activeEmployees.length.toString(), icon: 'fa-solid fa-briefcase', color: 'teal' },
-            { label: 'Active Projects', value: '14', icon: 'fa-solid fa-list-ul', color: 'purple' },
-            { label: 'Payroll Status', value: 'Paid', icon: 'fa-solid fa-circle-dollar-to-slot', color: 'green' }
+            { label: 'Today Attendance', value: data.employeeAttendance.count.toString(), icon: 'fa-solid fa-circle-check', color: 'green', link: '/attendance/today' },
+            { label: 'Total Employees', value: data.activeEmployees.length.toString(), icon: 'fa-solid fa-briefcase', color: 'teal', link: '/employees' },
+            { label: 'Active Projects', value: (data.activeProjects.projects?.length || 0).toString(), icon: 'fa-solid fa-list-ul', color: 'purple', link: '/projects' },
+            { label: 'Payroll Status', value: 'Paid', icon: 'fa-solid fa-circle-dollar-to-slot', color: 'green', link: '/employees' }
           ],
           internTrend: data.internTrend.map(t => ({ ...t, height: (t.count / maxIntern) * 100 })),
           employeeTrend: data.employeeTrend.map(t => ({ ...t, height: (t.count / maxEmployee) * 100 })),
@@ -112,8 +130,9 @@ export class ApiService {
 
   // Interns
   getAllActiveInterns(range: string = 'all', status: string = 'all'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/api/intern/all/active`, {
-      params: { range, status }
+    return this.http.get<any[]>(this.addCacheBuster(`${this.baseUrl}/api/intern/all/active`), {
+      params: { range, status },
+      headers: this.getHeaders()
     });
   }
 
@@ -129,8 +148,9 @@ export class ApiService {
 
   // Employees
   getAllEmployees(range: string = 'all', status: string = 'all'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/api/employee/all/active`, {
-      params: { range, status }
+    return this.http.get<any[]>(this.addCacheBuster(`${this.baseUrl}/api/employee/all/active`), {
+      params: { range, status },
+      headers: this.getHeaders()
     });
   }
 
@@ -139,9 +159,17 @@ export class ApiService {
   }
 
   getEmployeeById(id: string): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/api/employee/get/${id}`).pipe(
+    return this.http.get<any>(this.addCacheBuster(`${this.baseUrl}/api/employee/get/${id}`), { headers: this.getHeaders() }).pipe(
       map(res => res.employee)
     );
+  }
+
+  updateEmployee(id: string, data: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/employee/update/${id}`, data);
+  }
+
+  updateIntern(id: string, data: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/api/intern/update/${id}`, data);
   }
 
   // Attendance
@@ -176,7 +204,7 @@ export class ApiService {
 
   // Holidays
   getHolidays(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/api/holidays`);
+    return this.http.get<any[]>(this.addCacheBuster(`${this.baseUrl}/api/holidays`), { headers: this.getHeaders() });
   }
 
   saveHoliday(holiday: any): Observable<any> {
@@ -193,7 +221,7 @@ export class ApiService {
 
   // Policies
   getPolicies(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/api/policy/all`);
+    return this.http.get<any[]>(this.addCacheBuster(`${this.baseUrl}/api/policy/all`), { headers: this.getHeaders() });
   }
 
   savePolicy(policy: any): Observable<any> {
@@ -205,17 +233,16 @@ export class ApiService {
   }
 
   // Hierarchy (Org Hierarchy)
-  getOrgHierarchy(email: string = 'admin@softrate.com'): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/api/hr/policy?email=${email}`);
+  getOrgHierarchy(): Observable<any> {
+    return this.http.get<any>(this.addCacheBuster(`${this.baseUrl}/api/hr/policy`), { headers: this.getHeaders() });
   }
 
   getGlobalPolicyUrl(): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/api/hr/policy-only`);
   }
 
-  saveOrgHierarchy(url: string, email: string = 'admin@softrate.com'): Observable<any> {
+  saveOrgHierarchy(url: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/api/hr/policy/save`, {
-      email: email,
       policyUrl: url
     });
   }
@@ -237,7 +264,7 @@ export class ApiService {
     return this.http.get<any[]>(`${this.baseUrl}/api/employee/all/active`, {
       params: { range: 'all', status: 'approved' }
     }).pipe(
-      map(emps => emps.filter(e => e.isManager === true))
+      map(emps => emps.filter(e => e.isManager === true && e.isHr !== true))
     );
   }
 
@@ -273,7 +300,7 @@ export class ApiService {
 
   // Company Settings
   getCompanySettings(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/api/settings/company`);
+    return this.http.get<any>(this.addCacheBuster(`${this.baseUrl}/api/settings/company`), { headers: this.getHeaders() });
   }
 
   updateCompanySettings(settings: any): Observable<any> {
@@ -324,6 +351,21 @@ export class ApiService {
     return this.http.get<any>(`${this.baseUrl}/api/projects/manager/${managerId}`);
   }
 
+  getAllProjects(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/api/projects/all`);
+  }
+
+  getManagerTeam(managerId: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/api/assignments/team/${managerId}`);
+  }
+
+  getGlobalTeam(): Observable<any> {
+    return forkJoin({
+      interns: this.http.get<any[]>(`${this.baseUrl}/api/intern/all/active`),
+      employees: this.http.get<any[]>(`${this.baseUrl}/api/employee/all/active`)
+    });
+  }
+
   createProject(project: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/api/projects/create`, project);
   }
@@ -343,5 +385,32 @@ export class ApiService {
   // Generic Download with Auth
   downloadFile(url: string): Observable<Blob> {
     return this.http.get(url, { responseType: 'blob' });
+  }
+
+  // Promotions & Conversions
+  convertInternToEmployee(internId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/convert/intern-to-employee/${internId}`, {});
+  }
+
+  promoteToManager(employeeId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/convert/employee-to-manager/${employeeId}`, {});
+  }
+
+  convertToHr(staffId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/convert/to-hr/${staffId}`, {});
+  }
+
+  demoteToManager(staffId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/convert/hr-to-manager/${staffId}`, {});
+  }
+
+  demoteManagerToEmployee(staffId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/api/convert/manager-to-employee/${staffId}`, {});
+  }
+  getTodayUnifiedAttendance(managerId?: string): Observable<any> {
+    let url = `${this.baseUrl}/api/attendance/today/unified`;
+    const params: any = {};
+    if (managerId) params.managerId = managerId;
+    return this.http.get<any>(this.addCacheBuster(url), { params, headers: this.getHeaders() });
   }
 }

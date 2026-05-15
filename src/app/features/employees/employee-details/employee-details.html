@@ -11,7 +11,7 @@
     <p>Detailed overview and management for {{ employee()?.fullName || 'Employee' }}</p>
   </div>
   <div class="header-actions">
-    <button class="btn-secondary">
+    <button class="btn-secondary" (click)="editProfile()">
       <i class="fa-solid fa-pen-to-square"></i> Edit Profile
     </button>
   </div>
@@ -28,7 +28,8 @@
         </div>
         <h3>
           {{ employee().fullName }}
-          <i *ngIf="employee().isManager" class="fa-solid fa-shield-halved manager-badge" title="Manager"></i>
+          <i *ngIf="employee().isManager" class="fa-solid fa-crown" style="color: #f59e0b; font-size: 1rem; margin-left: 8px;" title="Manager"></i>
+          <i *ngIf="employee().isHr" class="fa-solid fa-shield-halved" style="color: #0ea5e9; font-size: 1rem; margin-left: 8px;" title="HR Admin"></i>
         </h3>
         <p class="employee-id-label">Employee ID: {{ employee().EmployeeId || 'N/A' }}</p>
         <div class="status-pill" [ngClass]="getStatusColor(employee().status)">
@@ -67,6 +68,35 @@
             Performance
           </button>
         </div>
+      </div>
+
+      <div class="card promotion-card" *ngIf="canPromoteToManager() || canConvertToHr() || canDemoteToManager() || canDemoteToEmployee()">
+        <h4>Role & Promotion</h4>
+        <p class="stat-desc">Update this staff member's administrative or management status.</p>
+        
+        <button class="btn-primary-outline w-100 mt-2 mb-2" *ngIf="canPromoteToManager()" (click)="promoteToManager()" [disabled]="isPromoting()">
+          <i class="fa-solid fa-arrow-up-right-dots" *ngIf="!isPromoting()"></i>
+          <span *ngIf="!isPromoting()">Promote to Manager</span>
+          <span *ngIf="isPromoting()">Updating...</span>
+        </button>
+
+        <button class="btn-secondary-outline w-100" *ngIf="canConvertToHr()" (click)="convertToHr()" [disabled]="isPromoting()">
+          <i class="fa-solid fa-user-gear" *ngIf="!isPromoting()"></i>
+          <span *ngIf="!isPromoting()">Convert to HR Staff</span>
+          <span *ngIf="isPromoting()">Updating...</span>
+        </button>
+
+        <button class="btn-danger-outline w-100 mt-2" *ngIf="canDemoteToManager()" (click)="demoteToManager()" [disabled]="isPromoting()">
+          <i class="fa-solid fa-user-minus" *ngIf="!isPromoting()"></i>
+          <span *ngIf="!isPromoting()">Demote to Manager</span>
+          <span *ngIf="isPromoting()">Updating...</span>
+        </button>
+
+        <button class="btn-danger-outline w-100 mt-2" *ngIf="canDemoteToEmployee()" (click)="demoteToEmployee()" [disabled]="isPromoting()">
+          <i class="fa-solid fa-user-slash" *ngIf="!isPromoting()"></i>
+          <span *ngIf="!isPromoting()">Demote to Employee</span>
+          <span *ngIf="isPromoting()">Updating...</span>
+        </button>
       </div>
     </div>
 
@@ -126,9 +156,11 @@
             <p>{{ (employee().onboardingDate | date:'longDate') || 'N/A' }}</p>
           </div>
           <div class="info-item">
-            <label>LinkedIn</label>
+            <label>LinkedIn Profile</label>
             <p>
-              <a *ngIf="employee().linkedin" [href]="employee().linkedin" target="_blank">{{ employee().linkedin }}</a>
+              <a *ngIf="employee().linkedin" [href]="employee().linkedin" target="_blank" class="linkedin-link" title="View LinkedIn Profile">
+                <hugeicons-icon [icon]="Share05Icon" size="20" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+              </a>
               <span *ngIf="!employee().linkedin">N/A</span>
             </p>
           </div>

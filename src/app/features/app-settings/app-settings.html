@@ -1,7 +1,16 @@
 <div class="settings-container">
   <div class="page-header">
-    <h1>App Settings</h1>
-    <p>Configure office locations, communication preferences, and system behavior.</p>
+    <div class="header-content">
+      <h1>App Settings</h1>
+      <p>Configure office locations, communication preferences, and system behavior.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-save-premium" (click)="saveAllSettings()" [disabled]="isSaving()">
+        <div class="btn-spinner" *ngIf="isSaving()"></div>
+        <hugeicons-icon [icon]="CheckmarkCircle01Icon" [size]="20" [strokeWidth]="2" color="currentColor" *ngIf="!isSaving()"></hugeicons-icon>
+        <span>{{ isSaving() ? 'Saving Changes...' : 'Save All Settings' }}</span>
+      </button>
+    </div>
   </div>
 
   <div *ngIf="isLoading()" class="loading-overlay">
@@ -11,12 +20,12 @@
 
   <div class="settings-grid" *ngIf="!isLoading()">
     <div class="main-content">
-      <!-- Location Settings -->
-      <div class="config-card">
+      <!-- Location Settings Section -->
+      <section *ngIf="activeTab() === 'locations'" class="config-card">
         <div class="card-header-minimal">
           <div class="hero-visual">
             <div class="icon-wrapper">
-              <hugeicons-icon [icon]="MapsLocation02Icon" size="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+              <hugeicons-icon [icon]="MapsLocation02Icon" [size]="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
             </div>
             <div class="hero-content">
               <h2>Office Locations</h2>
@@ -52,24 +61,24 @@
               </button>
             </div>
 
-            <div *ngIf="locations().length === 0" style="text-align: center; padding: 40px; color: #64748b; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
-              <i class="fa-solid fa-map-location-dot" style="font-size: 24px; margin-bottom: 12px; display: block;"></i>
-              No locations defined. Employees will be able to punch in from anywhere.
+            <div *ngIf="locations().length === 0" class="empty-state-card">
+              <i class="fa-solid fa-map-location-dot"></i>
+              <p>No locations defined. Employees can punch in from anywhere.</p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Communication Settings -->
-      <div class="config-card">
+      <!-- Communication Settings Section -->
+      <section *ngIf="activeTab() === 'communication'" class="config-card">
         <div class="card-header-minimal">
           <div class="hero-visual">
             <div class="icon-wrapper">
-              <hugeicons-icon [icon]="MailReceive01Icon" size="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+              <hugeicons-icon [icon]="MailReceive01Icon" [size]="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
             </div>
             <div class="hero-content">
               <h2>Communication & Notifications</h2>
-              <p>Manage how the system interacts with employees and admins.</p>
+              <p>Manage system alerts and notification preferences.</p>
             </div>
           </div>
         </div>
@@ -79,13 +88,13 @@
             <h3>Email Configuration</h3>
           </div>
           
-          <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; font-size: var(--text-base); font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">Admin Notification Email</label>
-            <div style="position: relative;" [class.read-only]="!canEditCommunication()">
-              <i class="fa-solid fa-envelope" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-              <input type="email" class="location-input" style="padding-left: 40px;" [ngModel]="receivingEmail()" (ngModelChange)="receivingEmail.set($event)" placeholder="hr@company.com" [disabled]="!canEditCommunication()">
+          <div class="field-group">
+            <label>Admin Notification Email</label>
+            <div class="input-with-icon" [class.read-only]="!canEditCommunication()">
+              <i class="fa-solid fa-envelope"></i>
+              <input type="email" class="location-input" [ngModel]="receivingEmail()" (ngModelChange)="receivingEmail.set($event)" placeholder="hr@company.com" [disabled]="!canEditCommunication()">
             </div>
-            <p style="font-size: 12px; color: #64748b; margin-top: 6px;">New applications and system alerts will be sent here.</p>
+            <p class="field-hint">System alerts and new applications will be sent here.</p>
           </div>
 
           <div class="section-title">
@@ -96,7 +105,7 @@
             <div class="toggle-item">
               <div class="toggle-info">
                 <h4>Email Alerts</h4>
-                <p>Send system alerts and leave status updates via Email.</p>
+                <p>Send leave updates and system notifications via Email.</p>
               </div>
               <label class="switch" [class.disabled]="!canEditCommunication()">
                 <input type="checkbox" [ngModel]="communication().emailNotifications" (ngModelChange)="communication.set({...communication(), emailNotifications: $event})" [disabled]="!canEditCommunication()">
@@ -105,41 +114,120 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
 
-    <div class="sidebar-help">
-      <div class="help-card">
-        <div class="form-body" style="padding: 0;">
-          <h4>
-            <i class="fa-solid fa-circle-info" style="color: #00657f;"></i>
-            How Geo-fencing Works
-          </h4>
-          <p style="font-size: 13px; color: #64748b; line-height: 1.6; margin: 0;">
-            Employees must be within the specified <strong>Radius</strong> of any authorized location to punch in. 
-            <br><br>
-            If no locations are added, geo-fencing is disabled and employees can punch in from any location.
-          </p>
-
-          <div class="step-guide">
-            <h5><hugeicons-icon [icon]="Coordinate01Icon" size="14" [strokeWidth]="1.5" color="currentColor" style="display: inline-flex; align-items: center;"></hugeicons-icon> How to get Lat/Long:</h5>
-            <ol>
-              <li>Open <strong>Google Maps</strong> on your computer.</li>
-              <li>Right-click the place or area on the map.</li>
-              <li>This will open a pop-up window. You can find your <strong>latitude and longitude</strong> at the top.</li>
-              <li>Left-click on the coordinates to automatically copy them to your clipboard.</li>
-            </ol>
+      <!-- Employee Roles Section -->
+      <section *ngIf="activeTab() === 'employee_roles'" class="config-card">
+        <div class="card-header-minimal">
+          <div class="hero-visual">
+            <div class="icon-wrapper">
+              <hugeicons-icon [icon]="UserCircleIcon" [size]="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
+            <div class="hero-content">
+              <h2>Employee Roles</h2>
+              <p>Manage designations available for full-time staff members.</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="actions-footer">
-        <button class="btn-save-all" (click)="saveAllSettings()" [disabled]="isSaving()">
-          <div class="btn-spinner" *ngIf="isSaving()"></div>
-          <hugeicons-icon [icon]="CheckmarkCircle01Icon" size="20" [strokeWidth]="2" color="currentColor" *ngIf="!isSaving()"></hugeicons-icon>
-          <span>{{ isSaving() ? 'Saving...' : 'Save All Settings' }}</span>
+        <div class="form-body">
+          <div class="section-title">
+            <h3>Designation List</h3>
+            <button class="btn-add" (click)="addRole('employee')">
+              <i class="fa-solid fa-plus"></i> Add Role
+            </button>
+          </div>
+
+          <div class="roles-grid">
+            <div class="role-chip-input" *ngFor="let role of employeeRoles(); let i = index; trackBy: trackByIndex" [class.read-only]="role.toLowerCase() === 'other'">
+              <input type="text" [ngModel]="role" (ngModelChange)="updateRole('employee', i, $event)" placeholder="Role Name" [disabled]="role.toLowerCase() === 'other'">
+              <button *ngIf="role.toLowerCase() !== 'other'" class="icon-btn-sm orange" (click)="removeRole('employee', i)" title="Remove Role">
+                <hugeicons-icon [icon]="Delete02Icon" [size]="18" [strokeWidth]="2" color="currentColor"></hugeicons-icon>
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="employeeRoles().length === 0" class="empty-state-card">
+            <i class="fa-solid fa-user-tag"></i>
+            <p>No employee roles defined. Add some to categorize your staff.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Intern Roles Section -->
+      <section *ngIf="activeTab() === 'intern_roles'" class="config-card">
+        <div class="card-header-minimal">
+          <div class="hero-visual">
+            <div class="icon-wrapper">
+              <hugeicons-icon [icon]="UserGroupIcon" [size]="32" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </div>
+            <div class="hero-content">
+              <h2>Intern Roles</h2>
+              <p>Define roles available for intern applications and tracking.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-body">
+          <div class="section-title">
+            <h3>Application Roles</h3>
+            <button class="btn-add" (click)="addRole('intern')">
+              <i class="fa-solid fa-plus"></i> Add Role
+            </button>
+          </div>
+
+          <div class="roles-grid">
+            <div class="role-chip-input" *ngFor="let role of internRoles(); let i = index; trackBy: trackByIndex" [class.read-only]="role.toLowerCase() === 'other'">
+              <input type="text" [ngModel]="role" (ngModelChange)="updateRole('intern', i, $event)" placeholder="Intern Role Name" [disabled]="role.toLowerCase() === 'other'">
+              <button *ngIf="role.toLowerCase() !== 'other'" class="icon-btn-sm orange" (click)="removeRole('intern', i)" title="Remove Role">
+                <hugeicons-icon [icon]="Delete02Icon" [size]="18" [strokeWidth]="2" color="currentColor"></hugeicons-icon>
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="internRoles().length === 0" class="empty-state-card">
+            <i class="fa-solid fa-users-rectangle"></i>
+            <p>No intern roles defined. These will appear in the application form.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- RIGHT SIDEBAR NAVIGATION -->
+    <div class="settings-sidebar">
+      <div class="nav-menu">
+        <h3 class="menu-title">Settings Menu</h3>
+        
+        <button class="nav-link" [class.active]="activeTab() === 'locations'" (click)="activeTab.set('locations')">
+          <div class="action-icon-circle blue-tint">
+            <hugeicons-icon [icon]="MapsLocation02Icon" [size]="22" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+          </div>
+          <span class="action-label">Office Locations</span>
+        </button>
+
+        <button class="nav-link" [class.active]="activeTab() === 'communication'" (click)="activeTab.set('communication')">
+          <div class="action-icon-circle orange-tint">
+            <hugeicons-icon [icon]="MailReceive01Icon" [size]="22" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+          </div>
+          <span class="action-label">Email</span>
+        </button>
+
+        <button class="nav-link" [class.active]="activeTab() === 'employee_roles'" (click)="activeTab.set('employee_roles')">
+          <div class="action-icon-circle teal-tint">
+            <hugeicons-icon [icon]="UserCircleIcon" [size]="22" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+          </div>
+          <span class="action-label">Employee Roles</span>
+        </button>
+
+        <button class="nav-link" [class.active]="activeTab() === 'intern_roles'" (click)="activeTab.set('intern_roles')">
+          <div class="action-icon-circle purple-tint">
+            <hugeicons-icon [icon]="UserGroupIcon" [size]="22" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+          </div>
+          <span class="action-label">Intern Roles</span>
         </button>
       </div>
+
+
     </div>
   </div>
 </div>

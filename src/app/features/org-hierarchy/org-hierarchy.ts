@@ -42,7 +42,7 @@ export class OrgHierarchy implements OnInit {
 
   fetchHierarchy() {
     this.isLoading.set(true);
-    this.apiService.getOrgHierarchy(this.userEmail).pipe(
+    this.apiService.getOrgHierarchy().pipe(
       finalize(() => this.isLoading.set(false))
     ).subscribe({
       next: (data: any) => {
@@ -81,12 +81,11 @@ export class OrgHierarchy implements OnInit {
     }
 
     this.isSaving.set(true);
-    this.apiService.saveOrgHierarchy(this.hierarchyUrl, this.userEmail).pipe(
+    this.apiService.saveOrgHierarchy(this.hierarchyUrl).pipe(
       finalize(() => this.isSaving.set(false))
     ).subscribe({
       next: () => {
         this.publishedUrl.set(this.hierarchyUrl);
-        alert('Hierarchy URL saved and published successfully');
       },
       error: (err: any) => {
         alert('Failed to save: ' + (err.error?.msg || err.message));

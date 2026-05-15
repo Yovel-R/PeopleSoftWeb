@@ -14,23 +14,28 @@
   <div class="tabs-group">
     <button [class.active]="currentCategory() === 'Internship'" (click)="setCategory('Internship')">
       Internships
-      <span class="count-badge" *ngIf="internshipCount > 0">{{ internshipCount }}</span>
+      <span class="count-badge" *ngIf="internshipCount() > 0">{{ internshipCount() }}</span>
+      <span class="search-match-dot" *ngIf="hasSearchMatch('Internship')"></span>
     </button>
     <button [class.active]="currentCategory() === 'Job'" (click)="setCategory('Job')">
       Jobs
-      <span class="count-badge" *ngIf="jobCount > 0">{{ jobCount }}</span>
+      <span class="count-badge" *ngIf="jobCount() > 0">{{ jobCount() }}</span>
+      <span class="search-match-dot" *ngIf="hasSearchMatch('Job')"></span>
     </button>
     <button [class.active]="currentCategory() === 'Assigned'" (click)="setCategory('Assigned')">
       Assigned
-      <span class="count-badge" *ngIf="assignedCount > 0">{{ assignedCount }}</span>
+      <span class="count-badge" *ngIf="assignedCount() > 0">{{ assignedCount() }}</span>
+      <span class="search-match-dot" *ngIf="hasSearchMatch('Assigned')"></span>
     </button>
     <button [class.active]="currentCategory() === 'Approved'" (click)="setCategory('Approved')">
       Approved
-      <span class="count-badge" *ngIf="approvedCount > 0">{{ approvedCount }}</span>
+      <span class="count-badge" *ngIf="approvedCount() > 0">{{ approvedCount() }}</span>
+      <span class="search-match-dot" *ngIf="hasSearchMatch('Approved')"></span>
     </button>
     <button [class.active]="currentCategory() === 'Rejected'" (click)="setCategory('Rejected')">
       Rejected
-      <span class="count-badge" *ngIf="rejectedCount > 0">{{ rejectedCount }}</span>
+      <span class="count-badge" *ngIf="rejectedCount() > 0">{{ rejectedCount() }}</span>
+      <span class="search-match-dot" *ngIf="hasSearchMatch('Rejected')"></span>
     </button>
   </div>
 
@@ -41,8 +46,8 @@
 </div>
 
 <div class="data-container" [class.loading]="isLoading()">
-  <div class="request-grid" *ngIf="!isLoading() && filteredRequests.length > 0">
-    <div class="request-card" *ngFor="let req of filteredRequests">
+  <div class="request-grid" *ngIf="!isLoading() && filteredRequests().length > 0">
+    <div class="request-card" *ngFor="let req of filteredRequests()">
       <div class="card-header">
         <div class="user-info">
           <div>
@@ -111,7 +116,7 @@
           <div class="assign-row">
             <select #managerSelect>
               <option value="">Select Manager...</option>
-              <option *ngFor="let m of managers()" [value]="m._id">{{ m.fullName }} ({{ m.department }})</option>
+              <option *ngFor="let m of managers()" [value]="m._id">{{ m.fullName }} {{ m.department ? '(' + m.department + ')' : '' }}</option>
             </select>
             <button class="btn-assign" (click)="assignToManager(req._id, managerSelect.value)" [disabled]="isAssigning() === req._id">
               {{ isAssigning() === req._id ? 'Assigning...' : 'Assign' }}
@@ -131,7 +136,7 @@
     </div>
   </div>
 
-  <div class="empty-state" *ngIf="!isLoading() && filteredRequests.length === 0">
+  <div class="empty-state" *ngIf="!isLoading() && filteredRequests().length === 0">
     <i class="fa-solid fa-inbox empty-icon"></i>
     <h3>No applications in {{ currentCategory() }}</h3>
     <p>Everything is caught up! No applications found in the {{ currentCategory() }} category.</p>

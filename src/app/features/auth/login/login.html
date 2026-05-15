@@ -1,28 +1,26 @@
 <div class="login-container">
   <!-- Left Branding Panel -->
   <div class="branding-panel">
-    <div class="logo-container">
-      <div class="logo-text">Softrate <span>HRM</span></div>
+    <div class="branding-content">
+      <div class="logo-container">
+        <div class="logo-text">Softrate <span>HRM</span></div>
+      </div>
+      <span class="crm-tag">Workforce Management</span>
+      <h1>Empowering your team with smart automation.</h1>
+      <p class="branding-desc">Manage attendance, leave, and performance in one unified workspace.</p>
     </div>
-    <span class="crm-tag">Employee CRM</span>
-    <h1>Sharp operational workspace for daily lead execution.</h1>
+    <div class="branding-bg-circles">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+    </div>
   </div>
 
   <!-- Right Form Panel -->
   <div class="form-panel">
     <div class="login-card">
-      <div class="login-tabs">
-        <button type="button" [class.active]="loginType() === 'hr'" (click)="setLoginType('hr')">
-          HR Portal
-        </button>
-        <button type="button" [class.active]="loginType() === 'employee'" (click)="setLoginType('employee')">
-          Employee
-        </button>
-      </div>
-
       <div class="form-header">
-        <h2>{{ loginType() === 'hr' ? 'HR Access' : 'Employee Access' }}</h2>
-        <p>Welcome back! Please enter your details.</p>
+        <h2>System Login</h2>
+        <p>Welcome back! Enter your ID or Email to continue.</p>
       </div>
 
       <div class="error-banner" *ngIf="errorMessage()">
@@ -31,31 +29,18 @@
       </div>
 
       <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-        <!-- HR Login Field -->
-        <div class="form-group" *ngIf="loginType() === 'hr'">
-          <label for="email">Email Address</label>
+        <!-- Unified Login Field -->
+        <div class="form-group">
+          <label for="identifier">Email Address / ID</label>
           <div class="input-wrapper">
+            <i class="fa-solid fa-envelope"></i>
             <input 
-              id="email"
-              type="email" 
-              [(ngModel)]="credentials.email" 
-              name="email" 
-              required 
-              placeholder="e.g. admin@softrate.com">
-          </div>
-        </div>
-
-        <!-- Employee Login Field -->
-        <div class="form-group" *ngIf="loginType() === 'employee'">
-          <label for="employeeId">Employee ID / Email</label>
-          <div class="input-wrapper">
-            <input 
-              id="employeeId"
+              id="identifier"
               type="text" 
-              [(ngModel)]="credentials.employeeId" 
-              name="employeeId" 
+              [(ngModel)]="credentials.identifier" 
+              name="identifier" 
               required 
-              placeholder="e.g. STP-1603-2026 or you@email.com">
+              placeholder="your@email.com or ID">
           </div>
         </div>
 
@@ -63,13 +48,14 @@
         <div class="form-group">
           <label for="password">Password</label>
           <div class="input-wrapper">
+            <i class="fa-solid fa-lock"></i>
             <input 
               id="password"
               type="password" 
               [(ngModel)]="credentials.password" 
               name="password" 
               required 
-              placeholder="Enter your password">
+              placeholder="••••••••">
           </div>
         </div>
 

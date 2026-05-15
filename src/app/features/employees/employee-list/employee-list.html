@@ -7,10 +7,23 @@
           <h1>Manage Employees</h1>
           <p>Complete overview of your organization's human capital.</p>
         </div>
-        <div class="status-filters">
-          <button class="filter-chip" [class.active]="statusFilter() === 'all'" (click)="setStatus('all')">All Staff</button>
-          <button class="filter-chip" [class.active]="statusFilter() === 'approved'" (click)="setStatus('approved')">Active</button>
-          <button class="filter-chip" [class.active]="statusFilter() === 'on leave'" (click)="setStatus('on leave')">On Leave</button>
+        <div class="header-tools">
+          <div class="status-filters">
+            <button class="filter-chip" [class.active]="roleFilter() === 'all'" (click)="setRoleFilter('all')">All Staff</button>
+            <button class="filter-chip" [class.active]="roleFilter() === 'manager'" (click)="setRoleFilter('manager')">Manager</button>
+            <button class="filter-chip" [class.active]="roleFilter() === 'hr'" (click)="setRoleFilter('hr')">Hr</button>
+            <button class="filter-chip" [class.active]="roleFilter() === 'employee'" (click)="setRoleFilter('employee')">Employee</button>
+          </div>
+
+          <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input 
+              type="text" 
+              placeholder="Search by name, ID or email..." 
+              (input)="onSearch($event)"
+              [value]="searchQuery()"
+            >
+          </div>
         </div>
       </div>
 
@@ -23,7 +36,8 @@
             <div class="identity-text">
               <span class="full-name">
                 {{ emp.fullName }}
-                <i *ngIf="emp.isManager" class="fa-solid fa-crown" style="color: #f59e0b; font-size: 0.75rem;"></i>
+                <i *ngIf="emp.isManager" class="fa-solid fa-crown" style="color: #f59e0b; font-size: 0.75rem; margin-left: 4px;" title="Manager"></i>
+                <i *ngIf="emp.isHr" class="fa-solid fa-shield-halved" style="color: #0ea5e9; font-size: 0.75rem; margin-left: 4px;" title="HR Admin"></i>
               </span>
               <span class="emp-id">{{ emp.EmployeeId || emp._id.substring(0, 8) }}</span>
             </div>
@@ -57,8 +71,14 @@
             <button class="icon-btn-sm purple" (click)="navigateTo(['/employees', emp.EmployeeId || emp._id])" title="View Profile">
               <hugeicons-icon [icon]="UserCircleIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
             </button>
-            <button class="icon-btn-sm teal" (click)="toggleManager(emp)" [class.active-manager]="emp.isManager" [title]="emp.isManager ? 'Demote' : 'Promote to Manager'">
-              <hugeicons-icon [icon]="emp.isManager ? Shield02Icon : Shield01Icon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            <button class="icon-btn-sm green" (click)="navigateTo(['/employees', emp.EmployeeId || emp._id, 'attendance'])" title="Attendance">
+              <hugeicons-icon [icon]="FingerAccessIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </button>
+            <button class="icon-btn-sm brown" (click)="navigateTo(['/employees', emp.EmployeeId || emp._id, 'payroll'])" title="Payroll">
+              <hugeicons-icon [icon]="CalendarCheckOut01Icon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
+            </button>
+            <button class="icon-btn-sm blue" (click)="navigateTo(['/employees', emp.EmployeeId || emp._id, 'review'])" title="Performance">
+              <hugeicons-icon [icon]="LicenseDraftIcon" size="18" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
             </button>
           </div>
         </div>

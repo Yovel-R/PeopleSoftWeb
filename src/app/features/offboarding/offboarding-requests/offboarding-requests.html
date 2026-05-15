@@ -81,7 +81,7 @@
         </div>
 
         <!-- HR Specific: Certificate Selection -->
-        <div class="form-group" *ngIf="userRole() === 'hr' && reviewAction() === 'accept'">
+        <div class="form-group" *ngIf="isHrType(userRole()) && reviewAction() === 'accept'">
           <label>Select Certificates to Generate & Send</label>
           <div class="certificate-checkboxes" style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
             <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">

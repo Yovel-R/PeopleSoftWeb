@@ -42,7 +42,10 @@
 
   <!-- Statistics Grid -->
   <div class="stats-grid" *ngIf="!isLoading()">
-    <div class="stat-card" *ngFor="let stat of stats()[selectedModel()]; let i = index" [ngClass]="stat.color">
+    <div class="stat-card" *ngFor="let stat of stats()[selectedModel()]; let i = index" 
+         [ngClass]="stat.color" 
+         [routerLink]="stat.link"
+         style="cursor: pointer;">
       <div class="stat-icon-container">
         <hugeicons-icon *ngIf="stat.label.includes('Attendance')" [icon]="FingerAccessIcon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
         <hugeicons-icon *ngIf="stat.label.includes('Leaves')" [icon]="CalendarCheckOut01Icon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
@@ -79,17 +82,17 @@
       Quick Management
     </h3>
     <div class="actions-grid">
-      <div class="action-card teal" routerLink="/interns" [queryParams]="{tab: 'list'}">
+      <div class="action-card teal" [routerLink]="selectedModel() === 'interns' ? '/interns/requests' : '/employees/add'" style="cursor: pointer;">
         <div class="action-icon-box">
           <hugeicons-icon [icon]="UserCircleIcon" size="20" [strokeWidth]="1.5"></hugeicons-icon>
         </div>
         <div class="action-details">
-          <h4>Add {{ selectedModel() === 'interns' ? 'Intern' : 'Employee' }}</h4>
+          <h4>{{ selectedModel() === 'interns' ? 'Intern Applications' : 'Add Employee' }}</h4>
           <p>Onboard new talent</p>
         </div>
       </div>
 
-      <div class="action-card orange" routerLink="/leaves">
+      <div class="action-card orange" routerLink="/leaves" style="cursor: pointer;">
         <div class="action-icon-box">
           <hugeicons-icon [icon]="Calendar01Icon" size="20" [strokeWidth]="1.5"></hugeicons-icon>
         </div>
@@ -99,7 +102,7 @@
         </div>
       </div>
 
-      <div class="action-card purple">
+      <div class="action-card purple" routerLink="/offboarding" style="cursor: pointer;">
         <div class="action-icon-box">
           <hugeicons-icon [icon]="Delete01Icon" size="20" [strokeWidth]="1.5"></hugeicons-icon>
         </div>
@@ -109,7 +112,7 @@
         </div>
       </div>
 
-      <div class="action-card blue">
+      <div class="action-card blue" routerLink="/performance-goals" style="cursor: pointer;">
         <div class="action-icon-box">
           <hugeicons-icon [icon]="LicenseDraftIcon" size="20" [strokeWidth]="1.5"></hugeicons-icon>
         </div>

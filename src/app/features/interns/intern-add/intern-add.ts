@@ -21,6 +21,7 @@ export class InternAdd implements OnInit {
   isSaving = signal(false);
   submitted = signal(false);
   isApprovalMode = signal(false);
+  isEditMode = signal(false);
   requestId = '';
   
   intern = {
@@ -39,13 +40,33 @@ export class InternAdd implements OnInit {
     applicationType: 'Internship'
   };
 
+  internRoles = signal<string[]>([]);
+
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
+    const isEdit = this.route.snapshot.queryParamMap.get('edit') === 'true';
+
     if (id) {
-      this.isApprovalMode.set(true);
+      if (isEdit) {
+        this.isEditMode.set(true);
+      } else {
+        this.isApprovalMode.set(true);
+      }
       this.requestId = id;
       this.fetchRequestData(id);
     }
+    this.fetchSettings();
+  }
+
+  fetchSettings() {
+    this.apiService.getCompanySettings().subscribe({
+      next: (res: any) => {
+        if (res.success && res.settings) {
+          this.internRoles.set(res.settings.internRoles || []);
+        }
+      },
+      error: (err) => console.error('Failed to fetch settings', err)
+    });
   }
 
   fetchRequestData(id: string) {
@@ -94,7 +115,19 @@ export class InternAdd implements OnInit {
 
     this.isSaving.set(true);
     
-    if (this.isApprovalMode()) {
+    if (this.isEditMode()) {
+      this.apiService.updateIntern(this.requestId, this.intern).subscribe({
+        next: () => {
+          alert('Intern profile updated successfully!');
+          this.router.navigate(['/interns', this.requestId]);
+        },
+        error: (err: any) => {
+          console.error('Failed to update intern', err);
+          alert('Failed to update: ' + (err.error?.message || err.message));
+          this.isSaving.set(false);
+        }
+      });
+    } else if (this.isApprovalMode()) {
       // Approval logic
       this.apiService.acceptIntern(this.requestId, this.intern).subscribe({
         next: () => {

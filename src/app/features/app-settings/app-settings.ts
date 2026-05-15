@@ -11,7 +11,9 @@ import {
   Settings01Icon,
   CheckmarkCircle01Icon,
   Coordinate01Icon,
-  MailReceive01Icon
+  MailReceive01Icon,
+  UserCircleIcon,
+  UserGroupIcon
 } from '@hugeicons/core-free-icons';
 import { finalize } from 'rxjs';
 
@@ -33,6 +35,8 @@ export class AppSettings implements OnInit {
   readonly CheckmarkCircle01Icon = CheckmarkCircle01Icon;
   readonly Coordinate01Icon = Coordinate01Icon;
   readonly MailReceive01Icon = MailReceive01Icon;
+  readonly UserCircleIcon = UserCircleIcon;
+  readonly UserGroupIcon = UserGroupIcon;
 
   userRole = signal<string | null>(localStorage.getItem('user_role'));
   currentUser = signal<any>(null);
@@ -42,6 +46,10 @@ export class AppSettings implements OnInit {
   communication = signal<any>({
     emailNotifications: true
   });
+  employeeRoles = signal<string[]>([]);
+  internRoles = signal<string[]>([]);
+  
+  activeTab = signal<'locations' | 'communication' | 'employee_roles' | 'intern_roles'>('locations');
 
   isSaving = signal(false);
   isLoading = signal(true);
@@ -65,6 +73,21 @@ export class AppSettings implements OnInit {
             whatsappNotifications: false,
             emailNotifications: true
           });
+          this.employeeRoles.set(res.settings.employeeRoles || []);
+          this.internRoles.set(res.settings.internRoles || [
+            'Web developer',
+            'App developer',
+            'Artificial Intelligence',
+            'Data Analyst',
+            'Cybersecurity Analyst',
+            'Networking Analyst',
+            'Graphics Designer',
+            'Digital marketing',
+            'Business developer (Sales)',
+            'Research & Development (R&D)',
+            'HR Analyst',
+            'Other'
+          ]);
         }
         this.isLoading.set(false);
       },
@@ -76,11 +99,13 @@ export class AppSettings implements OnInit {
   }
 
   canEditCommunication(): boolean {
-    return this.userRole() === 'hr';
+    const role = this.userRole()?.toLowerCase();
+    return role === 'hr' || role === 'hr_admin';
   }
 
   canEditLocation(location: any): boolean {
-    if (this.userRole() === 'hr') return true;
+    const role = this.userRole()?.toLowerCase();
+    if (role === 'hr' || role === 'hr_admin') return true;
     if (this.userRole() === 'manager') {
       // If it's a new location being added, or one they created
       return !location._id || location.addedBy === this.currentUser()?.employeeId;
@@ -95,7 +120,7 @@ export class AppSettings implements OnInit {
       latitude: 0,
       longitude: 0,
       radius: 200,
-      addedBy: this.userRole() === 'hr' ? 'hr' : this.currentUser()?.employeeId
+      addedBy: (this.userRole()?.toLowerCase() === 'hr' || this.userRole()?.toLowerCase() === 'hr_admin') ? 'hr' : this.currentUser()?.employeeId
     });
     this.locations.set([...current]);
   }
@@ -116,7 +141,9 @@ export class AppSettings implements OnInit {
     const payload = {
       receivingEmail: this.receivingEmail(),
       locations: this.locations(),
-      communication: this.communication()
+      communication: this.communication(),
+      employeeRoles: this.employeeRoles(),
+      internRoles: this.internRoles()
     };
 
     this.apiService.updateCompanySettings(payload).pipe(
@@ -124,10 +151,43 @@ export class AppSettings implements OnInit {
     ).subscribe({
       next: (res: any) => {
         alert('All settings updated successfully');
+        this.fetchSettings(); // Refresh to reflect changes immediately
       },
       error: (err) => {
         alert('Failed to update settings: ' + (err.error?.message || err.message));
       }
     });
+  }
+  
+  addRole(type: 'employee' | 'intern') {
+    const roles = type === 'employee' ? this.employeeRoles() : this.internRoles();
+    roles.push('');
+    if (type === 'employee') this.employeeRoles.set([...roles]);
+    else this.internRoles.set([...roles]);
+  }
+
+  removeRole(type: 'employee' | 'intern', index: number) {
+    const roles = type === 'employee' ? this.employeeRoles() : this.internRoles();
+    
+    // Don't allow deleting 'Other'
+    if (roles[index].toLowerCase() === 'other') {
+      alert('The "Other" role cannot be deleted as it is required by the system.');
+      return;
+    }
+
+    roles.splice(index, 1);
+    if (type === 'employee') this.employeeRoles.set([...roles]);
+    else this.internRoles.set([...roles]);
+  }
+
+  updateRole(type: 'employee' | 'intern', index: number, value: string) {
+    const roles = type === 'employee' ? this.employeeRoles() : this.internRoles();
+    roles[index] = value;
+    if (type === 'employee') this.employeeRoles.set([...roles]);
+    else this.internRoles.set([...roles]);
+  }
+
+  trackByIndex(index: number, item: any): any {
+    return index;
   }
 }

@@ -19,7 +19,13 @@ export class OffboardingRequests implements OnInit {
   userRole = signal<string | null>(localStorage.getItem('user_role'));
   allRequests = signal<any[]>([]);
   isLoading = signal(true);
-  activeTab = signal<'manager' | 'hr' | 'completed'>(localStorage.getItem('user_role') === 'hr' ? 'hr' : 'manager');
+  
+  isHrType(role: string | null): boolean {
+    const r = role?.toLowerCase();
+    return r === 'hr' || r === 'hr_admin';
+  }
+
+  activeTab = signal<'manager' | 'hr' | 'completed'>(this.isHrType(localStorage.getItem('user_role')) ? 'hr' : 'manager');
 
   // Review state
   showReviewModal = signal(false);
@@ -69,7 +75,7 @@ export class OffboardingRequests implements OnInit {
         // Managers only see what's pending their approval
         return r.status === 'pending_manager';
       }
-      if (role === 'hr') {
+      if (this.isHrType(role)) {
         // HR sees everything except what's still with managers
         return r.status === 'pending_hr' || r.status === 'accepted' || r.status === 'rejected';
       }
@@ -107,7 +113,7 @@ export class OffboardingRequests implements OnInit {
           },
           error: (err) => alert('Failed to process review: ' + err.message)
         });
-    } else {
+    } else if (this.isHrType(this.userRole())) {
       const flags = {
         internship: this.certInternship(),
         project: this.certProject(),

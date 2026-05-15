@@ -39,14 +39,16 @@ export class InternList implements OnInit {
 
   currentTab = signal<'list' | 'leaves' | 'requests' | 'corrections' | 'offboarding'>('list');
   interns = signal<any[]>([]);
+  allInterns = signal<any[]>([]);
   isLoading = signal(true);
   statusFilter = signal<string>('all');
   rangeFilter = signal<string>('all');
+  searchQuery = signal<string>('');
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       if (params['tab']) {
-        this.currentTab.set(params['tab']);
+        this.currentTab.set(params['tab'] as any);
       } else {
         this.currentTab.set('list');
       }
@@ -58,7 +60,8 @@ export class InternList implements OnInit {
     this.isLoading.set(true);
     this.apiService.getAllActiveInterns(this.rangeFilter(), this.statusFilter()).subscribe({
       next: (data) => {
-        this.interns.set(data);
+        this.allInterns.set(data);
+        this.applyFilter();
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -66,6 +69,29 @@ export class InternList implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  applyFilter() {
+    const query = this.searchQuery().toLowerCase();
+    const all = this.allInterns();
+    
+    if (!query) {
+      this.interns.set(all);
+      return;
+    }
+
+    const filtered = all.filter(i => 
+      i.fullName?.toLowerCase().includes(query) || 
+      i.internid?.toLowerCase().includes(query) ||
+      i.email?.toLowerCase().includes(query)
+    );
+    this.interns.set(filtered);
+  }
+
+  onSearch(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.searchQuery.set(input.value);
+    this.applyFilter();
   }
 
   setFilter(range: string) {

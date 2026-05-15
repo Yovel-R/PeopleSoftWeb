@@ -8,13 +8,49 @@
 /* Left Branding Panel */
 .branding-panel {
   flex: 1.2;
-  background-color: #f1f4f9;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 4rem 6rem;
   position: relative;
   overflow: hidden;
+  color: #fff;
+}
+
+.branding-content {
+  position: relative;
+  z-index: 2;
+}
+
+.branding-bg-circles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.circle-1 {
+  width: 400px;
+  height: 400px;
+  top: -100px;
+  right: -100px;
+}
+
+.circle-2 {
+  width: 250px;
+  height: 250px;
+  bottom: -50px;
+  left: -50px;
 }
 
 .logo-container {
@@ -25,7 +61,7 @@
   font-family: var(--font-heading);
   font-size: var(--text-5xl);
   font-weight: 800;
-  color: #1a1a1a;
+  color: #ffffff;
   letter-spacing: -1px;
   display: flex;
   align-items: center;
@@ -33,16 +69,16 @@
 }
 
 .logo-text span {
-  color: #3b82f6; /* Modern blue for the accent */
+  color: #93c5fd; /* Light blue accent */
 }
 
 .crm-tag {
   font-size: var(--text-sm);
   font-weight: 700;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 0.75rem;
+  letter-spacing: 1.5px;
+  margin-bottom: 1rem;
   display: block;
 }
 
@@ -51,9 +87,16 @@
   font-size: var(--text-6xl);
   line-height: 1.1;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #ffffff;
+  max-width: 500px;
+  margin: 0 0 1.5rem 0;
+}
+
+.branding-desc {
+  font-size: var(--text-xl);
+  color: rgba(255, 255, 255, 0.8);
   max-width: 400px;
-  margin: 0;
+  line-height: 1.6;
 }
 
 /* Right Form Panel */
@@ -70,40 +113,6 @@
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
-}
-
-.login-tabs {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 0.5rem;
-}
-
-.login-tabs button {
-  background: none;
-  border: none;
-  padding: 0.5rem 0;
-  font-size: var(--text-2xl);
-  font-weight: 600;
-  color: #9ca3af;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.login-tabs button.active {
-  color: #1a1a1a;
-}
-
-.login-tabs button.active::after {
-  content: '';
-  position: absolute;
-  bottom: -0.5rem;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #3b82f6;
 }
 
 .form-header {
@@ -154,11 +163,11 @@
 
 .input-wrapper input {
   width: 100%;
-  padding: 0.75rem 1rem;
-  font-size: var(--text-2xl);
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background-color: #fff;
+  padding: 0.85rem 1rem 0.85rem 3rem;
+  font-size: 1.1rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  background-color: #f9fafb;
   color: #1a1a1a;
   transition: all 0.2s ease;
 }
@@ -166,15 +175,22 @@
 .input-wrapper input:focus {
   outline: none;
   border-color: #3b82f6;
+  background-color: #fff;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 .input-wrapper i {
   position: absolute;
-  right: 1rem;
+  left: 1.1rem;
   top: 50%;
   transform: translateY(-50%);
   color: #9ca3af;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+}
+
+.input-wrapper input:focus + i {
+  color: #3b82f6;
 }
 
 .submit-btn {

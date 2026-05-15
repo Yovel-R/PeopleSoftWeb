@@ -17,40 +17,37 @@ export class Login {
   private router = inject(Router);
   private app = inject(App);
 
-  loginType = signal<'hr' | 'employee'>('hr');
   isLoading = signal(false);
   errorMessage = signal('');
 
   credentials = {
-    email: '',
-    employeeId: '',
+    identifier: '',
     password: ''
   };
-
-  setLoginType(type: 'hr' | 'employee') {
-    this.loginType.set(type);
-    this.errorMessage.set('');
-  }
 
   onSubmit() {
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    const identifier = this.loginType() === 'hr' ? this.credentials.email : this.credentials.employeeId;
-
-    this.apiService.login(identifier, this.credentials.password).subscribe({
+    this.apiService.login(this.credentials.identifier, this.credentials.password).subscribe({
       next: (res) => {
         // Use the role returned by unified-login
         const actualRole = res.role;
-        const userData = res.user || res.employee;
+        const userData = res.user || res.employee || res.hr;
+        
+        // Ensure name is present for the greeting
+        if (userData && !userData.profile && userData.firstName) {
+          userData.profile = { firstName: userData.firstName };
+        }
 
         localStorage.setItem('user_role', actualRole);
         localStorage.setItem('user_data', JSON.stringify(userData));
         if (res.token) localStorage.setItem('auth_token', res.token);
         
         this.app.userRole.set(actualRole);
+        this.app.loadUserData();
 
-        if (actualRole === 'hr') {
+        if (actualRole === 'hr' || actualRole === 'hr_admin') {
           this.router.navigate(['/dashboard']);
         } else if (actualRole === 'employee' || actualRole === 'manager') {
           this.router.navigate(['/employee/dashboard']);

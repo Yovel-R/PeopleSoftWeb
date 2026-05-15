@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HugeiconsIconComponent } from '@hugeicons/angular';
-import { StudentsIcon, WorkflowSquare03Icon, DashboardSquareRemoveIcon, Settings01Icon, DiplomaIcon, DashboardSquare02Icon, DashboardSpeed01Icon, UserGroupIcon, WorkIcon, Calendar03Icon, PolicyIcon } from '@hugeicons/core-free-icons';
+import { StudentsIcon, WorkflowSquare03Icon, DashboardSquareRemoveIcon, Settings01Icon, DiplomaIcon, DashboardSquare02Icon, DashboardSpeed01Icon, UserGroupIcon, WorkIcon, Calendar03Icon, PolicyIcon, FingerAccessIcon } from '@hugeicons/core-free-icons';
 import { ApiService } from './services/api.service';
 import { forkJoin } from 'rxjs';
 
@@ -33,19 +33,48 @@ export class App {
   readonly WorkIcon = WorkIcon;
   readonly Calendar03Icon = Calendar03Icon;
   readonly PolicyIcon = PolicyIcon;
+  readonly FingerAccessIcon = FingerAccessIcon;
 
   userRole = signal<string | null>(localStorage.getItem('user_role'));
+  userName = signal<string | null>(null);
   hasNotifications = signal<boolean>(false);
   notificationItems = signal<any[]>([]);
   showNotifications = signal<boolean>(false);
   apiService = inject(ApiService);
 
+  currentUrl = signal<string>('');
+
   constructor() {
-    if (this.userRole() === 'hr') {
+    this.currentUrl.set(this.router.url);
+    this.router.events.subscribe(() => {
+      this.currentUrl.set(this.router.url);
+    });
+
+    this.loadUserData();
+    if (this.isHrType()) {
+      this.refreshMe(); // Auto-refresh profile
       this.checkNotifications();
       // Poll every 2 minutes
       setInterval(() => this.checkNotifications(), 120000);
     }
+  }
+
+  isHrType(): boolean {
+    return this.isRole('hr') || this.isRole('hr_admin');
+  }
+
+  isManager(): boolean {
+    return this.isRole('manager');
+  }
+
+  isEmployee(): boolean {
+    return this.isRole('employee');
+  }
+
+  isRole(roleName: string): boolean {
+    const role = this.userRole()?.toLowerCase().replace(/[\s_-]/g, '');
+    const target = roleName.toLowerCase().replace(/[\s_-]/g, '');
+    return role === target;
   }
 
   toggleNotifications() {
@@ -119,8 +148,44 @@ export class App {
     });
   }
 
+  loadUserData() {
+    const role = localStorage.getItem('user_role');
+    this.userRole.set(role);
+
+    const data = localStorage.getItem('user_data');
+    if (data) {
+      try {
+        const user = JSON.parse(data);
+        // Extremely flexible name lookup
+        const name = user.profile?.firstName || user.firstName || user.fullName || user.profile?.name || 'User';
+        this.userName.set(name);
+      } catch (e) {
+        this.userName.set('User');
+      }
+    }
+  }
+
+  refreshMe() {
+    this.apiService.getMe().subscribe({
+      next: (res: any) => {
+        if (res.success && res.user) {
+          localStorage.setItem('user_data', JSON.stringify(res.user));
+          
+          // Also sync the role from the exact backend calculation
+          if (res.role) {
+            localStorage.setItem('user_role', res.role);
+            this.userRole.set(res.role);
+          }
+          
+          this.loadUserData();
+        }
+      }
+    });
+  }
+
   isLoginPage(): boolean {
-    return this.router.url === '/login' || this.router.url === '/' || this.router.url === '/register';
+    const url = this.currentUrl().split('?')[0]; // Use signal for reactivity
+    return url === '/login' || url === '/register' || url === '/';
   }
 
   getGreeting(): string {

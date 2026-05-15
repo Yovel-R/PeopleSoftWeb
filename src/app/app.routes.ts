@@ -27,12 +27,14 @@ import { OffboardingRequests } from './features/offboarding/offboarding-requests
 import { ProjectManagement } from './features/projects/project-management/project-management';
 
 import { PerformanceGoals } from './features/performance-goals/performance-goals';
+import { TodayAttendance } from './features/attendance/today-attendance/today-attendance';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   { path: 'dashboard', component: Dashboard },
+  { path: 'attendance/today', component: TodayAttendance },
   { path: 'employee/dashboard', component: EmployeeDashboard },
   { path: 'performance-goals', component: PerformanceGoals },
   { path: 'org-hierarchy', component: OrgHierarchy },
@@ -50,6 +52,8 @@ export const routes: Routes = [
   { path: 'interns/:id/review', component: InternReview },
   { path: 'employees', component: EmployeeList },
   { path: 'employees/requests', component: EmployeeRequests },
+  { path: 'employees/add', component: EmployeeAdd },
+  { path: 'employees/add/:id', component: EmployeeAdd },
   { path: 'employees/approve/:id', component: EmployeeAdd }, // We'll update details to handle approval if needed, or create EmployeeApprove
   { path: 'employees/:id', component: EmployeeDetails },
   { path: 'employees/:id/attendance', component: EmployeeAttendance },

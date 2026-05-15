@@ -35,6 +35,13 @@
   gap: 0.5rem;
 }
 
+.header-tools {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
 .filter-chip {
   padding: 0.5rem 1.25rem;
   border-radius: 99px;
@@ -58,6 +65,45 @@
   color: white;
   border-color: #0f172a;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+.search-container input {
+  width: 100%;
+  padding: 0.625rem 1rem 0.625rem 2.5rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
+  transition: all 0.2s ease;
+}
+
+.search-container input:focus {
+  outline: none;
+  background: white;
+  border-color: #0f172a;
+  box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05);
+}
+
+.search-container input::placeholder {
+  color: #94a3b8;
 }
 
 /* -------------------------------------------------------------
@@ -97,15 +143,15 @@
 .avatar-initial {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
-  color: white;
+  border-radius: 50%;
+  background: rgba(0, 101, 127, 0.1);
+  color: #0F172A;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 1rem;
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 101, 127, 0.05);
 }
 
 .identity-text {
@@ -187,18 +233,12 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* Colors matching the intern professional palette */
-.icon-btn-sm.teal { background: #eef2ee; color: #3d5c3a; border-color: #d4e0d3; }
-.icon-btn-sm.teal:hover { background: #dfeadf; color: #2e4729; }
-
-.icon-btn-sm.orange { background: #f3eeea; color: #6b4c38; border-color: #e0d0c5; }
-.icon-btn-sm.orange:hover { background: #e9e0d8; color: #54392a; }
-
-.icon-btn-sm.blue { background: #eaeff5; color: #344f6b; border-color: #c9d8e8; }
-.icon-btn-sm.blue:hover { background: #dde6f0; color: #263d56; }
-
-.icon-btn-sm.purple { background: #f0edf4; color: #5c4a6b; border-color: #d9cfea; }
-.icon-btn-sm.purple:hover { background: #e6e0ef; color: #483859; }
+.icon-btn-sm.green { background: #ecfdf5; color: #059669; }
+.icon-btn-sm.brown { background: #fdf8f6; color: #78350f; }
+.icon-btn-sm.teal { background: #eef2ee; color: #3d5c3a; }
+.icon-btn-sm.orange { background: #f3eeea; color: #6b4c38; }
+.icon-btn-sm.blue { background: #eaeff5; color: #344f6b; }
+.icon-btn-sm.purple { background: #f0edf4; color: #5c4a6b; }
 
 /* -------------------------------------------------------------
    VERTICAL ACTION SIDEBAR & LAYOUT
