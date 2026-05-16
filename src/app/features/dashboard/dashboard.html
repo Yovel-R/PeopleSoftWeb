@@ -1,5 +1,5 @@
 <div class="dashboard-wrapper">
-  
+
   <!-- Header Section -->
   <header class="welcome-header">
     <div class="header-main">
@@ -17,10 +17,10 @@
     <div class="header-actions">
       <!-- Search Bar -->
       <div class="search-container" style="position: relative;">
-        <hugeicons-icon [icon]="FilterIcon" size="18" [strokeWidth]="1.5" color="#94A3B8" 
+        <hugeicons-icon [icon]="FilterIcon" size="18" [strokeWidth]="1.5" color="#94A3B8"
           style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;">
         </hugeicons-icon>
-        <input type="text" placeholder="Search data..." 
+        <input type="text" placeholder="Search data..."
           style="padding: 0.625rem 1rem 0.625rem 2.5rem; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-secondary); font-size: var(--text-sm); outline: none; width: 240px; transition: border-color 0.2s;">
       </div>
 
@@ -29,12 +29,15 @@
         <span class="time">{{ currentTime() | date:'hh:mm:ss a' }}</span>
         <span class="date">{{ currentTime() | date:'EEEE, d MMMM y' }}</span>
       </div>
-      
+
       <!-- Notifications & Profile -->
       <div class="top-meta" style="display: flex; align-items: center; gap: 1rem;">
-        <button class="icon-btn" style="width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border-color); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative;">
-          <hugeicons-icon [icon]="Chat01Icon" size="20" [strokeWidth]="1.5" color="var(--text-secondary)"></hugeicons-icon>
-          <span style="position: absolute; top: 10px; right: 10px; width: 6px; height: 6px; background: #EF4444; border-radius: 50%; border: 1.5px solid white;"></span>
+        <button class="icon-btn"
+          style="width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border-color); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative;">
+          <hugeicons-icon [icon]="Chat01Icon" size="20" [strokeWidth]="1.5"
+            color="var(--text-secondary)"></hugeicons-icon>
+          <span
+            style="position: absolute; top: 10px; right: 10px; width: 6px; height: 6px; background: #EF4444; border-radius: 50%; border: 1.5px solid white;"></span>
         </button>
       </div>
     </div>
@@ -42,24 +45,38 @@
 
   <!-- Statistics Grid -->
   <div class="stats-grid" *ngIf="!isLoading()">
-    <div class="stat-card" *ngFor="let stat of stats()[selectedModel()]; let i = index" 
-         [ngClass]="stat.color" 
-         [routerLink]="stat.link"
-         style="cursor: pointer;">
-      <div class="stat-icon-container">
-        <hugeicons-icon *ngIf="stat.label.includes('Attendance')" [icon]="FingerAccessIcon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
-        <hugeicons-icon *ngIf="stat.label.includes('Leaves')" [icon]="CalendarCheckOut01Icon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
-        <hugeicons-icon *ngIf="stat.label.includes('Interns') || stat.label.includes('Employees')" [icon]="StudentsIcon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
-        <hugeicons-icon *ngIf="stat.label.includes('Applications')" [icon]="UserCircleIcon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
-        <hugeicons-icon *ngIf="stat.label.includes('Projects')" [icon]="WorkflowSquare03Icon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
-        <hugeicons-icon *ngIf="stat.label.includes('Payroll')" [icon]="Money03Icon" size="24" [strokeWidth]="1.5" color="currentColor"></hugeicons-icon>
-      </div>
-      <div class="stat-info">
-        <span class="stat-label">{{ stat.label }}</span>
-        <h3 class="stat-value">{{ stat.value }}</h3>
-        <div class="stat-trend" [style.color]="stat.color === 'green' ? '#10B981' : '#64748B'">
-          <span>Live updates</span>
+    <div class="stat-card" *ngFor="let stat of stats()[selectedModel()]; let i = index" [ngClass]="stat.color"
+      [routerLink]="stat.link" style="cursor: pointer;">
+      <div class="stat-top">
+        <div class="stat-value-group">
+          <h3 class="stat-value">{{ stat.value }}</h3>
+          <span class="stat-label">{{ stat.label }}</span>
         </div>
+        <div class="stat-icon-container">
+          <hugeicons-icon *ngIf="stat.label.includes('Attendance')" [icon]="FingerAccessIcon" size="20"
+            [strokeWidth]="2" color="currentColor"></hugeicons-icon>
+          <hugeicons-icon *ngIf="stat.label.includes('Leaves')" [icon]="CalendarCheckOut01Icon" size="20"
+            [strokeWidth]="2" color="currentColor"></hugeicons-icon>
+          <hugeicons-icon *ngIf="stat.label.includes('Interns') || stat.label.includes('Employees')"
+            [icon]="StudentsIcon" size="20" [strokeWidth]="2" color="currentColor"></hugeicons-icon>
+          <hugeicons-icon *ngIf="stat.label.includes('Applications')" [icon]="UserCircleIcon" size="20"
+            [strokeWidth]="2" color="currentColor"></hugeicons-icon>
+          <hugeicons-icon *ngIf="stat.label.includes('Projects')" [icon]="WorkflowSquare03Icon" size="20"
+            [strokeWidth]="2" color="currentColor"></hugeicons-icon>
+          <hugeicons-icon *ngIf="stat.label.includes('Payroll')" [icon]="Money03Icon" size="20" [strokeWidth]="2"
+            color="currentColor"></hugeicons-icon>
+        </div>
+      </div>
+      <div class="stat-bottom">
+        <div class="trend-badge"
+          [ngClass]="stat.trend.startsWith('-') ? 'negative' : (stat.trend === '0%' ? 'neutral' : 'positive')">
+          <hugeicons-icon [icon]="AnalyticsUpIcon" size="14" [strokeWidth]="2" color="currentColor"
+            *ngIf="!stat.trend.startsWith('-') && stat.trend !== '0%'"></hugeicons-icon>
+          <hugeicons-icon [icon]="AnalyticsDownIcon" size="14" [strokeWidth]="2" color="currentColor"
+            *ngIf="stat.trend.startsWith('-')"></hugeicons-icon>
+          <span>{{ stat.trend }}</span>
+        </div>
+        <span class="trend-text">from last week</span>
       </div>
     </div>
   </div>
@@ -82,7 +99,8 @@
       Quick Management
     </h3>
     <div class="actions-grid">
-      <div class="action-card teal" [routerLink]="selectedModel() === 'interns' ? '/interns/requests' : '/employees/add'" style="cursor: pointer;">
+      <div class="action-card teal"
+        [routerLink]="selectedModel() === 'interns' ? '/interns/requests' : '/employees/add'" style="cursor: pointer;">
         <div class="action-icon-box">
           <hugeicons-icon [icon]="UserCircleIcon" size="20" [strokeWidth]="1.5"></hugeicons-icon>
         </div>
@@ -126,7 +144,7 @@
 
   <!-- Content Grid -->
   <div class="dashboard-content-layout">
-    
+
     <!-- Attendance Trend Chart -->
     <div class="analytics-card">
       <div class="card-header">
@@ -134,28 +152,53 @@
           <h3>Attendance Trend</h3>
           <p class="caption">Weekly participation analysis</p>
         </div>
-        <div class="header-meta">
-          <select class="period-select">
-            <option>Last 7 Days</option>
-            <option>Last 30 Days</option>
-          </select>
+      </div>
+
+      <!-- Analytics Summary Row -->
+      <div class="analytics-summary">
+        <div class="summary-stat">
+          <span class="label">Average Present</span>
+          <div class="value">{{ selectedModel() === 'interns' ? stats().internSummary?.avgPresent :
+            stats().employeeSummary?.avgPresent }}</div>
+        </div>
+        <div class="summary-stat">
+          <span class="label">Average Absent</span>
+          <div class="value">{{ selectedModel() === 'interns' ? stats().internSummary?.avgAbsent :
+            stats().employeeSummary?.avgAbsent }}</div>
+        </div>
+        <div class="summary-stat">
+          <span class="label">Best Day</span>
+          <div class="value" style="text-transform: capitalize;">{{ selectedModel() === 'interns' ?
+            stats().internSummary?.bestDay : stats().employeeSummary?.bestDay }}</div>
         </div>
       </div>
 
       <div class="chart-container">
-        <div class="chart-grid-lines">
-          <div class="grid-line" *ngFor="let line of [1,2,3,4]"></div>
+        <!-- Average Line -->
+        <div class="avg-line-container"
+          [style.bottom.%]="selectedModel() === 'interns' ? stats().internSummary?.avgLineHeight : stats().employeeSummary?.avgLineHeight">
+          <div class="avg-line"></div>
+          <span class="avg-label">AVG</span>
         </div>
-        
-        <div class="chart-bar-group" *ngFor="let day of (selectedModel() === 'interns' ? stats().internTrend : stats().employeeTrend)">
+
+        <div class="chart-grid-lines">
+          <div class="grid-line" *ngFor="let line of [1,2,3,4,5]"></div>
+        </div>
+
+        <div class="chart-bar-group"
+          *ngFor="let day of (selectedModel() === 'interns' ? stats().internTrend : stats().employeeTrend)">
           <div class="bar-wrapper">
-            <div class="bar" 
-              [style.height.%]="day.height || 0" 
-              [attr.data-value]="day.count"
-              [title]="day.count + ' present'">
+            <div class="bar" [style.height.%]="day.height || 5">
+              <!-- Custom Hover Tooltip -->
+              <div class="chart-tooltip">
+                <span class="tt-date">{{ day.day }}</span>
+                <div class="tt-data">
+                  <div class="tt-row"><span class="dot present"></span> Present: <b>{{ day.count }}</b></div>
+                </div>
+              </div>
             </div>
           </div>
-          <span class="bar-label">{{ day.day }}</span>
+          <span class="bar-label">{{ day.day | slice:0:3 }}</span>
         </div>
       </div>
     </div>
@@ -165,13 +208,17 @@
       <div class="card-header">
         <h3>Recent Activity</h3>
       </div>
-      
+
       <div class="activity-list" *ngIf="!isLoading()">
         <div class="activity-item" *ngFor="let activity of stats().activities">
-          <div class="activity-icon" [style.color]="activity.color === 'green' ? '#10B981' : activity.color === 'orange' ? '#F59E0B' : '#3B82F6'">
-            <hugeicons-icon *ngIf="activity.title.includes('Application')" [icon]="UserCircleIcon" size="16" [strokeWidth]="2"></hugeicons-icon>
-            <hugeicons-icon *ngIf="activity.title.includes('Leave')" [icon]="Calendar01Icon" size="16" [strokeWidth]="2"></hugeicons-icon>
-            <hugeicons-icon *ngIf="!activity.title.includes('Application') && !activity.title.includes('Leave')" [icon]="FingerAccessIcon" size="16" [strokeWidth]="2"></hugeicons-icon>
+          <div class="activity-icon"
+            [style.color]="activity.color === 'green' ? '#10B981' : activity.color === 'orange' ? '#F59E0B' : '#3B82F6'">
+            <hugeicons-icon *ngIf="activity.title.includes('Application')" [icon]="UserCircleIcon" size="16"
+              [strokeWidth]="2"></hugeicons-icon>
+            <hugeicons-icon *ngIf="activity.title.includes('Leave')" [icon]="Calendar01Icon" size="16"
+              [strokeWidth]="2"></hugeicons-icon>
+            <hugeicons-icon *ngIf="!activity.title.includes('Application') && !activity.title.includes('Leave')"
+              [icon]="FingerAccessIcon" size="16" [strokeWidth]="2"></hugeicons-icon>
           </div>
           <div class="activity-content">
             <h5>{{ activity.title }}</h5>
@@ -182,7 +229,7 @@
             </span>
           </div>
         </div>
-        
+
         <button class="view-all-btn">
           View All Activities
           <hugeicons-icon [icon]="Home01Icon" size="14" [strokeWidth]="2"></hugeicons-icon>

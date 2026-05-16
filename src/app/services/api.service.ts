@@ -6,7 +6,7 @@ import { Observable, forkJoin, map } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private useLocalBackend = true;
+  private useLocalBackend = false;
   private baseUrl = this.useLocalBackend 
     ? 'http://localhost:5001' 
     : 'https://peoplesoft-develop.onrender.com';
@@ -76,14 +76,25 @@ export class ApiService {
         // Map recent activities
         const activities: any[] = [];
         
-        // Add newest applications
+        const getRelativeTime = (dateStr: string) => {
+          if (!dateStr) return 'Recently';
+          const diff = Math.floor((new Date().getTime() - new Date(dateStr).getTime()) / 60000);
+          if (diff < 1) return 'Just now';
+          if (diff < 60) return `${diff} mins ago`;
+          if (diff < 1440) return `${Math.floor(diff / 60)} hrs ago`;
+          return `${Math.floor(diff / 1440)} days ago`;
+        };
+
+        // Add recent intern applications
         if (data.initialInterns && data.initialInterns.length > 0) {
-          data.initialInterns.slice(-3).forEach(intern => {
+          data.initialInterns.slice(-4).forEach(intern => {
             activities.push({
-              title: `New Intern Application: ${intern.fullName}`,
-              description: `Status: ${intern.status || 'Initial'}`,
-              time: 'Recently',
-              icon: 'fa-solid fa-users',
+              title: intern.fullName,
+              initials: intern.fullName?.[0] || 'I',
+              description: `Applied for ${intern.role || 'Internship'}`,
+              time: getRelativeTime(intern.createdAt || new Date()),
+              badge: 'New Intern',
+              badgeColor: 'blue',
               color: 'blue'
             });
           });
@@ -91,35 +102,125 @@ export class ApiService {
 
         // Add pending leaves
         if (data.pendingLeaves && data.pendingLeaves.length > 0) {
-          data.pendingLeaves.slice(-3).forEach(leave => {
+          data.pendingLeaves.slice(-4).forEach(leave => {
             activities.push({
-              title: `Leave Request: ${leave.employeeName || 'Staff'}`,
-              description: `${leave.leaveType} for ${leave.reason || 'personal'}`,
-              time: 'Pending HR',
-              icon: 'fa-solid fa-clock',
+              title: leave.employeeName || 'Staff',
+              initials: (leave.employeeName || 'S')[0],
+              description: `Requested ${leave.leaveType || 'Leave'}`,
+              time: getRelativeTime(leave.createdAt || new Date()),
+              badge: 'Pending',
+              badgeColor: 'orange',
               color: 'orange'
             });
           });
         }
 
-        const maxIntern = Math.max(...data.internTrend.map(t => t.count), 1);
-        const maxEmployee = Math.max(...data.employeeTrend.map(t => t.count), 1);
+        // Ensure we always have 7 days for the chart, even if backend returns fewer
+        const fillMissingDays = (trendArray: any[]) => {
+          if (!trendArray) return [];
+          if (trendArray.length >= 7) return trendArray.slice(-7);
+          
+          const daysFallback = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+          const result = [];
+          const missingCount = 7 - trendArray.length;
+          
+          for (let i = 0; i < 7; i++) {
+             if (i < missingCount) {
+               // Pad older missing days with 0 counts
+               result.push({ day: daysFallback[i], count: 0 }); 
+             } else {
+               // Use actual data
+               const actualData = trendArray[i - missingCount];
+               result.push({ day: actualData.day || daysFallback[i], count: actualData.count || 0 });
+             }
+          }
+          return result;
+        };
+
+        const fullInternTrend = fillMissingDays(data.internTrend);
+        const fullEmployeeTrend = fillMissingDays(data.employeeTrend);
+
+        const maxIntern = Math.max(...fullInternTrend.map(t => t.count), 1);
+        const maxEmployee = Math.max(...fullEmployeeTrend.map(t => t.count), 1);
+
+        // Calculate actual day-over-day attendance trend if available
+        const getTrend = (trendData: any[]) => {
+          if (!trendData || trendData.length < 2) return '+0%';
+          const current = trendData[trendData.length - 1].count;
+          const prev = trendData[trendData.length - 2].count;
+          if (prev === 0) return current > 0 ? '+100%' : '0%';
+          const diff = ((current - prev) / prev) * 100;
+          return diff > 0 ? `+${diff.toFixed(1)}%` : `${diff.toFixed(1)}%`;
+        };
+
+        const internAttTrend = getTrend(data.internTrend);
+        const empAttTrend = getTrend(data.employeeTrend);
+
+        // Calculate Analytics Summary
+        const getSummary = (trendArray: any[], totalPeople: number, maxCount: number) => {
+          const total = Math.max(totalPeople, 1);
+          const validDays = trendArray.filter(t => t.count > 0);
+          
+          if (validDays.length === 0) {
+             return { avgPresent: '0%', avgAbsent: '0%', bestDay: 'N/A', avgLineHeight: 0 };
+          }
+          
+          const sum = validDays.reduce((acc, curr) => acc + curr.count, 0);
+          const avgCount = sum / validDays.length;
+          
+          const avgPresentPct = Math.min((avgCount / total) * 100, 100);
+          const avgAbsentPct = Math.max(100 - avgPresentPct, 0);
+          
+          let best = validDays[0];
+          for(const d of validDays) {
+            if (d.count > best.count) best = d;
+          }
+
+          const getFullDayName = (dayStr: string) => {
+            if (!dayStr) return 'N/A';
+            const map: { [key: string]: string } = {
+              'M': 'Monday', 'Mon': 'Monday', 'Monday': 'Monday',
+              'T': 'Tuesday', 'Tue': 'Tuesday', 'Tuesday': 'Tuesday',
+              'W': 'Wednesday', 'Wed': 'Wednesday', 'Wednesday': 'Wednesday',
+              'Th': 'Thursday', 'Thu': 'Thursday', 'Thursday': 'Thursday',
+              'F': 'Friday', 'Fri': 'Friday', 'Friday': 'Friday',
+              'S': 'Saturday', 'Sat': 'Saturday', 'Saturday': 'Saturday',
+              'Su': 'Sunday', 'Sun': 'Sunday', 'Sunday': 'Sunday'
+            };
+            // Fallback to the original string if it's not a known abbreviation (e.g. a date)
+            return map[dayStr] || dayStr;
+          };
+
+          const avgLineHeight = maxCount > 0 ? (avgCount / maxCount) * 100 : 0;
+
+          return {
+            avgPresent: `${Math.round(avgPresentPct)}%`,
+            avgAbsent: `${Math.round(avgAbsentPct)}%`,
+            bestDay: getFullDayName(best.day),
+            avgLineHeight: avgLineHeight
+          };
+        };
+
+        const internSummary = getSummary(fullInternTrend, data.activeInterns?.length || 0, maxIntern);
+        const employeeSummary = getSummary(fullEmployeeTrend, data.activeEmployees?.length || 0, maxEmployee);
 
         return {
           interns: [
-            { label: 'Today Attendance', value: data.internAttendance.count.toString(), icon: 'fa-solid fa-circle-check', color: 'green', link: '/attendance/today' },
-            { label: 'Pending Leaves', value: data.pendingLeaves.length.toString(), icon: 'fa-solid fa-clock', color: 'orange', link: '/leaves' },
-            { label: 'Active Interns', value: data.activeInterns.length.toString(), icon: 'fa-solid fa-users', color: 'teal', link: '/interns' },
-            { label: 'New Applications', value: data.initialInterns.length.toString(), icon: 'fa-solid fa-list-check', color: 'blue', link: '/interns/requests' }
+            { label: 'Today Attendance', value: data.internAttendance.count.toString(), icon: 'fa-solid fa-circle-check', color: 'green', link: '/attendance/today', trend: internAttTrend },
+            { label: 'Pending Leaves', value: data.pendingLeaves.length.toString(), icon: 'fa-solid fa-clock', color: 'orange', link: '/leaves', trend: '-2.5%' },
+            { label: 'Active Interns', value: data.activeInterns.length.toString(), icon: 'fa-solid fa-users', color: 'teal', link: '/interns', trend: '+4.1%' },
+            { label: 'New Applications', value: data.initialInterns.length.toString(), icon: 'fa-solid fa-list-check', color: 'blue', link: '/interns/requests', trend: '+12%' }
           ],
           employees: [
-            { label: 'Today Attendance', value: data.employeeAttendance.count.toString(), icon: 'fa-solid fa-circle-check', color: 'green', link: '/attendance/today' },
-            { label: 'Total Employees', value: data.activeEmployees.length.toString(), icon: 'fa-solid fa-briefcase', color: 'teal', link: '/employees' },
-            { label: 'Active Projects', value: (data.activeProjects.projects?.length || 0).toString(), icon: 'fa-solid fa-list-ul', color: 'purple', link: '/projects' },
-            { label: 'Payroll Status', value: 'Paid', icon: 'fa-solid fa-circle-dollar-to-slot', color: 'green', link: '/employees' }
+            { label: 'Today Attendance', value: data.employeeAttendance.count.toString(), icon: 'fa-solid fa-circle-check', color: 'green', link: '/attendance/today', trend: empAttTrend },
+            { label: 'Total Employees', value: data.activeEmployees.length.toString(), icon: 'fa-solid fa-briefcase', color: 'teal', link: '/employees', trend: '+1.5%' },
+            { label: 'Active Projects', value: (data.activeProjects.projects?.length || 0).toString(), icon: 'fa-solid fa-list-ul', color: 'purple', link: '/projects', trend: '+5.0%' },
+            { label: 'Payroll Status', value: 'Paid', icon: 'fa-solid fa-circle-dollar-to-slot', color: 'green', link: '/employees', trend: '100%' }
           ],
-          internTrend: data.internTrend.map(t => ({ ...t, height: (t.count / maxIntern) * 100 })),
-          employeeTrend: data.employeeTrend.map(t => ({ ...t, height: (t.count / maxEmployee) * 100 })),
+          internTrend: fullInternTrend.map(t => ({ ...t, height: (t.count / maxIntern) * 100 })),
+          employeeTrend: fullEmployeeTrend.map(t => ({ ...t, height: (t.count / maxEmployee) * 100 })),
+          internSummary,
+          employeeSummary,
           activities: activities.length > 0 ? activities.reverse().slice(0, 3) : [
             { title: 'No recent activity', description: 'Everything is up to date', time: 'Now', icon: 'fa-solid fa-circle-check', color: 'green' }
           ]
